@@ -1,0 +1,54 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false  # true by default
+
+api:
+  dashboard: true  # true by default
+  insecure: true  # Don't do this in production!
+
+# Entry Points configuration
+# ---
+entryPoints:
+  web:
+    address: :80
+    # (Optional) Redirect to HTTPS
+    # ---
+    # http:
+    #   redirections:
+    #     entryPoint:
+    #       to: websecure
+    #       scheme: https
+
+  websecure:
+    address: :443
+    http:
+      tls: 
+        certResolver: aduh-prod
+
+# Configure your CertificateResolver here...
+# ---
+certificatesResolvers:
+  aduh-prod:
+    acme:
+      email: vladstefan.petre@outlook.com
+      # acme.json needs chmod 600
+      storage: /etc/traefik/certs/acme.json
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web
+      tlsChallenge: {}
+  aduh-stage:
+    acme:
+      email: vladstefan.petre@outlook.com
+      storage: /etc/traefik/certs/acme.json
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web
+
+providers:
+  docker:
+    exposedByDefault: false  # Default is true
+  file:
+    # watch for dynamic configuration changes
+    directory: /etc/traefik
+    watch: true

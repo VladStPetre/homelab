@@ -1,0 +1,72 @@
+http:
+ #region routers 
+  routers:
+    homeassistant:
+      # For Homeassistant config, check: https://www.home-assistant.io/integrations/http/#reverse-proxies
+      # This relies on Homeassistant using http. No certs are needed in the Homeassistant config.
+      entryPoints:
+        - "websecure"
+      rule: "Host(`ruxadu.go.ro`)"
+      middlewares:
+        - default-headers
+      tls: 
+        certResolver: aduh-prod
+      service: homeassistant
+    # portainer:
+    #   # For Homeassistant config, check: https://www.home-assistant.io/integrations/http/#reverse-proxies
+    #   # This relies on Homeassistant using http. No certs are needed in the Homeassistant config.
+    #   entryPoints:
+    #     - "websecure"
+    #   rule: "Host(`portainer.ruxadu.go.ro`)"
+    #   middlewares:
+    #     - default-headers
+    #   tls: 
+    #     certResolver: aduh-prod
+    #   service: portainer
+ #end region routers
+
+ #region services
+  services:
+    homeassistant:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.7.173:8123"
+        passHostHeader: true
+    # portainer:
+    #   loadBalancer:
+    #     servers:
+    #       - url: "http://192.168.7.173:9443"
+    #     passHostHeader: true
+ #end region services
+
+  middlewares:
+
+    https-redirectscheme:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    default-headers:
+      headers:
+        frameDeny: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    default-whitelist:
+      ipWhiteList:
+        sourceRange:
+        - "192.168.7.1/24"
+        - "172.21.0.0/16"
+
+    secured:
+      chain:
+        middlewares:
+        - default-whitelist
+        - default-headers

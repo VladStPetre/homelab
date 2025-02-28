@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - /home/pi/homelab/configs/ha:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+    network_mode: host
+
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    # ports:
+    #   - "8086:8086"
+    volumes:
+      - /home/pi/homelab/configs/influxdb2:/etc/influxdb2
+      - /home/pi/homelab/data/influxdb2:/var/lib/influxdb2
+    network_mode: host
+
+  esphome:
+    container_name: esphome
+    image: esphome/esphome
+    restart: unless-stopped
+    ports:
+      - 6052:6052
+    environment:
+      - TZ=Europe/Bucharest
+    volumes:
+      - /home/pi/homelab/configs/esphome:/config
+    privileged: true
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    network_mode: host

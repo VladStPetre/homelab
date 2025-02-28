@@ -1,0 +1,166 @@
+version: '3.8'
+
+services:  
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - 9443:9443
+    volumes:
+      - /home/pi/homelab/data/portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "portainer.io/managed=true"
+    restart: unless-stopped
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "81:80/tcp"
+    environment:
+      TZ: 'Europe/Bucharest'
+      WEBPASSWORD: '<redacted>'
+      FTLCONF_LOCAL_IPV4: '192.168.7.173'
+    volumes:
+      - '/home/pi/homelab/data/pihole/etc-pihole:/etc/pihole'
+      - '/home/pi/homelab/data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
+    cap_add:
+      - NET_ADMIN
+    dns: 
+    - 127.0.0.1
+    labels:
+      - "portainer.io/managed=true"
+    restart: always
+  
+  # uptime-kuma:
+  #   image: louislam/uptime-kuma:1
+  #   container_name: uptime-kuma
+  #   ports:
+  #     - "3001:3001"
+  #   volumes:
+  #     - '/home/pi/homelab/uptime-kuma/data:/app/data'
+  #   restart: unless-stopped
+
+  wireguard:
+    image: lscr.io/linuxserver/wireguard:latest
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ='Europe/Bucharest'
+      - SERVERURL=ruxadu.go.ro #optional
+      - SERVERPORT=62931 #optional
+      - PEERS=3 #optional
+      - PEERDNS=auto #optional
+      # - INTERNAL_SUBNET=10.13.13.0 #optional
+      - ALLOWEDIPS=0.0.0.0/0 #optional
+      - PERSISTENTKEEPALIVE_PEERS=all #optional
+      - LOG_CONFS=true #optional
+    volumes:
+      - /home/pi/homelab/configs/wireguard:/config
+      - /lib/modules:/lib/modules #optional
+    ports:
+      - 51820:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    dns: 
+    - 172.19.0.2
+    labels:
+      - "portainer.io/managed=true"
+    restart: always
+
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: always
+    # security_opt:
+    #   - no-new-privileges:true
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/pi/homelab/configs/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - /home/pi/homelab/configs/traefik/certs/acme.json:/etc/traefik/certs/acme.json
+      - /home/pi/homelab/configs/traefik/config.yml:/etc/traefik/config.yml:ro
+    labels:
+      - "portainer.io/managed=true"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - /home/pi/homelab/data/grafana:/var/lib/grafana
+    # environment:
+    #   GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-piechart-panel"
+    labels:
+      - "portainer.io/managed=true"
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - 9100:9100
+    labels:
+      - "portainer.io/managed=true"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    user: root
+    volumes:
+      - /home/pi/homelab/configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /home/pi/homelab/data/prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=90d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - 9090:9090
+    labels:
+      - "portainer.io/managed=true"
+
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:v0.47.2
+  #   container_name: cadvisor
+  #   ports:
+  #   - 8181:8080
+  #   volumes:
+  #   - /:/rootfs:ro
+  #   - /var/run:/var/run:rw
+  #   - /sys:/sys:ro
+  #   - /var/lib/docker/:/var/lib/docker:ro
+  #   command:
+  #   - "--docker_only=true"
+  #   - "--housekeeping_interval=30s"
+  #   - "--disable_metrics=accelerator,cpu_topology,disk,memory_numa,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,resctrl,cpuset,advtcp"
+      # labels:
+      # - "portainer.io/managed=true"
