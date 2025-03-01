@@ -26,3 +26,14 @@ for DIR in "${DIRECTORIES[@]}"; do
 done
 
 echo "Directory structure created successfully!"
+
+#copy dependencies where needed
+echo "Copying pihole config..."
+cp "$BASE_DIR/configs/pihole/etc-pihole/custom.list" "$BASE_DIR/data/pihole/etc-pihole/custom.list" 
+cp "$BASE_DIR/configs/pihole/etc-pihole/adlists.list" "$BASE_DIR/data/pihole/etc-pihole/adlists.list" 
+cp "$BASE_DIR/configs/pihole/etc-dnsmasq.d/05-pihole-custom-cname.conf" "$BASE_DIR/data/pihole/etc-dnsmasq.d/05-pihole-custom-cname.conf" 
+echo "Pihole config copied..."
+
+# create docker network
+docker network create --subnet=172.24.0.0/16 hlcl
+

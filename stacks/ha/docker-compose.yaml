@@ -16,7 +16,6 @@ services:
   influxdb:
     image: influxdb:latest
     container_name: influxdb
-
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
