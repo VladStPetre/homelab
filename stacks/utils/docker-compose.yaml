@@ -11,6 +11,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
       - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
     restart: unless-stopped
     networks:
       - hlcl
@@ -38,6 +39,7 @@ services:
       - 1.1.1.1
     labels:
       - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
     restart: always
     networks:
       - hlcl
@@ -80,6 +82,7 @@ services:
     - 172.19.0.2
     labels:
       - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
     restart: always
     networks:
       - hlcl
@@ -102,6 +105,9 @@ services:
       - /home/pi/homelab/configs/traefik/config.yml:/etc/traefik/config.yml:ro
     labels:
       - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+    networks:
+      - hlcl
 
   grafana:
     image: grafana/grafana:latest
@@ -117,6 +123,7 @@ services:
     #   GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-piechart-panel"
     labels:
       - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
     networks:
       - hlcl
 
@@ -137,6 +144,7 @@ services:
       - 9100:9100
     labels:
       - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
     networks:
       - hlcl
 
@@ -159,6 +167,7 @@ services:
       - 9090:9090
     labels:
       - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
     networks:
       - hlcl
 
@@ -178,5 +187,6 @@ services:
   #   - "--disable_metrics=accelerator,cpu_topology,disk,memory_numa,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,resctrl,cpuset,advtcp"
       # labels:
       # - "portainer.io/managed=true"
+      # - "io.portainer.accesscontrol.users=admin"
     # networks:
       # - hlcl

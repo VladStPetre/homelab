@@ -24,7 +24,7 @@ influxdb:
   ssl: false
   host: 192.168.7.173
   port: 8086
-  token: HCL5LNdv0gur47ZeZh3jA4JQW2pGchptUgjJJizerMDmNEQviWoiTwLdLNDUHb6Ahb6cPNhu7JldjLoJkChCsQ==
+  token: <redacted>
   bucket: ha-db0
   organization: aduh
   max_retries: 3
