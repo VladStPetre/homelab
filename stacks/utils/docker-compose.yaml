@@ -190,3 +190,8 @@ services:
       # - "io.portainer.accesscontrol.users=admin"
     # networks:
       # - hlcl
+
+networks:
+  hlcl:
+    name: hlcl
+    external: true
