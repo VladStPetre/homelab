@@ -154,10 +154,10 @@ services:
     restart: unless-stopped
     user: root
     volumes:
-      - /home/pi/homelab/configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /home/pi/homelab/configs/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - /home/pi/homelab/data/prometheus:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--config.file=/etc/prometheus/prometheus.yaml'
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention.time=90d'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
