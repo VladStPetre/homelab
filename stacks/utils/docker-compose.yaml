@@ -125,6 +125,8 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
+    environment:
+      - GF_SECURITY_ALLOW_EMBEDDING=true
     volumes:
       - /home/pi/homelab/data/grafana:/var/lib/grafana
     # environment:
