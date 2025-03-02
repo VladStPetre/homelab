@@ -12,6 +12,10 @@ services:
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.homeassistant.rule=Host(`portainer.sierra.local`)"
+      - "traefik.http.routers.homeassistant.entrypoints=web"
+      - "traefik.http.routers.homeassistant.tls=false"
     restart: unless-stopped
     networks:
       - hlcl
@@ -32,6 +36,10 @@ services:
     volumes:
       - '/home/pi/homelab/data/pihole/etc-pihole:/etc/pihole'
       - '/home/pi/homelab/data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
+      - "traefik.enable=true"
+      - "traefik.http.routers.homeassistant.rule=Host(`pihole.sierra.local`)"
+      - "traefik.http.routers.homeassistant.entrypoints=web"
+      - "traefik.http.routers.homeassistant.tls=false"
     cap_add:
       - NET_ADMIN
     dns: 
@@ -106,6 +114,10 @@ services:
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.homeassistant.rule=Host(`traefik.sierra.local`)"
+      - "traefik.http.routers.homeassistant.entrypoints=web"
+      - "traefik.http.routers.homeassistant.tls=false"
     networks:
       - hlcl
 
@@ -124,6 +136,10 @@ services:
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.homeassistant.rule=Host(`grafana.sierra.local`)"
+      - "traefik.http.routers.homeassistant.entrypoints=web"
+      - "traefik.http.routers.homeassistant.tls=false"
     networks:
       - hlcl
 
@@ -168,6 +184,10 @@ services:
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.homeassistant.rule=Host(`prometheus.sierra.local`)"
+      - "traefik.http.routers.homeassistant.entrypoints=web"
+      - "traefik.http.routers.homeassistant.tls=false"
     networks:
       - hlcl
 
