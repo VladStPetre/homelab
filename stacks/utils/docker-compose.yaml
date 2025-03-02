@@ -4,8 +4,8 @@ services:
 
   portainer:
     image: portainer/portainer-ce:latest
-    ports:
-      - 9443:9443
+    # ports:
+    #   - 9443:9443
     volumes:
       - /home/pi/homelab/data/portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -27,7 +27,7 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
-      - "81:80/tcp"
+      # - "81:80/tcp"
     environment:
       TZ: 'Europe/Bucharest'
       WEBPASSWORD: '<redacted>'
@@ -104,7 +104,7 @@ services:
     ports:
       - 80:80
       - 443:443
-      - 8080:8080
+      # - 8080:8080
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -179,8 +179,8 @@ services:
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
-    ports:
-      - 9090:9090
+    # ports:
+    #   - 9090:9090
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
