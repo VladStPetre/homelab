@@ -116,9 +116,6 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.sierra.local`)"
-      - "traefik.http.routers.traefik.entrypoints=web"
-      - "traefik.http.routers.traefik.tls=false"
     networks:
       - hlcl
 
