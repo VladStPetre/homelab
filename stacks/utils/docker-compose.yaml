@@ -4,8 +4,8 @@ services:
 
   portainer:
     image: portainer/portainer-ce:latest
-    # ports:
-    #   - 9443:9443
+    ports:
+      - 9443:9443
     volumes:
       - /home/pi/homelab/data/portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
