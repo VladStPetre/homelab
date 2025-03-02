@@ -5,6 +5,7 @@ services:
   portainer:
     container_name: portainer
     image: portainer/portainer-ce:latest
+    command: -H unix:///var/run/docker.sock
     ports:
       - 9443:9443
     volumes:
@@ -17,7 +18,7 @@ services:
       - "traefik.http.routers.portainer.rule=Host(`portainer.sierra.local`)"
       - "traefik.http.routers.portainer.entrypoints=web"
       - "traefik.http.routers.portainer.tls=false"
-      - "traefik.http.services.portainer-utils.loadbalancer.server.port=9443"
+      - "traefik.http.services.portainer-utils.loadbalancer.server.port=9000"
     restart: unless-stopped
     networks:
       - hlcl
