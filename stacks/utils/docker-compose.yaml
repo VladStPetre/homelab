@@ -115,7 +115,6 @@ services:
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
     networks:
       - hlcl
 
