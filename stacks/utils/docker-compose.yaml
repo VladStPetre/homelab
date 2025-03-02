@@ -36,10 +36,6 @@ services:
     volumes:
       - '/home/pi/homelab/data/pihole/etc-pihole:/etc/pihole'
       - '/home/pi/homelab/data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
-      - "traefik.enable=true"
-      - "traefik.http.routers.pihole.rule=Host(`pihole.sierra.local`)"
-      - "traefik.http.routers.pihole.entrypoints=web"
-      - "traefik.http.routers.pihole.tls=false"
     cap_add:
       - NET_ADMIN
     dns: 
@@ -48,6 +44,10 @@ services:
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.sierra.local`)"
+      - "traefik.http.routers.pihole.entrypoints=web"
+      - "traefik.http.routers.pihole.tls=false"
     restart: always
     networks:
       - hlcl
