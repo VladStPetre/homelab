@@ -35,5 +35,5 @@ cp "$BASE_DIR/configs/pihole/etc-dnsmasq.d/05-pihole-custom-cname.conf" "$BASE_D
 echo "Pihole config copied..."
 
 # create docker network
-docker network create --subnet=172.24.0.0/16 hlcl
+docker network create --subnet=172.21.0.0/16 hlcl
 
