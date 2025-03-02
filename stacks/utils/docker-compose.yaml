@@ -1,13 +1,9 @@
-version: '3.8'
-
 services:  
 
   portainer:
     container_name: portainer
     image: portainer/portainer-ce:latest
     command: -H unix:///var/run/docker.sock
-    ports:
-      - 9443:9443
     volumes:
       - /home/pi/homelab/data/portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -30,7 +26,6 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
-      - "81:80/tcp"
     environment:
       TZ: 'Europe/Bucharest'
       WEBPASSWORD: '<redacted>'
@@ -133,8 +128,6 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    ports:
-      - "3000:3000"
     volumes:
       - /home/pi/homelab/data/grafana:/var/lib/grafana
     # environment:
@@ -185,8 +178,6 @@ services:
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
-    # ports:
-    #   - 9090:9090
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
