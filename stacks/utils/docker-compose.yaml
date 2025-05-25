@@ -88,7 +88,7 @@ services:
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     dns: 
-    - 172.19.0.2
+    - 192.168.7.173
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
