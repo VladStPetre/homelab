@@ -60,9 +60,13 @@ client.publish("homeassistant/button/pi3/shutdown/config", json.dumps({
 }), retain=True)
 
 while True:
-    temp = float(os.popen("vcgencmd measure_temp").readline().replace("temp=", "").replace("'C\\n", ""))
+    temp = get_temp()
     cpu = psutil.cpu_percent()
     mem = psutil.virtual_memory().percent
     payload = json.dumps({"temperature": temp, "cpu": cpu, "memory": mem})
     client.publish("pi3/status", payload)
     time.sleep(60)
+
+def get_temp():
+    res = os.popen("vcgencmd measure_temp").readline().strip()
+    return float(res.replace("temp=", "").replace("'C", "").strip())
