@@ -13,10 +13,10 @@ Description=Pi3 MQTT Sensors Publisher
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /home/pi/homelab/configs/pi3_mqtt_sensors.py
+ExecStart=/usr/bin/python3 /home/pi/homelab/configs/kiosk/pi3_mqtt_sensors.py
 Restart=always
 User=pi
-WorkingDirectory=/home/pi/homelab/configs
+WorkingDirectory=/home/pi/homelab/configs/kiosk
 
 [Install]
 WantedBy=multi-user.target
@@ -29,10 +29,10 @@ Description=Pi3 MQTT Command Listener
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /home/pi/homelab/configs/pi3_mqtt_listener.py
+ExecStart=/usr/bin/python3 /home/pi/homelab/configs/kiosk/pi3_mqtt_listener.py
 Restart=always
 User=pi
-WorkingDirectory=/home/pi/homelab/configs
+WorkingDirectory=/home/pi/homelab/configs/kiosk
 
 [Install]
 WantedBy=multi-user.target
