@@ -1,7 +1,7 @@
 import psutil, os, time, json
 import paho.mqtt.client as mqtt
 
-MQTT_BROKER = "$MQTT_BROKER"
+MQTT_BROKER = "192.168.7.173"
 BASE_TOPIC = 'homeassistant/sensor/pi3'
 client = mqtt.Client()
 client.connect(MQTT_BROKER)

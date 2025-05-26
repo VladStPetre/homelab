@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 import os
 
-MQTT_BROKER = "$MQTT_BROKER"
+MQTT_BROKER = "192.168.7.173"
 
 def on_message(client, userdata, msg):
     topic = msg.topic
