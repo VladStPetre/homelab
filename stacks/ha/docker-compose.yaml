@@ -37,6 +37,8 @@ services:
       - /home/pi/homelab/data/mosquitto/data:/mosquitto/data
       - /home/pi/homelab/data/mosquitto/log:/mosquitto/log
     restart: unless-stopped
+    networks:
+      - hlcl
 
   esphome:
     container_name: esphome
