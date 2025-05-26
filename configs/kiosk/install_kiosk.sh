@@ -16,7 +16,7 @@ After=network.target
 ExecStart=/usr/bin/python3 /home/pi/homelab/configs/pi3_mqtt_sensors.py
 Restart=always
 User=pi
-WorkingDirectory=/home/pi
+WorkingDirectory=/home/pi/homelab/configs
 
 [Install]
 WantedBy=multi-user.target
@@ -32,7 +32,7 @@ After=network.target
 ExecStart=/usr/bin/python3 /home/pi/homelab/configs/pi3_mqtt_listener.py
 Restart=always
 User=pi
-WorkingDirectory=/home/pi
+WorkingDirectory=/home/pi/homelab/configs
 
 [Install]
 WantedBy=multi-user.target
