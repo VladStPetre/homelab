@@ -13,6 +13,10 @@ DEVICE = {
     "model": "Pi 3 Model B"
 }
 
+def get_temp():
+    res = os.popen("vcgencmd measure_temp").readline().strip()
+    return float(res.replace("temp=", "").replace("'C", "").strip())
+
 client.publish(f"{BASE_TOPIC}/cpu_temp/config", json.dumps({
     "name": "Pi 3 CPU Temp",
     "state_topic": "pi3/status",
@@ -66,7 +70,3 @@ while True:
     payload = json.dumps({"temperature": temp, "cpu": cpu, "memory": mem})
     client.publish("pi3/status", payload)
     time.sleep(60)
-
-def get_temp():
-    res = os.popen("vcgencmd measure_temp").readline().strip()
-    return float(res.replace("temp=", "").replace("'C", "").strip())
