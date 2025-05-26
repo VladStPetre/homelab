@@ -16,6 +16,9 @@ DIRECTORIES=(
     "$BASE_DIR/configs/influxdb2"
     "$BASE_DIR/configs/wireguard"
     "$BASE_DIR/configs/esphome"
+    "$BASE_DIR/data/mosquitto/config"
+    "$BASE_DIR/data/mosquitto/data"
+    "$BASE_DIR/data/mosquitto/log"
 )
 
 # Create directories
@@ -33,6 +36,10 @@ cp "$BASE_DIR/configs/pihole/etc-pihole/custom.list" "$BASE_DIR/data/pihole/etc-
 cp "$BASE_DIR/configs/pihole/etc-pihole/adlists.list" "$BASE_DIR/data/pihole/etc-pihole/adlists.list" 
 cp "$BASE_DIR/configs/pihole/etc-dnsmasq.d/05-pihole-custom-cname.conf" "$BASE_DIR/data/pihole/etc-dnsmasq.d/05-pihole-custom-cname.conf" 
 echo "Pihole config copied..."
+
+echo "Copying mosquitto config..."
+cp "$BASE_DIR/configs/mosquitto/mosquitto.conf" "$BASE_DIR/data/mosquitto/config/mosquitto.conf" 
+echo "Mosquitto config copied..."
 
 # create docker network
 docker network create --subnet=172.21.0.0/16 hlcl
