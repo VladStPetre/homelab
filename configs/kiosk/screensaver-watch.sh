@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export DISPLAY=:0
+
 LOG_FILE="/home/pi/screensaver.log"
 SCREENSAVER_PATH="file:///home/pi/homelab/configs/kiosk/screensaver.html"
 INACTIVITY_LIMIT=120000  # 2 minutes
