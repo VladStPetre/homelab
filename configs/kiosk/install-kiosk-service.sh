@@ -10,17 +10,18 @@ echo "🔧 Creating systemd service for Chromium kiosk..."
 sudo tee "$SERVICE_PATH" > /dev/null <<EOF
 [Unit]
 Description=Chromium Kiosk with Screensaver
-After=graphical.target
+After=multi-user.target
+Wants=graphical.target
 
 [Service]
-User=$USER_NAME
-Environment=XDG_RUNTIME_DIR=/run/user/$(id -u $USER_NAME)
+User=pi
+WorkingDirectory=/home/pi
+Environment=DISPLAY=:0
 ExecStart=/usr/bin/startx
-Restart=always
-RestartSec=5s
+Restart=on-failure
 
 [Install]
-WantedBy=graphical.target
+WantedBy=multi-user.target
 EOF
 
 echo "✅ Service file created at $SERVICE_PATH"
