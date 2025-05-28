@@ -20,16 +20,33 @@
     }
   </style>
 </head>
-<body onclick="window.close()">
+<body onclick="dismiss()">
   <div id="clock"></div>
 
   <script>
+    const clock = document.getElementById("clock");
+    let lastTime = "";
+  
     function updateClock() {
       const now = new Date();
-      const h = now.getHours().toString().padStart(2, '0');
-      const m = now.getMinutes().toString().padStart(2, '0');
-      document.getElementById('clock').textContent = `${h}:${m}`;
+      const h = now.getHours().toString().padStart(2, "0");
+      const m = now.getMinutes().toString().padStart(2, "0");
+      const currentTime = `${h}:${m}`;
+      if (currentTime !== lastTime) {
+        clock.textContent = currentTime;
+        lastTime = currentTime;
+      }
     }
+
+    function dismiss() {
+      try {
+        setTimeout(() => window.close(), 100) // preferred
+      } catch (e) {
+        // fallback
+        window.location.href = "hhttp://sierra.local:8123";
+      }
+    } 
+  
     updateClock();
     setInterval(updateClock, 1000);
   </script>
