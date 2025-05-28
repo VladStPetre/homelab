@@ -1,0 +1,17 @@
+#!/bin/bash
+
+### MUST BE COPIED in .xinitrc file in home folder
+
+xset s off
+xset -dpms
+xset s noblank
+
+unclutter -idle 0.1 -root &
+
+openbox-session &
+
+# Launch your main Home Assistant kiosk page
+chromium-browser --noerrdialogs --disable-infobars --kiosk http://sierra.local:8123 &
+
+# Start screensaver monitor
+/home/pi/screensaver-watch.sh &
