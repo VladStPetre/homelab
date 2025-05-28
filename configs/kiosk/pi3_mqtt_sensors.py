@@ -69,4 +69,4 @@ while True:
     mem = psutil.virtual_memory().percent
     payload = json.dumps({"temperature": temp, "cpu": cpu, "memory": mem})
     client.publish("pi3/status", payload)
-    time.sleep(60)
+    time.sleep(3600)
