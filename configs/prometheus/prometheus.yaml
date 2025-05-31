@@ -9,12 +9,12 @@ scrape_configs:
         labels:
           server: 'sierra'
 
-  - job_name: 'docker-daemon-cadvisor'
-    scrape_interval: 15s
-    static_configs:
-      - targets: ['cadvisor:8181']
-        labels:
-          server: 'sierra'
+  # - job_name: 'docker-daemon-cadvisor'
+  #   scrape_interval: 15s
+  #   static_configs:
+  #     - targets: ['cadvisor:8181']
+  #       labels:
+  #         server: 'sierra'
 
   ### to be disabled if cdavisor will be setup
   - job_name: 'docker-daemon'
