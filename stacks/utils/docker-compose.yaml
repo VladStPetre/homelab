@@ -28,7 +28,7 @@ services:
       - "67:67/udp"
     environment:
       TZ: 'Europe/Bucharest'
-      WEBPASSWORD: '<redacted>'
+      WEBPASSWORD: ${PIHOLE_PASS}
       FTLCONF_LOCAL_IPV4: '192.168.7.173'
       PIHOLE_DNS: '1.1.1.1;1.0.0.1'
       DNSMASQ_LISTENING: "all"        # Allow external devices to use this DNS
@@ -72,8 +72,8 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ='Europe/Bucharest'
-      - SERVERURL=ruxadu.go.ro #optional
-      - SERVERPORT=62931 #optional
+      - SERVERURL=${WG_SERVER_URL}
+      - SERVERPORT=${WG_SERVER_PORT}
       - PEERS=3 #optional
       - PEERDNS=auto #optional
       # - INTERNAL_SUBNET=10.13.13.0 #optional
