@@ -260,7 +260,7 @@ services:
       - "traefik.http.routers.qbittorrent.rule=Host(`qb.sierra.local`)"
       - "traefik.http.routers.qbittorrent.entrypoints=web"
       - "traefik.http.routers.qbittorrent.tls=false"
-      - "traefik.http.services.portainer-utils.loadbalancer.server.port=8081"
+      - "traefik.http.services.qbittorrent-utils.loadbalancer.server.port=8081"
     networks:
       - hlcl
 
