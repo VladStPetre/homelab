@@ -231,6 +231,38 @@ services:
     networks:
       - hlcl
 
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=1000                # your local user ID
+      - PGID=1000                # your local group ID
+      - TZ=Europe/Bucharest
+      - WEBUI_PORT=8080
+      - UMASK_SET=022            # sensible file perms
+      # optional: auth user/pass
+#      - WEBUI_USERNAME=admin
+#      - WEBUI_PASSWORD=secretpass
+    volumes:
+      - /home/pi/homelab/configs/qbittorrent/config:/config # needs manual creation
+      - /mnt/media/Downloads:/downloads
+      - /mnt/media/Watch:/watch
+    ports:
+      - "8080:8080"              # web UI
+      - "6881:6881"              # torrent traffic TCP
+      - "6881:6881/udp"          # torrent traffic UDP
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qb.sierra.local`)"
+      - "traefik.http.routers.qbittorrent.entrypoints=web"
+      - "traefik.http.routers.qbittorrent.tls=false"
+    networks:
+      - hlcl
+
 networks:
   hlcl:
     name: hlcl
