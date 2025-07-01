@@ -244,7 +244,8 @@ services:
       - UMASK_SET=022            # sensible file perms
     volumes:
       - /home/pi/homelab/configs/qbittorrent/config:/config # needs manual creation
-      - /mnt/media/Downloads:/downloads
+      - /mnt/media/Movies:/movies
+      - /mnt/media/Series:/series
       - /mnt/media/Watch:/watch
     ports:
       - "8081:8081"              # web UI
