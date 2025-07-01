@@ -250,7 +250,7 @@ services:
       - /mnt/media/Downloads:/downloads
       - /mnt/media/Watch:/watch
     ports:
-      - "8081:8080"              # web UI
+      - "8081:8081"              # web UI
       - "6881:6881"              # torrent traffic TCP
       - "6881:6881/udp"          # torrent traffic UDP
     labels:
@@ -260,7 +260,7 @@ services:
       - "traefik.http.routers.qbittorrent.rule=Host(`qb.sierra.local`)"
       - "traefik.http.routers.qbittorrent.entrypoints=web"
       - "traefik.http.routers.qbittorrent.tls=false"
-      - "traefik.http.services.portainer-utils.loadbalancer.server.port=8080"
+      - "traefik.http.services.portainer-utils.loadbalancer.server.port=8081"
     networks:
       - hlcl
 
