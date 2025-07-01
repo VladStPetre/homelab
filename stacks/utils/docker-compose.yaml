@@ -242,9 +242,6 @@ services:
       - TZ=Europe/Bucharest
       - WEBUI_PORT=8081
       - UMASK_SET=022            # sensible file perms
-      # optional: auth user/pass
-      - WEBUI_USERNAME=${QB_WEB_UN}
-      - WEBUI_PASSWORD=${QB_WEB_PS}
     volumes:
       - /home/pi/homelab/configs/qbittorrent/config:/config # needs manual creation
       - /mnt/media/Downloads:/downloads
