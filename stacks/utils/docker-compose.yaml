@@ -208,6 +208,29 @@ services:
     # networks:
       # - hlcl
 
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    user: root
+    volumes:
+      - /home/pi/homelab/configs/jellyfin:/config
+      - /home/pi/homelab/configs/jellyfin/cache:/cache
+      - /mnt/media:/media
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Bucharest
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.sierra.local`)"
+      - "traefik.http.routers.jellyfin.entrypoints=web"
+      - "traefik.http.routers.jellyfin.tls=false"
+    networks:
+      - hlcl
+
 networks:
   hlcl:
     name: hlcl
