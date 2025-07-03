@@ -52,8 +52,7 @@ services:
       - "traefik.http.routers.pihole.tls=false"
       - "traefik.http.services.pihole-utils.loadbalancer.server.port=80"
     restart: always
-    networks:
-      - hlcl
+    network_mode: host
   
   # uptime-kuma:
   #   image: louislam/uptime-kuma:1
