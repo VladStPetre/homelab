@@ -4,6 +4,8 @@ services:
   homeassistant:
     container_name: homeassistant
     image: "ghcr.io/home-assistant/home-assistant:stable"
+    ports:
+      - "8086:8086"
     volumes:
       - /home/pi/homelab/configs/ha:/config
       - /etc/localtime:/etc/localtime:ro
@@ -11,20 +13,30 @@ services:
     privileged: true
     devices:
       - /dev/ttyACM0:/dev/ttyACM0
-    network_mode: host
+    networks:
+      - hlcl
 
   influxdb:
     image: influxdb:latest
     container_name: influxdb
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=${DOCKER_INFLUXDB_INIT_MODE}
+      - DOCKER_INFLUXDB_INIT_USERNAME=${DOCKER_INFLUXDB_INIT_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${DOCKER_INFLUXDB_INIT_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
+      - DOCKER_INFLUXDB_INIT_RETENTION=${DOCKER_INFLUXDB_INIT_RETENTION}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    # ports:
-    #   - "8086:8086"
+    ports:
+     - "8086:8086"
     volumes:
       - /home/pi/homelab/configs/influxdb2:/etc/influxdb2
       - /home/pi/homelab/data/influxdb2:/var/lib/influxdb2
-    network_mode: host
+    networks:
+      - hlcl
 
   mosquitto:
     image: eclipse-mosquitto:latest

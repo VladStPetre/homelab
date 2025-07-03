@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+##### DO NOT USE anymore
+
+
+
 SERVICE_NAME="vexthdd.service"
 SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME"
 USER_NAME="pi"

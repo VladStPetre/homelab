@@ -44,5 +44,6 @@ cp "$BASE_DIR/configs/mosquitto/mosquitto.conf" "$BASE_DIR/data/mosquitto/config
 echo "Mosquitto config copied..."
 
 # create docker network
+echo "Create docker network..."
 docker network create --subnet=172.21.0.0/16 hlcl
-
+echo "Docker network created..."

@@ -80,7 +80,7 @@ services:
       - SERVERPORT=${WG_SERVER_PORT}
       - PEERS=3 #optional
       - PEERDNS=auto #optional
-      # - INTERNAL_SUBNET=10.13.13.0 #optional
+      - INTERNAL_SUBNET=10.13.13.0 #optional
       - ALLOWEDIPS=0.0.0.0/0 #optional
       - PERSISTENTKEEPALIVE_PEERS=all #optional
       - LOG_CONFS=true #optional
