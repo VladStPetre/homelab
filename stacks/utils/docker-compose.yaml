@@ -125,6 +125,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
+    user: "1000"
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
