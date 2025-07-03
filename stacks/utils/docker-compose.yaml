@@ -23,26 +23,37 @@ services:
     container_name: pihole
     image: pihole/pihole:latest
     ports:
+      # DNS Ports
       - "53:53/tcp"
       - "53:53/udp"
-      - "67:67/udp"
+      # Default HTTP Port
+      - "80:80/tcp"
+      # Default HTTPs Port. FTL will generate a self-signed certificate
+      - "443:443/tcp"
+      # Uncomment the line below if you are using Pi-hole as your DHCP server
+      #- "67:67/udp"
+      # Uncomment the line below if you are using Pi-hole as your NTP server
+      #- "123:123/udp"
     env_file:
       - .env
     environment:
       TZ: 'Europe/Bucharest'
-      WEBPASSWORD: ${PIHOLE_PASS}
-      FTLCONF_LOCAL_IPV4: '192.168.7.173'
-      PIHOLE_DNS: '1.1.1.1;1.0.0.1'
-      DNSMASQ_LISTENING: "all"        # Allow external devices to use this DNS
+      FTLCONF_webserver_api_password: ${PIHOLE_PASS}
+      FTLCONF_dns_listeningMode: 'all'
+      FTLCONF_dns_upstreams: '1.1.1.1;1.0.0.1'
+      PIHOLE_UID: '1000'
+      PIHOLE_GID: '1000'
       VIRTUAL_HOST: "pihole.sierra.local" # To match the domain name from traefik label
     volumes:
       - '/home/pi/homelab/data/pihole/etc-pihole:/etc/pihole'
       - '/home/pi/homelab/data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
     cap_add:
       - NET_ADMIN
-    dns: 
-      - 127.0.0.1
-      - 1.1.1.1
+      - SYS_TIME
+      - SYS_NICE
+#    dns:
+#      - 127.0.0.1
+#      - 1.1.1.1
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -52,7 +63,8 @@ services:
       - "traefik.http.routers.pihole.tls=false"
       - "traefik.http.services.pihole-utils.loadbalancer.server.port=80"
     restart: always
-    network_mode: host
+    networks:
+      - hlcl
   
   # uptime-kuma:
   #   image: louislam/uptime-kuma:1
