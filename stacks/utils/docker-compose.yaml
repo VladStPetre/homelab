@@ -118,7 +118,7 @@ services:
     environment:
       - WG_HOST=${WG_SERVER_URL} # or static public IP
       - PASSWORD=${WG_EASY_WEB_PASS}
-      - WG_PORT=51820
+      - WG_PORT=${WG_SERVER_PORT}
       - WG_DEFAULT_DNS=192.168.7.173 #172.28.0.2 # Pi-hole's IP
     volumes:
       - /home/pi/homelab/configs/wireguard:/config # must match wireguard volume above
