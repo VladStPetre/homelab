@@ -89,7 +89,7 @@ services:
       - TZ='Europe/Bucharest'
       - SERVERURL=${WG_SERVER_URL}
       - SERVERPORT=${WG_SERVER_PORT}
-      - PEERS=3 #optional
+      - PEERS=5 #optional
       - PEERDNS=auto #optional
       - INTERNAL_SUBNET=10.13.13.0 #optional
       - ALLOWEDIPS=0.0.0.0/0 #optional
@@ -102,8 +102,9 @@ services:
       - 51820:51820/udp
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
     dns: 
-    - 192.168.7.173
+      - 192.168.7.173
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -111,10 +112,34 @@ services:
     networks:
       - hlcl
 
+  wg-easy:
+    image: weejewel/wg-easy:latest
+    container_name: wg-easy
+    environment:
+      - WG_HOST=${WG_SERVER_URL} # or static public IP
+      - PASSWORD=${WG_EASY_WEB_PASS}
+      - WG_PORT=51820
+      - WG_DEFAULT_DNS=192.168.7.173 #172.28.0.2 # Pi-hole's IP
+    volumes:
+      - /home/pi/homelab/configs/wireguard:/config # must match wireguard volume above
+    ports:
+      - "51821:51821/tcp" # Web UI (or use traefik)
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.wgeasy.rule=Host(`wg-easy.sierra.local`)"
+      - "traefik.http.services.wgeasy.loadbalancer.server.port=51821"
+
+    restart: unless-stopped
+    networks:
+      - pihole_net
+    depends_on:
+      - wireguard
+
   traefik:
     image: traefik:latest
     container_name: traefik
-    restart: always
     # security_opt:
     #   - no-new-privileges:true
     ports:
@@ -130,6 +155,7 @@ services:
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
+    restart: always
     networks:
       - hlcl
 
