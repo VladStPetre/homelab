@@ -49,7 +49,7 @@ services:
       - "traefik.http.routers.influxdb.rule=Host(`influxdb.sierra.local`)"
       - "traefik.http.routers.influxdb.entrypoints=web"
       - "traefik.http.routers.influxdb.tls=false"
-      - "traefik.http.services.influxdb-utils.loadbalancer.server.port=8123"
+      - "traefik.http.services.influxdb-utils.loadbalancer.server.port=8086"
     networks:
       - hlcl
 
