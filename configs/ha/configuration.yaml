@@ -46,6 +46,19 @@ influxdb:
     entities:
       - weather.home
 
+template:
+  - sensor:
+      - name: "Monitored Devices Unavailable"
+        state: >
+          {% set monitored_devices = states.device_tracker | selectattr('attributes.monitor', 'eq', true) %}
+          {% set unavailable_devices = monitored_devices | selectattr('state', 'eq', 'unavailable') | list %}
+          {{ unavailable_devices | length }}
+        attributes:
+          unavailable_devices: >
+            {% set monitored_devices = states.device_tracker | selectattr('attributes.monitor', 'eq', true) %}
+            {% set unavailable_devices = monitored_devices | selectattr('state', 'eq', 'unavailable') | list %}
+            {{ unavailable_devices | map(attribute='entity_id') | list }}
+
 wake_on_lan:
 
 automation: !include automations.yaml
