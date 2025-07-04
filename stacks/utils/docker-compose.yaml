@@ -65,7 +65,7 @@ services:
     restart: always
     networks:
       hlcl:
-        ipv4_address: 172.21.0.9
+        ipv4_address: 172.21.0.109
   
   # uptime-kuma:
   #   image: louislam/uptime-kuma:1
@@ -139,7 +139,7 @@ services:
     restart: always
     networks:
       hlcl:
-        ipv4_address: 172.21.0.2
+        ipv4_address: 172.21.0.102
 
   grafana:
     image: grafana/grafana:latest
