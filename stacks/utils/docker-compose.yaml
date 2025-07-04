@@ -241,6 +241,8 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Bucharest
+    ports:
+      - "8096:8096"
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -248,7 +250,6 @@ services:
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.sierra.local`)"
       - "traefik.http.routers.jellyfin.entrypoints=web"
       - "traefik.http.routers.jellyfin.tls=false"
-      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
     networks:
       - hlcl
 
