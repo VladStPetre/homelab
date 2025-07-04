@@ -25,12 +25,12 @@ read -p "Enter desired mount point (default: $DEFAULT_MOUNT): " MOUNTPOINT
 MOUNTPOINT="${MOUNTPOINT:-$DEFAULT_MOUNT}"
 
 # 4. Ask for user (default is 'pi')
-DEFAULT_UID=$(id -u pi 2>/dev/null || echo 1000)
-DEFAULT_GID=$(id -g pi 2>/dev/null || echo 1000)
-read -p "Enter UID to own files (default: $DEFAULT_UID): " UID
-UID="${UID:-$DEFAULT_UID}"
-read -p "Enter GID to own files (default: $DEFAULT_GID): " GID
-GID="${GID:-$DEFAULT_GID}"
+DEFAULT_USR_ID=$(id -u pi 2>/dev/null || echo 1000)
+DEFAULT_GRP_ID=$(id -g pi 2>/dev/null || echo 1000)
+read -p "Enter UID to own files (default: $DEFAULT_USR_ID): " USR_ID
+USR_ID="${USR_ID:-$DEFAULT_USR_ID}"
+read -p "Enter GID to own files (default: $DEFAULT_GRP_ID): " GRP_ID
+GRP_ID="${GRP_ID:-$DEFAULT_GRP_ID}"
 
 # 5. Ask for umask (default 022)
 read -p "Enter umask for permissions (default: 022, use 000 for all users RW): " UMASK
@@ -43,7 +43,7 @@ if [ ! -d "$MOUNTPOINT" ]; then
 fi
 
 # 7. Add to /etc/fstab
-FSTAB_LINE="UUID=${UUID}   ${MOUNTPOINT}   ntfs-3g   defaults,uid=${UID},gid=${GID},umask=${UMASK},nofail,x-systemd.automount   0   0"
+FSTAB_LINE="UUID=${UUID}   ${MOUNTPOINT}   ntfs-3g   defaults,nofail,uid=${USR_ID},gid=${GRP_ID},umask=${UMASK},x-systemd.automount   0   0"
 
 echo "Adding the following line to /etc/fstab:"
 echo "$FSTAB_LINE"
