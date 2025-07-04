@@ -130,6 +130,11 @@ services:
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.sierra.local`)"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.tls=false"
+      - "traefik.http.services.traefik-utils.loadbalancer.server.port=80"
     restart: always
     networks:
       - hlcl
@@ -187,7 +192,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
       - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=90d'
+      - '--storage.tsdb.retention.time=365d'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
