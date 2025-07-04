@@ -64,7 +64,8 @@ services:
       - "traefik.http.services.pihole-utils.loadbalancer.server.port=80"
     restart: always
     networks:
-      - hlcl
+      hlcl:
+        ipv4_address: 172.28.0.9
   
   # uptime-kuma:
   #   image: louislam/uptime-kuma:1
@@ -137,7 +138,8 @@ services:
       - "traefik.http.services.traefik-utils.loadbalancer.server.port=80"
     restart: always
     networks:
-      - hlcl
+      hlcl:
+        ipv4_address: 172.28.0.2
 
   grafana:
     image: grafana/grafana:latest

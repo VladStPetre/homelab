@@ -22,9 +22,9 @@ tts:
 influxdb:
   api_version: 2
   ssl: false
-  host: 192.168.7.173
-  port: 8086
-  token: <redacted>
+  host: influxdb.sierra.local
+  port: 80
+  token: !secret inlfuxdb_token # manually assign in secrets.yaml
   bucket: ha-db0
   organization: aduh
   max_retries: 3
