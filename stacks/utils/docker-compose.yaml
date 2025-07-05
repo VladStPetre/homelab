@@ -250,9 +250,9 @@ services:
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.sierra.local`)"
       - "traefik.http.routers.jellyfin.entrypoints=web"
       - "traefik.http.routers.jellyfin.tls=false"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
     networks:
       - hlcl
-
 
   qbittorrent:
     image: linuxserver/qbittorrent:latest
@@ -263,7 +263,7 @@ services:
       - PGID=1000                # your local group ID
       - TZ=Europe/Bucharest
       - WEBUI_PORT=8081
-      - UMASK_SET=022            # sensible file perms
+      - UMASK_SET=000            # sensible file perms
     volumes:
       - /home/pi/homelab/configs/qbittorrent/config:/config # needs manual creation
       - /mnt/media/Movies:/movies
