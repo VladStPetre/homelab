@@ -135,7 +135,7 @@ services:
       - "traefik.http.routers.traefik.rule=Host(`traefik.sierra.local`)"
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.routers.traefik.tls=false"
-      - "traefik.http.services.traefik-utils.loadbalancer.server.port=80"
+      - "traefik.http.services.traefik-utils.loadbalancer.server.port=8080"
     restart: always
     networks:
       hlcl:
