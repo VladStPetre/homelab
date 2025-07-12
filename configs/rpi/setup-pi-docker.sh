@@ -28,8 +28,8 @@ mkdir -p $DOCKER_CONFIG/cli-plugins
 ARCH=$(uname -m)
 if [ "$ARCH" = "aarch64" ]; then
     COMPOSE_ARCH="aarch64" # initially was arm64 - but not found in releases
-elif [ "$ARCH" = "armv7l" ]; then
-    COMPOSE_ARCH="armv7"
+elif [ "$ARCH" = "x86_64" ]; then
+    COMPOSE_ARCH="x86_64"
 else
     echo "Unsupported architecture: $ARCH"
     exit 1
@@ -47,9 +47,3 @@ git --version
 
 echo "=== All done! ==="
 echo "You may need to log out and back in for docker group permissions to take effect."
-
-
-
-
-
-curl -SL "https://github.com/docker/compose/releases/download/v2.38.1/docker-compose-linux-arm64" -o ~/.docker/cli-plugins/docker-compose

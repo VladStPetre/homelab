@@ -25,8 +25,8 @@ read -p "Enter desired mount point (default: $DEFAULT_MOUNT): " MOUNTPOINT
 MOUNTPOINT="${MOUNTPOINT:-$DEFAULT_MOUNT}"
 
 # 4. Ask for user (default is 'pi')
-DEFAULT_USR_ID=$(id -u pi 2>/dev/null || echo 1000)
-DEFAULT_GRP_ID=$(id -g pi 2>/dev/null || echo 1000)
+DEFAULT_USR_ID=$(id -u $USER 2>/dev/null || echo 1000)
+DEFAULT_GRP_ID=$(id -g $USER 2>/dev/null || echo 1000)
 read -p "Enter UID to own files (default: $DEFAULT_USR_ID): " USR_ID
 USR_ID="${USR_ID:-$DEFAULT_USR_ID}"
 read -p "Enter GID to own files (default: $DEFAULT_GRP_ID): " GRP_ID

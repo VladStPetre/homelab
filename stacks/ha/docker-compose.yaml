@@ -60,7 +60,7 @@ services:
       - "1883:1883"
       - "9001:9001"  # Optional WebSocket
     volumes:
-      - /home/pi/homelab/data/mosquitto/config:/mosquitto/config
+      - /home/pi/homelab/configs/mosquitto:/mosquitto/config
       - /home/pi/homelab/data/mosquitto/data:/mosquitto/data
       - /home/pi/homelab/data/mosquitto/log:/mosquitto/log
     restart: unless-stopped

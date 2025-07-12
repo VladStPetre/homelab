@@ -5,5 +5,6 @@
 - Docker and system monitoring
 - Docker Container & Host Metrics
 
-## Custom dashboard for hoem stats
+## Custom dashboard for home stats
 - Aduh-Rpi-Stats
+- Home-Stats

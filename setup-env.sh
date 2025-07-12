@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the base directory (default is the current directory)
-BASE_DIR="${1:-/home/pi/homelab}"
+export BASE_DIR="${1:-$HOME/homelab}"
 
 # Define the directory structure as an array
 DIRECTORIES=(
@@ -23,6 +23,9 @@ DIRECTORIES=(
     "$BASE_DIR/data/mosquitto/log"
 )
 
+# setup env vars for Grp id
+export GID=$(id -g $USER)
+
 # Create directories
 echo "Creating directory structure under '$BASE_DIR'..."
 for DIR in "${DIRECTORIES[@]}"; do
@@ -39,10 +42,6 @@ cp "$BASE_DIR/configs/pihole/etc-pihole/adlists.list" "$BASE_DIR/data/pihole/etc
 cp "$BASE_DIR/configs/pihole/etc-pihole/pihole-FTL.conf" "$BASE_DIR/data/pihole/etc-pihole/pihole-FTL.conf"
 cp "$BASE_DIR/configs/pihole/etc-dnsmasq.d/05-pihole-custom-cname.conf" "$BASE_DIR/data/pihole/etc-dnsmasq.d/05-pihole-custom-cname.conf"
 echo "Pihole config copied..."
-
-echo "Copying mosquitto config..."
-cp "$BASE_DIR/configs/mosquitto/mosquitto.conf" "$BASE_DIR/data/mosquitto/config/mosquitto.conf" 
-echo "Mosquitto config copied..."
 
 # create docker network
 echo "Create docker network..."
