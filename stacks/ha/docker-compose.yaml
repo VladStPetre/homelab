@@ -6,7 +6,7 @@ services:
     ports:
       - "8123:8123"
     volumes:
-      - /home/pi/homelab/configs/ha:/config
+      - $BASE_DIR/configs/ha:/config
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     privileged: true
@@ -16,7 +16,7 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.hass.rule=Host(`hass.sierra.local`)"
+      - "traefik.http.routers.hass.rule=Host(`hass.echo.local`)"
       - "traefik.http.routers.hass.entrypoints=web"
       - "traefik.http.routers.hass.tls=false"
       - "traefik.http.services.hass-utils.loadbalancer.server.port=8123"
@@ -40,13 +40,13 @@ services:
     ports:
      - "8086:8086"
     volumes:
-      - /home/pi/homelab/configs/influxdb2:/etc/influxdb2
-      - /home/pi/homelab/data/influxdb2:/var/lib/influxdb2
+      - $BASE_DIR/configs/influxdb2:/etc/influxdb2
+      - $BASE_DIR/data/influxdb2:/var/lib/influxdb2
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.influxdb.rule=Host(`influxdb.sierra.local`)"
+      - "traefik.http.routers.influxdb.rule=Host(`influxdb.echo.local`)"
       - "traefik.http.routers.influxdb.entrypoints=web"
       - "traefik.http.routers.influxdb.tls=false"
       - "traefik.http.services.influxdb-utils.loadbalancer.server.port=8086"
@@ -60,15 +60,15 @@ services:
       - "1883:1883"
       - "9001:9001"  # Optional WebSocket
     volumes:
-      - /home/pi/homelab/configs/mosquitto:/mosquitto/config
-      - /home/pi/homelab/data/mosquitto/data:/mosquitto/data
-      - /home/pi/homelab/data/mosquitto/log:/mosquitto/log
+      - $BASE_DIR/configs/mosquitto:/mosquitto/config
+      - $BASE_DIR/data/mosquitto/data:/mosquitto/data
+      - $BASE_DIR/data/mosquitto/log:/mosquitto/log
     restart: unless-stopped
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.mosquitto.rule=Host(`mosquitto.sierra.local`)"
+      - "traefik.http.routers.mosquitto.rule=Host(`mosquitto.echo.local`)"
       - "traefik.http.routers.mosquitto.entrypoints=web"
       - "traefik.http.routers.mosquitto.tls=false"
       - "traefik.http.services.mosquitto-utils.loadbalancer.server.port=1883"
@@ -84,7 +84,7 @@ services:
     environment:
       - TZ=Europe/Bucharest
     volumes:
-      - /home/pi/homelab/configs/esphome:/config
+      - $BASE_DIR/configs/esphome:/config
     privileged: true
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0
@@ -92,7 +92,7 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.esphome.rule=Host(`esphome.sierra.local`)"
+      - "traefik.http.routers.esphome.rule=Host(`esphome.echo.local`)"
       - "traefik.http.routers.esphome.entrypoints=web"
       - "traefik.http.routers.esphome.tls=false"
       - "traefik.http.services.esphome-utils.loadbalancer.server.port=1883"

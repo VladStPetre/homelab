@@ -5,13 +5,13 @@ services:
     image: portainer/portainer-ce:latest
     command: -H unix:///var/run/docker.sock
     volumes:
-      - /home/pi/homelab/data/portainer:/data
+      - $BASE_DIR/data/portainer:/data
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.sierra.local`)"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.echo.local`)"
       - "traefik.http.routers.portainer.entrypoints=web"
       - "traefik.http.routers.portainer.tls=false"
       - "traefik.http.services.portainer-utils.loadbalancer.server.port=9000"
@@ -43,10 +43,10 @@ services:
       FTLCONF_dns_upstreams: '1.1.1.1;1.0.0.1'
       PIHOLE_UID: ${UID}
       PIHOLE_GID: ${GID}
-      VIRTUAL_HOST: "pihole.sierra.local" # To match the domain name from traefik label
+      VIRTUAL_HOST: "pihole.echo.local" # To match the domain name from traefik label
     volumes:
-      - '/home/pi/homelab/data/pihole/etc-pihole:/etc/pihole'
-      - '/home/pi/homelab/data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
+      - $BASE_DIR/data/pihole/etc-pihole:/etc/pihole
+      - $BASE_DIR/data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
     cap_add:
       - NET_ADMIN
       - SYS_TIME
@@ -58,7 +58,7 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.pihole.rule=Host(`pihole.sierra.local`)"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.echo.local`)"
       - "traefik.http.routers.pihole.entrypoints=web"
       - "traefik.http.routers.pihole.tls=false"
       - "traefik.http.services.pihole-utils.loadbalancer.server.port=80"
@@ -73,7 +73,7 @@ services:
   #   ports:
   #     - "3001:3001"
   #   volumes:
-  #     - '/home/pi/homelab/uptime-kuma/data:/app/data'
+  #     - '$BASE_DIR/uptime-kuma/data:/app/data'
   #   restart: unless-stopped
 
   wireguard:
@@ -97,7 +97,7 @@ services:
       - PERSISTENTKEEPALIVE_PEERS=all #optional
       - LOG_CONFS=true #optional
     volumes:
-      - /home/pi/homelab/configs/wireguard:/config
+      - $BASE_DIR/configs/wireguard:/config
       - /lib/modules:/lib/modules #optional
     ports:
       - 51820:51820/udp
@@ -125,14 +125,14 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /home/pi/homelab/configs/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
-      - /home/pi/homelab/configs/traefik/certs/acme.json:/etc/traefik/certs/acme.json
-      - /home/pi/homelab/configs/traefik/config.yml:/etc/traefik/config.yml:ro
+      - $BASE_DIR/configs/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - $BASE_DIR/configs/traefik/certs/acme.json:/etc/traefik/certs/acme.json
+      - $BASE_DIR/configs/traefik/config.yml:/etc/traefik/config.yml:ro
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.sierra.local`)"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.echo.local`)"
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.routers.traefik.tls=false"
       - "traefik.http.services.traefik-utils.loadbalancer.server.port=8080"
@@ -151,14 +151,14 @@ services:
     environment:
       - GF_SECURITY_ALLOW_EMBEDDING=true
     volumes:
-      - /home/pi/homelab/data/grafana:/var/lib/grafana
+      - $BASE_DIR/data/grafana:/var/lib/grafana
     # environment:
     #   GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-piechart-panel"
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.sierra.local`)"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.echo.local`)"
       - "traefik.http.routers.grafana.entrypoints=web"
       - "traefik.http.routers.grafana.tls=false"
     networks:
@@ -189,8 +189,8 @@ services:
     restart: unless-stopped
     user: root
     volumes:
-      - /home/pi/homelab/configs/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
-      - /home/pi/homelab/data/prometheus:/prometheus
+      - $BASE_DIR/configs/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - $BASE_DIR/data/prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
       - '--storage.tsdb.path=/prometheus'
@@ -202,7 +202,7 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.prometheus.rule=Host(`prometheus.sierra.local`)"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.echo.local`)"
       - "traefik.http.routers.prometheus.entrypoints=web"
       - "traefik.http.routers.prometheus.tls=false"
     networks:
@@ -227,62 +227,6 @@ services:
       # - "io.portainer.accesscontrol.users=admin"
     # networks:
       # - hlcl
-
-  jellyfin:
-    image: jellyfin/jellyfin:latest
-    container_name: jellyfin
-    restart: unless-stopped
-    user: root
-    volumes:
-      - /home/pi/homelab/configs/jellyfin:/config
-      - /home/pi/homelab/configs/jellyfin/cache:/cache
-      - /mnt/media:/media
-    environment:
-      - PUID=${UID}
-      - PGID=${GID}
-      - TZ=Europe/Bucharest
-    ports:
-      - "8096:8096"
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
-      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.sierra.local`)"
-      - "traefik.http.routers.jellyfin.entrypoints=web"
-      - "traefik.http.routers.jellyfin.tls=false"
-      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
-    networks:
-      - hlcl
-
-  qbittorrent:
-    image: linuxserver/qbittorrent:latest
-    container_name: qbittorrent
-    restart: unless-stopped
-    environment:
-      - PUID=${UID}                # your local user ID
-      - PGID=${GID}                # your local group ID
-      - TZ=Europe/Bucharest
-      - WEBUI_PORT=8081
-      - UMASK_SET=000            # sensible file perms
-    volumes:
-      - /home/pi/homelab/configs/qbittorrent/config:/config # needs manual creation
-      - /mnt/media/Movies:/movies
-      - /mnt/media/Series:/series
-      - /mnt/media/Watch:/watch
-    ports:
-      - "8081:8081"              # web UI
-      - "6881:6881"              # torrent traffic TCP
-      - "6881:6881/udp"          # torrent traffic UDP
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
-      - "traefik.http.routers.qbittorrent.rule=Host(`qb.sierra.local`)"
-      - "traefik.http.routers.qbittorrent.entrypoints=web"
-      - "traefik.http.routers.qbittorrent.tls=false"
-      - "traefik.http.services.qbittorrent-utils.loadbalancer.server.port=8081"
-    networks:
-      - hlcl
 
 networks:
   hlcl:

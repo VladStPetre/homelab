@@ -1,0 +1,62 @@
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    user: root
+    volumes:
+      - $BASE_DIR/configs/jellyfin:/config
+      - $BASE_DIR/configs/jellyfin/cache:/cache
+      - /mnt/media:/media
+    environment:
+      - PUID=${UID}
+      - PGID=${GID}
+      - TZ=Europe/Bucharest
+    ports:
+      - "8096:8096"
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.echo.local`)"
+      - "traefik.http.routers.jellyfin.entrypoints=web"
+      - "traefik.http.routers.jellyfin.tls=false"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+    networks:
+      - hlcl
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=${UID}                # your local user ID
+      - PGID=${GID}                # your local group ID
+      - TZ=Europe/Bucharest
+      - WEBUI_PORT=8081
+      - UMASK_SET=000            # sensible file perms
+    volumes:
+      - $BASE_DIR/configs/qbittorrent/config:/config # needs manual creation
+      - /mnt/media/Movies:/movies
+      - /mnt/media/Series:/series
+      - /mnt/media/Watch:/watch
+    ports:
+      - "8081:8081"              # web UI
+      - "6881:6881"              # torrent traffic TCP
+      - "6881:6881/udp"          # torrent traffic UDP
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qb.echo.local`)"
+      - "traefik.http.routers.qbittorrent.entrypoints=web"
+      - "traefik.http.routers.qbittorrent.tls=false"
+      - "traefik.http.services.qbittorrent-utils.loadbalancer.server.port=8081"
+    networks:
+      - hlcl
+
+networks:
+  hlcl:
+    name: hlcl
+    external: true

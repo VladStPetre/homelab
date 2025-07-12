@@ -18,7 +18,6 @@ DIRECTORIES=(
     "$BASE_DIR/configs/esphome"
     "$BASE_DIR/configs/jellyfin"
     "$BASE_DIR/configs/jellyfin/cache"
-    "$BASE_DIR/data/mosquitto/config"
     "$BASE_DIR/data/mosquitto/data"
     "$BASE_DIR/data/mosquitto/log"
 )
