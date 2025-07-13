@@ -12,7 +12,7 @@ After=network.target
 [Service]
 ExecStart=/usr/bin/python3 /home/adu/homelab/configs/rpi/ext-hdd-mount/hdd-mount-mqtt-sensors.py
 Restart=always
-User=pi
+User=adu
 WorkingDirectory=/home/adu/homelab/configs/rpi/ext-hdd-mount
 
 [Install]
@@ -28,7 +28,7 @@ After=network.target
 [Service]
 ExecStart=/usr/bin/python3 /home/adu/homelab/configs/rpi/ext-hdd-mount/hdd-mount-mqtt-cmd.py
 Restart=always
-User=pi
+User=adu
 WorkingDirectory=/home/adu/homelab/configs/rpi/ext-hdd-mount
 
 [Install]
