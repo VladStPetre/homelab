@@ -20,7 +20,7 @@ WantedBy=multi-user.target
 EOF
 
 # === Create listener service ===
-cat <<EOF | sudo tee /etc/systemd/system/pi3-mqtt-listener.service > /dev/null
+cat <<EOF | sudo tee /etc/systemd/system/hdd-mount-mqtt-cmd.service > /dev/null
 [Unit]
 Description=Echo ext hdd MQTT Command Listener
 After=network.target
