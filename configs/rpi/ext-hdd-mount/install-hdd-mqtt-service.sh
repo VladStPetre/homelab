@@ -10,7 +10,7 @@ Description=Echo ext hdd MQTT Sensors Publisher
 After=network.target
 
 [Service]
-Environment="MQTT_BROKER=$MQTT_BROKER_IP"
+Environment="MQTT_BROKER_IP=$MQTT_BROKER_IP"
 ExecStart=/usr/bin/python3 /home/adu/homelab/configs/rpi/ext-hdd-mount/hdd-mount-mqtt-sensors.py
 Restart=always
 User=adu
@@ -27,7 +27,7 @@ Description=Echo ext hdd MQTT Command Listener
 After=network.target
 
 [Service]
-Environment="MQTT_BROKER=$MQTT_BROKER_IP"
+Environment="MQTT_BROKER_IP=$MQTT_BROKER_IP"
 ExecStart=/usr/bin/python3 /home/adu/homelab/configs/rpi/ext-hdd-mount/hdd-mount-mqtt-cmd.py
 Restart=always
 User=adu
