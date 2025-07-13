@@ -3,6 +3,8 @@ import paho.mqtt.client as mqtt
 
 MQTT_BROKER = os.environ.get('MQTT_BROKER_IP')
 BASE_TOPIC = 'homeassistant/sensor/echo'
+
+print("connecting to broker - ", MQTT_BROKER)
 client = mqtt.Client()
 client.connect(MQTT_BROKER)
 

@@ -15,6 +15,7 @@ def on_message(client, userdata, msg):
             os.system("mount /mnt/media")
             client.publish("echo/vexthdd/state", "on")
 
+print("connecting to broker - ", MQTT_BROKER)
 client = mqtt.Client()
 client.connect(MQTT_BROKER)
 client.subscribe("echo/command/#")
