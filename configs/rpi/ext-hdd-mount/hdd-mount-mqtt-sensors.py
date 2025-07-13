@@ -41,3 +41,5 @@ def is_mounted(mount_point):
 
 state = "on" if is_mounted("/mnt/media") else "off"
 client.publish("echo/vexthdd/state", state)
+
+client.loop_forever()
