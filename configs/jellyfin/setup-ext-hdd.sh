@@ -60,4 +60,4 @@ sudo mount -a
 echo
 echo "Done! Your NTFS drive should be mounted at $MOUNTPOINT."
 echo "It will mount automatically on boot, even if not present at startup (nofail, x-systemd.automount)."
-echo "Original /etc/fstab is backed up as /etc/fstab.backup.TIMESTAMP."
+echo "Original /detc/fstab is backe up as /etc/fstab.backup.TIMESTAMP."

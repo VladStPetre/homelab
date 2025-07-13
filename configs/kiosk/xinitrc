@@ -15,5 +15,5 @@ openbox-session &
 
 # MUST BE THE LAST COMMAND
 # Launch your main Home Assistant kiosk page
-chromium-browser --noerrdialogs --disable-infobars --kiosk http://sierra.local:8123
+chromium-browser --noerrdialogs --disable-infobars --kiosk http://hass.echo.local
 
