@@ -10,7 +10,7 @@ http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 127.0.0.1
-    - 192.168.7.173      # Add the IP address of the proxy server
+    - 192.168.7.124      # Add the IP address of the proxy server
     - 172.21.0.102      # Traefik's Docker network address, Ip taken from logs
   ip_ban_enabled: true
   login_attempts_threshold: 3
@@ -22,7 +22,7 @@ tts:
 influxdb:
   api_version: 2
   ssl: false
-  host: influxdb.sierra.local
+  host: influxdb.echo.local
   port: 80
   token: !secret inlfuxdb_token # manually assign in secrets.yaml
   bucket: ha-db0

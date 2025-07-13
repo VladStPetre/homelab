@@ -5,9 +5,12 @@ scrape_configs:
   - job_name: 'nodes'
     scrape_interval: 15s
     static_configs:
-      - targets: ['node-exporter:9100']
+      - targets: ['192.168.7.173:9100']
         labels:
           server: 'sierra'
+      - targets: ['node-exporter:9100' ]
+        labels:
+          server: 'echo'
 
   # - job_name: 'docker-daemon-cadvisor'
   #   scrape_interval: 15s
@@ -23,3 +26,6 @@ scrape_configs:
       - targets: ['192.168.7.173:9323']
         labels:
           server: 'sierra'
+      - targets: [ '192.168.7.124:9323' ]
+        labels:
+          server: 'echo'
