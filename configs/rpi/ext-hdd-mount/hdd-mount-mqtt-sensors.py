@@ -13,6 +13,16 @@ DEVICE = {
     "model": "G3 plus"
 }
 
+# client.publish(f"{BASE_TOPIC}/vexthdd/config", json.dumps({
+#     "name": "Echo",
+#     "state_topic": "pi3/status",
+#     "unit_of_measurement": "°C",
+#     "value_template": "{{ value_json.temperature }}",
+#     "device_class": "temperature",
+#     "unique_id": "pi3_cpu_temp",
+#     "device": DEVICE
+# }), retain=True)
+
 client.publish("homeassistant/switch/echo/vexthdd/config", json.dumps({
     "name": "Echo vexthdd",
     "command_topic": "echo/command/vexthddmount",
@@ -22,3 +32,10 @@ client.publish("homeassistant/switch/echo/vexthdd/config", json.dumps({
     "unique_id": "echo_vexthddmount_control",
     "device": DEVICE
 }), retain=True)
+
+def is_mounted(mount_point):
+    with open('/proc/mounts') as f:
+        return any(mount_point in line for line in f)
+
+state = "on" if is_mounted("/mnt/media") else "off"
+client.publish("echo/vexthdd/state", state)
