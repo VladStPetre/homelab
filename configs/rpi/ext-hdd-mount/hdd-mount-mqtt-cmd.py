@@ -13,11 +13,9 @@ def on_message(client, userdata, msg):
 
     if topic == "echo/command/vexthddmount":
         if payload == "off":
-            os.system("umount /mnt/media")
-            client.publish("echo/vexthdd/state", "off")
+            os.system("sudo umount /mnt/media")
         elif payload == "on":
-            os.system("mount /mnt/media")
-            client.publish("echo/vexthdd/state", "on")
+            os.system("sudo mount /mnt/media")
 
         # Always check and publish ACTUAL status after running the command
         state = "on" if is_mounted("/mnt/media") else "off"
