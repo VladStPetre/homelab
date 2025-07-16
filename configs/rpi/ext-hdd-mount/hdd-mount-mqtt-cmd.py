@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 import os
+import time
 
 MQTT_BROKER = os.environ.get('MQTT_BROKER_IP')
 
@@ -18,6 +19,7 @@ def on_message(client, userdata, msg):
             os.system("sudo mount /mnt/media")
 
         # Always check and publish ACTUAL status after running the command
+        time.sleep(2)
         state = "on" if is_mounted("/mnt/media") else "off"
         client.publish("echo/vexthdd/state", state, retain=True)
 
