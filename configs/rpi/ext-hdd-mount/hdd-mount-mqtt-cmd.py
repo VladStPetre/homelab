@@ -19,11 +19,10 @@ def on_message(client, userdata, msg):
             os.system("sudo mount /mnt/media")
 
         # Always check and publish ACTUAL status after running the command
-        time.sleep(2)
+        time.sleep(1)
         state = "on" if is_mounted("/mnt/media") else "off"
         client.publish("echo/vexthdd/state", state, retain=True)
 
-print("connecting to broker - ", MQTT_BROKER)
 client = mqtt.Client()
 client.connect(MQTT_BROKER)
 client.subscribe("echo/command/#")
