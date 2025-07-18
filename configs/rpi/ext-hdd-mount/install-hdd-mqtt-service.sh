@@ -11,6 +11,7 @@ After=network.target
 
 [Service]
 Environment="MQTT_BROKER_IP=$MQTT_BROKER_IP"
+ExecStartPre=/bin/sleep 40
 ExecStart=/usr/bin/python3 /home/adu/homelab/configs/rpi/ext-hdd-mount/hdd-mount-mqtt-sensors.py
 Restart=on-failure
 User=adu
@@ -28,6 +29,7 @@ After=network.target
 
 [Service]
 Environment="MQTT_BROKER_IP=$MQTT_BROKER_IP"
+ExecStartPre=/bin/sleep 40
 ExecStart=/usr/bin/python3 /home/adu/homelab/configs/rpi/ext-hdd-mount/hdd-mount-mqtt-cmd.py
 Restart=on-failure
 User=adu
