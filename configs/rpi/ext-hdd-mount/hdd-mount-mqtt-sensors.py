@@ -30,7 +30,7 @@ def is_mounted(mount_point):
         return any(mount_point in line for line in f)
 
 state = "on" if is_mounted("/mnt/media") else "off"
-client.publish("echo/vexthdd/state", state)
+client.publish("echo/vexthdd/state", state, retain=True)
 
 while True:
     state = "on" if is_mounted("/mnt/media") else "off"
