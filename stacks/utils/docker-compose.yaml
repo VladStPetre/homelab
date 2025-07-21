@@ -236,6 +236,8 @@ services:
     volumes:
       - $BASE_DIR/data/n8n:/home/node/.n8n
       - $BASE_DIR/data/n8n/local-files:/files
+    networks:
+      - hlcl
 
 
   # cadvisor:
