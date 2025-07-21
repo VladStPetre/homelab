@@ -20,6 +20,8 @@ DIRECTORIES=(
     "$BASE_DIR/configs/jellyfin/cache"
     "$BASE_DIR/data/mosquitto/data"
     "$BASE_DIR/data/mosquitto/log"
+    "$BASE_DIR/data/n8n"
+    "$BASE_DIR/data/n8n/local-files"
 )
 
 # setup env vars for Grp id

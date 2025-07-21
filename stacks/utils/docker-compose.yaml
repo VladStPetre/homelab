@@ -210,6 +210,34 @@ services:
     networks:
       - hlcl
 
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    ports:
+      - "127.0.0.1:5678:5678"
+    env_file:
+      - .env
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.echo.local`)"
+      - "traefik.http.routers.n8n.entrypoints=web"
+      - "traefik.http.routers.n8n.tls=false"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+    environment:
+      - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
+      - GENERIC_TIMEZONE=Europe/Bucharest
+    volumes:
+      - $BASE_DIR/data/n8n:/home/node/.n8n
+      - $BASE_DIR/data/n8n/local-files:/files
+
+
   # cadvisor:
   #   image: gcr.io/cadvisor/cadvisor:v0.47.2
   #   container_name: cadvisor
