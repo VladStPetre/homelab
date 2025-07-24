@@ -61,6 +61,8 @@ template:
 
 wake_on_lan:
 
+api:
+
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
