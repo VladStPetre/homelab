@@ -49,6 +49,7 @@ influxdb:
 template:
   - sensor:
       - name: "Monitored Devices Unavailable"
+        unique_id: template_devices_unavailable_monitor
         state: >
           {% set monitored_devices = states.device_tracker | selectattr('attributes.monitor', 'eq', true) %}
           {% set unavailable_devices = monitored_devices | selectattr('state', 'eq', 'unavailable') | list %}
