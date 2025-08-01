@@ -218,6 +218,7 @@ services:
       - PUID=${UID}
       - PGID=${GID}
       - TZ='Europe/Bucharest'
+      - SETTINGS_ENCRYPTION_KEY=${DUPLICATI_ENCRYPTION_KEY}
     volumes:
       - $BASE_DIR/configs/duplicati:/config                      # Duplicati configs
       - $BASE_DIR/configs:/source/configs:ro
