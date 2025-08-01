@@ -235,6 +235,8 @@ services:
       - "traefik.http.routers.duplicati.tls=false"
       - "traefik.http.services.traefik-utils.loadbalancer.server.port=8200"
     restart: unless-stopped
+    networks:
+      - hlcl
 
 
   n8n:
