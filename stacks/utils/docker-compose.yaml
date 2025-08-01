@@ -221,7 +221,7 @@ services:
       - SETTINGS_ENCRYPTION_KEY=${DUPLICATI_ENCRYPTION_KEY}
       - DUPLICATI__WEBSERVICE_PASSWORD=${DUPLICATI_WEB_PASS}
 #      - CLI_ARGS=--webservice-interface=any
-    command: --webservice-interface=any
+    command: [ "--webservice-interface=any" ]
     volumes:
       - $BASE_DIR/configs/duplicati:/config                      # Duplicati configs
       - $BASE_DIR/configs:/source/configs:ro
