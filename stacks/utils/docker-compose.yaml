@@ -220,7 +220,7 @@ services:
       - TZ='Europe/Bucharest'
       - SETTINGS_ENCRYPTION_KEY=${DUPLICATI_ENCRYPTION_KEY}
       - DUPLICATI__WEBSERVICE_PASSWORD=${DUPLICATI_WEB_PASS}
-      - CLI_ARGS=--webservice-interface=any --webservice-allowed-hostnames=duplicati.echo.local
+      - CLI_ARGS=--webservice-interface=any
     volumes:
       - $BASE_DIR/configs/duplicati:/config                      # Duplicati configs
       - $BASE_DIR/configs:/source/configs:ro
@@ -231,11 +231,6 @@ services:
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
-      - "traefik.http.routers.duplicati.rule=Host(`duplicati.echo.local`)"
-      - "traefik.http.routers.duplicati.entrypoints=web"
-      - "traefik.http.routers.duplicati.tls=false"
-      - "traefik.http.services.duplicati.loadbalancer.server.port=8200"
     restart: unless-stopped
     networks:
       - hlcl
