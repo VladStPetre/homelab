@@ -219,6 +219,7 @@ services:
       - PGID=${GID}
       - TZ='Europe/Bucharest'
       - SETTINGS_ENCRYPTION_KEY=${DUPLICATI_ENCRYPTION_KEY}
+      - CLI_ARGS=--webservice-interface=any
     volumes:
       - $BASE_DIR/configs/duplicati:/config                      # Duplicati configs
       - $BASE_DIR/configs:/source/configs:ro
