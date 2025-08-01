@@ -233,7 +233,7 @@ services:
       - "traefik.http.routers.duplicati.rule=Host(`duplicati.echo.local`)"
       - "traefik.http.routers.duplicati.entrypoints=web"
       - "traefik.http.routers.duplicati.tls=false"
-      - "traefik.http.services.traefik-utils.loadbalancer.server.port=8200"
+      - "traefik.http.services.duplicati.loadbalancer.server.port=8200"
     restart: unless-stopped
     networks:
       - hlcl
