@@ -16,12 +16,14 @@ DIRECTORIES=(
     "$BASE_DIR/configs/influxdb2"
     "$BASE_DIR/configs/wireguard"
     "$BASE_DIR/configs/esphome"
+    "$BASE_DIR/configs/duplicati"
     "$BASE_DIR/configs/jellyfin"
     "$BASE_DIR/configs/jellyfin/cache"
     "$BASE_DIR/data/mosquitto/data"
     "$BASE_DIR/data/mosquitto/log"
     "$BASE_DIR/data/n8n"
     "$BASE_DIR/data/n8n/local-files"
+    "$BASE_DIR/data/backups"
 )
 
 # setup env vars for Grp id

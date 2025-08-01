@@ -1,4 +1,4 @@
-services:  
+services:
 
   portainer:
     container_name: portainer
@@ -51,9 +51,9 @@ services:
       - NET_ADMIN
       - SYS_TIME
       - SYS_NICE
-#    dns:
-#      - 127.0.0.1
-#      - 1.1.1.1
+    #    dns:
+    #      - 127.0.0.1
+    #      - 1.1.1.1
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -211,6 +211,31 @@ services:
       - hlcl
 
 
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    container_name: duplicati
+    environment:
+      - PUID=${UID}
+      - PGID=${GID}
+      - TZ='Europe/Bucharest'
+    volumes:
+      - $BASE_DIR/configs/duplicati:/config                      # Duplicati configs
+      - $BASE_DIR/configs:/source/configs:ro
+      - $BASE_DIR/data:/source/data:ro
+      - $BASE_DIR/data/backups:/backups                          # Backup destination (local disk or mount)
+    ports:
+      - 8200:8200
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.duplicati.rule=Host(`duplicati.echo.local`)"
+      - "traefik.http.routers.duplicati.entrypoints=web"
+      - "traefik.http.routers.duplicati.tls=false"
+      - "traefik.http.services.traefik-utils.loadbalancer.server.port=8200"
+    restart: unless-stopped
+
+
   n8n:
     image: docker.n8n.io/n8nio/n8n
     container_name: n8n
@@ -241,24 +266,24 @@ services:
       - hlcl
 
 
-  # cadvisor:
-  #   image: gcr.io/cadvisor/cadvisor:v0.47.2
-  #   container_name: cadvisor
-  #   ports:
-  #   - 8181:8080
-  #   volumes:
-  #   - /:/rootfs:ro
-  #   - /var/run:/var/run:rw
-  #   - /sys:/sys:ro
-  #   - /var/lib/docker/:/var/lib/docker:ro
-  #   command:
-  #   - "--docker_only=true"
-  #   - "--housekeeping_interval=30s"
-  #   - "--disable_metrics=accelerator,cpu_topology,disk,memory_numa,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,resctrl,cpuset,advtcp"
+      # cadvisor:
+      #   image: gcr.io/cadvisor/cadvisor:v0.47.2
+      #   container_name: cadvisor
+      #   ports:
+      #   - 8181:8080
+      #   volumes:
+      #   - /:/rootfs:ro
+      #   - /var/run:/var/run:rw
+      #   - /sys:/sys:ro
+      #   - /var/lib/docker/:/var/lib/docker:ro
+      #   command:
+      #   - "--docker_only=true"
+      #   - "--housekeeping_interval=30s"
+      #   - "--disable_metrics=accelerator,cpu_topology,disk,memory_numa,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,resctrl,cpuset,advtcp"
       # labels:
       # - "portainer.io/managed=true"
       # - "io.portainer.accesscontrol.users=admin"
-    # networks:
+      # networks:
       # - hlcl
 
 networks:
