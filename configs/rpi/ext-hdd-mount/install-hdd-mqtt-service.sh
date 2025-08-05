@@ -16,6 +16,8 @@ ExecStart=/usr/bin/python3 /home/adu/homelab/configs/rpi/ext-hdd-mount/hdd-mount
 Restart=on-failure
 User=adu
 WorkingDirectory=/home/adu/homelab/configs/rpi/ext-hdd-mount
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
@@ -34,6 +36,8 @@ ExecStart=/usr/bin/python3 /home/adu/homelab/configs/rpi/ext-hdd-mount/hdd-mount
 Restart=on-failure
 User=adu
 WorkingDirectory=/home/adu/homelab/configs/rpi/ext-hdd-mount
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
