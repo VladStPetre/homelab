@@ -8,7 +8,7 @@ services:
     volumes:
       - $BASE_DIR/configs/ha:/config
       - /etc/localtime:/etc/localtime:ro
-    restart: unless-stopped
+    restart: always
     privileged: true
     devices:
       - /dev/ttyACM0:/dev/ttyACM0
@@ -36,7 +36,7 @@ services:
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
     security_opt:
       - no-new-privileges:true
-    restart: unless-stopped
+    restart: always
     ports:
      - "8086:8086"
     volumes:
@@ -63,7 +63,7 @@ services:
       - $BASE_DIR/configs/mosquitto:/mosquitto/config
       - $BASE_DIR/data/mosquitto/data:/mosquitto/data
       - $BASE_DIR/data/mosquitto/log:/mosquitto/log
-    restart: unless-stopped
+    restart: always
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -78,7 +78,7 @@ services:
   esphome:
     container_name: esphome
     image: esphome/esphome
-    restart: unless-stopped
+    restart: always
     ports:
       - 6052:6052
     environment:

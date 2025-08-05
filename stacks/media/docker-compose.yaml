@@ -3,7 +3,7 @@ services:
   jellyfin:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
-    restart: unless-stopped
+    restart: always
     user: root
     volumes:
       - $BASE_DIR/configs/jellyfin:/config
@@ -29,7 +29,7 @@ services:
   qbittorrent:
     image: linuxserver/qbittorrent:latest
     container_name: qbittorrent
-    restart: unless-stopped
+    restart: always
     environment:
       - PUID=${UID}                # your local user ID
       - PGID=${GID}                # your local group ID

@@ -15,7 +15,7 @@ services:
       - "traefik.http.routers.portainer.entrypoints=web"
       - "traefik.http.routers.portainer.tls=false"
       - "traefik.http.services.portainer-utils.loadbalancer.server.port=9000"
-    restart: unless-stopped
+    restart: always
     networks:
       - hlcl
 
@@ -74,7 +74,7 @@ services:
   #     - "3001:3001"
   #   volumes:
   #     - '$BASE_DIR/uptime-kuma/data:/app/data'
-  #   restart: unless-stopped
+  #   restart: always
 
   wireguard:
     image: lscr.io/linuxserver/wireguard:latest
@@ -147,7 +147,7 @@ services:
     user: ${UID}
     security_opt:
       - no-new-privileges:true
-    restart: unless-stopped
+    restart: always
     environment:
       - GF_SECURITY_ALLOW_EMBEDDING=true
     volumes:
@@ -167,7 +167,7 @@ services:
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
-    restart: unless-stopped
+    restart: always
     ports:
       - "9100:9100"
     volumes:
@@ -188,7 +188,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
-    restart: unless-stopped
+    restart: always
     user: root
     volumes:
       - $BASE_DIR/configs/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
@@ -231,7 +231,7 @@ services:
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
-    restart: unless-stopped
+    restart: always
     networks:
       - hlcl
 

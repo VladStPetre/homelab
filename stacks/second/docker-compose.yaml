@@ -3,7 +3,7 @@ services:
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
-    restart: unless-stopped
+    restart: always
     ports:
       - "9100:9100"
     volumes:
