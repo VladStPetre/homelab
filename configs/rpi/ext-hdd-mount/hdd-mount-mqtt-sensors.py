@@ -35,4 +35,5 @@ client.publish("echo/vexthdd/state", state, retain=True)
 while True:
     state = "on" if is_mounted("/mnt/media") else "off"
     client.publish("echo/vexthdd/state", state, retain=True)
+    print("published -> echo/vexthdd/state", state)
     time.sleep(60)
