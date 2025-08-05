@@ -34,6 +34,9 @@ def on_message(client, userdata, msg):
         client.publish("echo/vexthdd/state", state, retain=True)
 
         print("published -> echo/vexthdd/state", state)
+    else
+        print("hdd-mount-cmd topic is:", topic)
+
 
 client = mqtt.Client()
 client.connect(MQTT_BROKER)
