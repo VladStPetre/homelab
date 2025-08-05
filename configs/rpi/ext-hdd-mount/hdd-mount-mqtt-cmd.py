@@ -34,7 +34,7 @@ def on_message(client, userdata, msg):
         client.publish("echo/vexthdd/state", state, retain=True)
 
         print("published -> echo/vexthdd/state", state)
-    else
+    else:
         print("hdd-mount-cmd topic is:", topic)
 
 
