@@ -92,6 +92,7 @@ services:
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
+      - '--web.enable-remote-write-receiver'
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"

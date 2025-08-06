@@ -24,6 +24,9 @@ DIRECTORIES=(
     "$BASE_DIR/data/n8n"
     "$BASE_DIR/data/n8n/local-files"
     "$BASE_DIR/data/backups"
+    "$BASE_DIR/data/loki"
+    "$BASE_DIR/data/loki/chunks"
+    "$BASE_DIR/data/loki/rules"
 )
 
 # setup env vars for Grp id
