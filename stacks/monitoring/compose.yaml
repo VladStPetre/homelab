@@ -61,7 +61,7 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - $BASE_DIR/configs/loki:/etc/loki/config.yaml:ro
+      - $BASE_DIR/configs/loki/config.yaml:/etc/loki/config.yaml:ro
       - $BASE_DIR/data/loki:/loki:rw
     labels:
       - "portainer.io/managed=true"
