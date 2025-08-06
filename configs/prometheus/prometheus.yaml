@@ -1,31 +1,31 @@
 global:
   scrape_interval: 1m
 
-scrape_configs:
-  - job_name: 'nodes'
-    scrape_interval: 15s
-    static_configs:
-      - targets: ['192.168.7.173:9100']
-        labels:
-          server: 'sierra'
-      - targets: ['node-exporter:9100' ]
-        labels:
-          server: 'echo'
-
-  # - job_name: 'docker-daemon-cadvisor'
-  #   scrape_interval: 15s
-  #   static_configs:
-  #     - targets: ['cadvisor:8181']
-  #       labels:
-  #         server: 'sierra'
-
-  ### to be disabled if cdavisor will be setup
-  - job_name: 'docker-daemon'
-    scrape_interval: 15s
-    static_configs:
-      - targets: ['192.168.7.173:9323']
-        labels:
-          server: 'sierra'
-      - targets: [ '192.168.7.124:9323' ]
-        labels:
-          server: 'echo'
+#scrape_configs:
+#  - job_name: 'nodes'
+#    scrape_interval: 15s
+#    static_configs:
+#      - targets: ['192.168.7.173:9100']
+#        labels:
+#          server: 'sierra'
+#      - targets: ['node-exporter:9100' ]
+#        labels:
+#          server: 'echo'
+#
+#  # - job_name: 'docker-daemon-cadvisor'
+#  #   scrape_interval: 15s
+#  #   static_configs:
+#  #     - targets: ['cadvisor:8181']
+#  #       labels:
+#  #         server: 'sierra'
+#
+#  ### to be disabled if cdavisor will be setup
+#  - job_name: 'docker-daemon'
+#    scrape_interval: 15s
+#    static_configs:
+#      - targets: ['192.168.7.173:9323']
+#        labels:
+#          server: 'sierra'
+#      - targets: [ '192.168.7.124:9323' ]
+#        labels:
+#          server: 'echo'

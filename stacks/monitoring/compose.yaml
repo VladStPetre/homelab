@@ -2,7 +2,7 @@
 services:
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana-oss:latest
     container_name: grafana
     user: ${UID}
     security_opt:
@@ -12,8 +12,6 @@ services:
       - GF_SECURITY_ALLOW_EMBEDDING=true
     volumes:
       - $BASE_DIR/data/grafana:/var/lib/grafana
-    # environment:
-    #   GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-piechart-panel"
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -23,6 +21,60 @@ services:
       - "traefik.http.routers.grafana.tls=false"
     networks:
       - hlcl
+
+  alloy:
+    image: grafana/alloy:v1.10.0
+    container_name: alloy
+    hostname: echo
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    ports:
+      - "12345:12345"
+    volumes:
+      - $BASE_DIR/configs/alloy/config.alloy:/etc/alloy/config.alloy
+      - $BASE_DIR/data/alloy:/var/lib/alloy/data
+      - /:/rootfs:ro
+      - /run:/run:ro
+      - /var/log:/var/log:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker/:ro
+      - /run/udev/data:/run/udev/data:ro
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.alloy.rule=Host(`alloy.echo.local`)"
+      - "traefik.http.routers.alloy.entrypoints=web"
+      - "traefik.http.routers.alloy.tls=false"
+      - "traefik.http.services.alloy.loadbalancer.server.port=12345"
+    restart: always
+    networks:
+      - hlcl
+
+  loki:
+    container_name: loki
+    image: grafana/loki:3.5.3
+    command: "-config.file=/etc/loki/config.yaml"
+    ports:
+      - "3100:3100"
+    volumes:
+      - $BASE_DIR/configs/loki:/etc/loki/config.yaml:ro
+      - $BASE_DIR/data/loki:/loki:rw
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.http.routers.loki.rule=Host(`loki.echo.local`)"
+      - "traefik.http.routers.loki.entrypoints=web"
+      - "traefik.http.routers.loki.tls=false"
+      - "traefik.http.services.loki.loadbalancer.server.port=3100"
+    networks:
+       - hlcl
+
+    restart: always
 
   prometheus:
     image: prom/prometheus:latest
@@ -49,26 +101,26 @@ services:
     networks:
       - hlcl
 
-  node-exporter:
-    image: prom/node-exporter:latest
-    container_name: node-exporter
-    restart: always
-    ports:
-      - "9100:9100"
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
-    networks:
-      - hlcl
+#  node-exporter:
+#    image: prom/node-exporter:latest
+#    container_name: node-exporter
+#    restart: always
+#    ports:
+#      - "9100:9100"
+#    volumes:
+#      - /proc:/host/proc:ro
+#      - /sys:/host/sys:ro
+#      - /:/rootfs:ro
+#    command:
+#      - '--path.procfs=/host/proc'
+#      - '--path.rootfs=/rootfs'
+#      - '--path.sysfs=/host/sys'
+#      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+#    labels:
+#      - "portainer.io/managed=true"
+#      - "io.portainer.accesscontrol.users=admin"
+#    networks:
+#      - hlcl
 
 networks:
   hlcl:
