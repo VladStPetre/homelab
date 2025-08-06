@@ -49,15 +49,6 @@ services:
       hlcl:
         ipv4_address: 172.21.0.109
 
-  # uptime-kuma:
-  #   image: louislam/uptime-kuma:1
-  #   container_name: uptime-kuma
-  #   ports:
-  #     - "3001:3001"
-  #   volumes:
-  #     - '$BASE_DIR/uptime-kuma/data:/app/data'
-  #   restart: always
-
   wireguard:
     image: lscr.io/linuxserver/wireguard:latest
     container_name: wireguard
@@ -122,3 +113,8 @@ services:
     networks:
       hlcl:
         ipv4_address: 172.21.0.102
+
+networks:
+  hlcl:
+    name: hlcl
+    external: true
