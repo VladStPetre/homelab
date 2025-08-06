@@ -58,6 +58,7 @@ services:
     container_name: loki
     image: grafana/loki:3.5.3
     command: "-config.file=/etc/loki/config.yaml"
+    user: ${UID}
     ports:
       - "3100:3100"
     volumes:
