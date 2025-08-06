@@ -1,8 +1,10 @@
 import paho.mqtt.client as mqtt
 import os
 import time
+import logging
 
 MQTT_BROKER = os.environ.get('MQTT_BROKER_IP')
+logging.basicConfig(level=logging.INFO)
 
 def wait_for_state(desired, timeout=15):
     for _ in range(timeout):
@@ -28,14 +30,14 @@ def on_message(client, userdata, msg):
             wait_for_state(False, timeout=15)
 
         # Always check and publish ACTUAL status after running the command
-        print("received -> echo/command/vexthddmount", payload)
+        logging.info("received -> echo/command/vexthddmount", payload)
 
         state = "on" if is_mounted("/mnt/media") else "off"
         client.publish("echo/vexthdd/state", state, retain=True)
 
-        print("published -> echo/vexthdd/state", state)
+        logging.info("published -> echo/vexthdd/state", state)
     else:
-        print("hdd-mount-cmd topic is:", topic)
+        logging.info("hdd-mount-cmd topic is:", topic)
 
 
 client = mqtt.Client()
