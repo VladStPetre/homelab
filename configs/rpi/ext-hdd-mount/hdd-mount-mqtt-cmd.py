@@ -4,7 +4,7 @@ import time
 import logging
 
 MQTT_BROKER = os.environ.get('MQTT_BROKER_IP')
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 def wait_for_state(desired, timeout=15):
     for _ in range(timeout):
@@ -30,14 +30,14 @@ def on_message(client, userdata, msg):
             wait_for_state(False, timeout=15)
 
         # Always check and publish ACTUAL status after running the command
-        logging.info("received -> echo/command/vexthddmount: %s", payload)
+        logging.info("received -> echo/command/vexthddmount -> %s", payload)
 
         state = "on" if is_mounted("/mnt/media") else "off"
         client.publish("echo/vexthdd/state", state, retain=True)
 
-        logging.info("published -> echo/vexthdd/state: %s", state)
+        logging.info("published -> echo/vexthdd/state -> %s", state)
     else:
-        logging.info("hdd-mount-cmd topic is: %s", topic)
+        logging.info("hdd-mount-cmd topic is -> %s", topic)
 
 
 client = mqtt.Client()
