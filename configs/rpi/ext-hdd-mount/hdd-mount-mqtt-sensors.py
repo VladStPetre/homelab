@@ -6,7 +6,7 @@ MQTT_BROKER = os.environ.get('MQTT_BROKER_IP')
 BASE_TOPIC = 'homeassistant/sensor/echo'
 logging.basicConfig(level=logging.INFO)
 
-logging.info("connecting to broker - ", MQTT_BROKER)
+logging.info("connecting to broker - %s", MQTT_BROKER)
 client = mqtt.Client()
 client.connect(MQTT_BROKER)
 
@@ -33,12 +33,12 @@ def is_mounted(mount_point):
 
 state = "on" if is_mounted("/mnt/media") else "off"
 client.publish("echo/vexthdd/state", state, retain=True)
-logging.info("published -> echo/vexthdd/state", state)
+logging.info("published -> echo/vexthdd/state: %s", state)
 
 while True:
     state = "on" if is_mounted("/mnt/media") else "off"
     client.publish("echo/vexthdd/state", state, retain=True)
 
-    logging.info("published -> echo/vexthdd/state", state)
+    logging.info("published -> echo/vexthdd/state: %s", state)
 
     time.sleep(60)

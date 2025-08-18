@@ -30,14 +30,14 @@ def on_message(client, userdata, msg):
             wait_for_state(False, timeout=15)
 
         # Always check and publish ACTUAL status after running the command
-        logging.info("received -> echo/command/vexthddmount", payload)
+        logging.info("received -> echo/command/vexthddmount: %s", payload)
 
         state = "on" if is_mounted("/mnt/media") else "off"
         client.publish("echo/vexthdd/state", state, retain=True)
 
-        logging.info("published -> echo/vexthdd/state", state)
+        logging.info("published -> echo/vexthdd/state: %s", state)
     else:
-        logging.info("hdd-mount-cmd topic is:", topic)
+        logging.info("hdd-mount-cmd topic is: %s", topic)
 
 
 client = mqtt.Client()
