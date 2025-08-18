@@ -3,7 +3,7 @@ services:
 
   pihole:
     container_name: pihole
-    image: pihole/pihole:latest
+    image: pihole/pihole:2025.08.0
     ports:
       # DNS Ports
       - "53:53/tcp"
@@ -50,7 +50,7 @@ services:
         ipv4_address: 172.21.0.109
 
   wireguard:
-    image: lscr.io/linuxserver/wireguard:latest
+    image: lscr.io/linuxserver/wireguard:1.0.20250521
     container_name: wireguard
     cap_add:
       - NET_ADMIN
@@ -87,7 +87,7 @@ services:
       - hlcl
 
   traefik:
-    image: traefik:latest
+    image: traefik:v3.5.0
     container_name: traefik
     # security_opt:
     #   - no-new-privileges:true

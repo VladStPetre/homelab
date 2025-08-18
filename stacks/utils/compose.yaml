@@ -73,27 +73,6 @@ services:
     networks:
       - hlcl
 
-
-      # cadvisor:
-      #   image: gcr.io/cadvisor/cadvisor:v0.47.2
-      #   container_name: cadvisor
-      #   ports:
-      #   - 8181:8080
-      #   volumes:
-      #   - /:/rootfs:ro
-      #   - /var/run:/var/run:rw
-      #   - /sys:/sys:ro
-      #   - /var/lib/docker/:/var/lib/docker:ro
-      #   command:
-      #   - "--docker_only=true"
-      #   - "--housekeeping_interval=30s"
-      #   - "--disable_metrics=accelerator,cpu_topology,disk,memory_numa,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,resctrl,cpuset,advtcp"
-      # labels:
-      # - "portainer.io/managed=true"
-      # - "io.portainer.accesscontrol.users=admin"
-      # networks:
-      # - hlcl
-
 networks:
   hlcl:
     name: hlcl

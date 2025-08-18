@@ -2,7 +2,7 @@
 services:
 
   grafana:
-    image: grafana/grafana-oss:latest
+    image: grafana/grafana-oss:11.5.8
     container_name: grafana
     user: ${UID}
     security_opt:
@@ -23,7 +23,7 @@ services:
       - hlcl
 
   alloy:
-    image: grafana/alloy:v1.10.0
+    image: grafana/alloy:v1.10.1
     container_name: alloy
     hostname: echo
     command:
@@ -78,7 +78,7 @@ services:
     restart: always
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.5.0
     container_name: prometheus
     restart: always
     user: root
@@ -102,27 +102,6 @@ services:
       - "traefik.http.routers.prometheus.tls=false"
     networks:
       - hlcl
-
-#  node-exporter:
-#    image: prom/node-exporter:latest
-#    container_name: node-exporter
-#    restart: always
-#    ports:
-#      - "9100:9100"
-#    volumes:
-#      - /proc:/host/proc:ro
-#      - /sys:/host/sys:ro
-#      - /:/rootfs:ro
-#    command:
-#      - '--path.procfs=/host/proc'
-#      - '--path.rootfs=/rootfs'
-#      - '--path.sysfs=/host/sys'
-#      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-#    labels:
-#      - "portainer.io/managed=true"
-#      - "io.portainer.accesscontrol.users=admin"
-#    networks:
-#      - hlcl
 
 networks:
   hlcl:

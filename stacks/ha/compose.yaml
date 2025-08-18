@@ -2,7 +2,7 @@
 services:
   homeassistant:
     container_name: homeassistant
-    image: "ghcr.io/home-assistant/home-assistant:latest"
+    image: ghcr.io/home-assistant/home-assistant:2025.8.2
     ports:
       - "8123:8123"
     volumes:
@@ -24,7 +24,7 @@ services:
       - hlcl
 
   influxdb:
-    image: influxdb:latest
+    image: influxdb:2.7.12
     container_name: influxdb
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
@@ -54,7 +54,7 @@ services:
       - hlcl
 
   mosquitto:
-    image: eclipse-mosquitto:latest
+    image: eclipse-mosquitto:2.0.22
     container_name: mosquitto
     ports:
       - "1883:1883"
@@ -75,28 +75,28 @@ services:
     networks:
       - hlcl
 
-  esphome:
-    container_name: esphome
-    image: esphome/esphome
-    restart: always
-    ports:
-      - 6052:6052
-    environment:
-      - TZ=Europe/Bucharest
-    volumes:
-      - $BASE_DIR/configs/esphome:/config
-    privileged: true
-    devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
-      - "traefik.http.routers.esphome.rule=Host(`esphome.echo.local`)"
-      - "traefik.http.routers.esphome.entrypoints=web"
-      - "traefik.http.routers.esphome.tls=false"
-      - "traefik.http.services.esphome-utils.loadbalancer.server.port=1883"
-    network_mode: host
+#  esphome:
+#    container_name: esphome
+#    image: esphome/esphome:2025.7.5
+#    restart: always
+#    ports:
+#      - 6052:6052
+#    environment:
+#      - TZ=Europe/Bucharest
+#    volumes:
+#      - $BASE_DIR/configs/esphome:/config
+#    privileged: true
+#    devices:
+#      - /dev/ttyUSB0:/dev/ttyUSB0
+#    labels:
+#      - "portainer.io/managed=true"
+#      - "io.portainer.accesscontrol.users=admin"
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.esphome.rule=Host(`esphome.echo.local`)"
+#      - "traefik.http.routers.esphome.entrypoints=web"
+#      - "traefik.http.routers.esphome.tls=false"
+#      - "traefik.http.services.esphome-utils.loadbalancer.server.port=1883"
+#    network_mode: host
 
 networks:
   hlcl:

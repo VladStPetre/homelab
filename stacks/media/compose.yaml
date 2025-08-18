@@ -1,7 +1,7 @@
 
 services:
   jellyfin:
-    image: jellyfin/jellyfin:latest
+    image: jellyfin/jellyfin:2025081805
     container_name: jellyfin
     restart: always
     user: root
@@ -27,7 +27,7 @@ services:
       - hlcl
 
   qbittorrent:
-    image: linuxserver/qbittorrent:latest
+    image: linuxserver/qbittorrent:5.1.2
     container_name: qbittorrent
     restart: always
     environment:
