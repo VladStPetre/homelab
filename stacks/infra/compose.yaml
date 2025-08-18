@@ -25,7 +25,7 @@ services:
       FTLCONF_dns_upstreams: '1.1.1.1;1.0.0.1'
       PIHOLE_UID: ${UID}
       PIHOLE_GID: ${GID}
-      VIRTUAL_HOST: "pihole.echo.local" # To match the domain name from traefik label
+      VIRTUAL_HOST: "pihole.${DOMAIN_NAME}" # To match the domain name from traefik label
     volumes:
       - $BASE_DIR/data/pihole/etc-pihole:/etc/pihole
       - $BASE_DIR/data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
@@ -40,7 +40,7 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.pihole.rule=Host(`pihole.echo.local`)"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.${DOMAIN_NAME}`)"
       - "traefik.http.routers.pihole.entrypoints=web"
       - "traefik.http.routers.pihole.tls=false"
       - "traefik.http.services.pihole-utils.loadbalancer.server.port=80"
@@ -105,7 +105,7 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.echo.local`)"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_NAME}`)"
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.routers.traefik.tls=false"
       - "traefik.http.services.traefik-utils.loadbalancer.server.port=8080"
