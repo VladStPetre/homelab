@@ -24,6 +24,7 @@
       "semanticCommitType": "chore",
       "semanticCommitScope": "stack/{{parentDir}}",
       "commitMessageTopic": "monthly dependency updates for stack/{{parentDir}}",
+      "commitMessageAction": "Update",
       "labels": ["dependencies", "renovate", "stack"],
       "prBodyNotes": [
         "This PR groups all Docker image updates found under `{{packageFileDir}}`."
