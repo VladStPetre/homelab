@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: update-stacks-${{ vars.REPO_DIR || secrets.REPO_DIR }}-main
+  group: update-stacks-${{ secrets.REPO_DIR }}-main
   cancel-in-progress: false
 
 jobs:
