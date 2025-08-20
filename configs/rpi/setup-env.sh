@@ -27,6 +27,7 @@ DIRECTORIES=(
     "$BASE_DIR/data/loki"
     "$BASE_DIR/data/loki/chunks"
     "$BASE_DIR/data/loki/rules"
+    "$BASE_DIR/data/gh-runner"
 )
 
 # setup env vars for Grp id
