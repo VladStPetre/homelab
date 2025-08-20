@@ -1,7 +1,12 @@
-name: update stacks (main only stash + ff-only)
+name: Update docker Stack(s)
 
 on:
   workflow_dispatch:
+    inputs:
+      TARGET_STACK:
+        description: "Stack under REPO_DIR/stacks to update (blank or 'all' = update all)"
+        required: false
+        default: ""
 
 concurrency:
   group: server-pull-${{ github.repository_id }}-main
@@ -77,3 +82,132 @@ jobs:
         run: |
           git --no-pager log -1 --oneline
           git status --short --branch
+
+  update_stacks:
+    name: Update stacks from /stacks (target ${{ github.event.inputs.stack || 'all' }})
+    needs: pull
+    runs-on: [ self-hosted, linux, docker, stacks ]
+    env:
+      REPO_DIR: ${{ secrets.REPO_DIR }}
+      TARGET_STACK: ${{ github.event.inputs.TARGET_STACK }}   # "" or "all" = all stacks; otherwise a single stack name
+      STACK_EXCLUDE: ${{ vars.STACK_EXCLUDE }}                 # optional: comma/space-separated list
+
+    steps:
+      - name: Validate stacks directory
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if [ -z "${REPO_DIR:-}" ]; then
+            echo "::error ::REPO_DIR not set. Define repository Secret REPO_DIR."
+            exit 1
+          fi
+          if [ ! -d "$REPO_DIR/stacks" ]; then
+            echo "::error ::Stacks directory not found: $REPO_DIR/stacks"
+            exit 1
+          fi
+          echo "Stacks root: $REPO_DIR/stacks"
+          echo "Target stack: '${TARGET_STACK:-<all>}'"
+          echo "Exclude list: '${STACK_EXCLUDE:-<none>}'"
+
+      - name: Update containers (one or all stacks with exclusion list)
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          
+          # Detect docker compose command
+          if docker compose version >/dev/null 2>&1; then
+            DC="docker compose"
+          elif docker-compose version >/devnull 2>&1; then
+            DC="docker-compose"
+          else
+            echo "::error ::Neither 'docker compose' nor 'docker-compose' is available on this runner."
+            exit 1
+          fi
+          
+          shopt -s nullglob
+          
+          # Normalize exclusion list (lowercase, space-separated)
+          EXC_LIST=""
+          if [ -n "${STACK_EXCLUDE:-}" ]; then
+            EXC_LIST=$(echo "$STACK_EXCLUDE" | tr ',;|\t' ' ' | tr -s ' ' | tr '[:upper:]' '[:lower:]')
+          fi
+          
+          is_excluded () {
+            local candidate_lc="$1"
+            for e in $EXC_LIST; do
+              if [ "$candidate_lc" = "$e" ]; then
+                return 0
+              fi
+            done
+            return 1
+          }
+          
+          # Build target list
+          TARGET_DIRS=()
+          if [ -z "${TARGET_STACK:-}" ] || [ "${TARGET_STACK,,}" = "all" ]; then
+            for d in "$REPO_DIR/stacks"/*; do
+              [ -d "$d" ] || continue
+              name="$(basename "$d")"
+              name_lc="$(echo "$name" | tr '[:upper:]' '[:lower:]')"
+              if is_excluded "$name_lc"; then
+                echo "::warning ::Skipping excluded stack: $name"
+                continue
+              fi
+              TARGET_DIRS+=( "$d" )
+            done
+          else
+            TDIR="$REPO_DIR/stacks/$TARGET_STACK"
+            if [ ! -d "$TDIR" ]; then
+              echo "::error ::Requested stack not found: $TDIR"
+              exit 1
+            fi
+            name_lc="$(echo "$TARGET_STACK" | tr '[:upper:]' '[:lower:]')"
+            if is_excluded "$name_lc"; then
+              echo "::warning ::Requested stack '$TARGET_STACK' is excluded — nothing to do."
+              exit 0
+            fi
+            TARGET_DIRS=( "$TDIR" )
+          fi
+          
+          if [ ${#TARGET_DIRS[@]} -eq 0 ]; then
+            echo "::notice ::No stacks selected for update."
+            exit 0
+          fi
+          
+          UPDATED=()
+          SKIPPED=()
+          
+          for dir in "${TARGET_DIRS[@]}"; do
+            [ -d "$dir" ] || continue
+            stack="$(basename "$dir")"
+          
+            # Choose compose file
+            if [ -f "$dir/compose.yaml" ]; then
+              COMPOSE_FILE="$dir/compose.yaml"
+            elif [ -f "$dir/docker-compose.yml" ]; then
+              COMPOSE_FILE="$dir/docker-compose.yml"
+            elif [ -f "$dir/compose.yml" ]; then
+              COMPOSE_FILE="$dir/compose.yml"
+            else
+              echo "::warning ::No compose file for stack '$stack' (compose.yaml / compose.yml / docker-compose.yml). Skipping."
+              SKIPPED+=( "$stack" )
+              continue
+            fi
+          
+            # Stable project name per stack (avoid collisions)
+            export COMPOSE_PROJECT_NAME="stack_${stack//[^a-zA-Z0-9]/_}"
+          
+            echo "=== Updating stack: $stack ==="
+            echo "Compose file: $COMPOSE_FILE"
+            $DC -f "$COMPOSE_FILE" pull
+            $DC -f "$COMPOSE_FILE" up -d --remove-orphans
+            UPDATED+=( "$stack" )
+            echo "=== Done: $stack ==="
+          done
+          
+          echo "Updated stacks: ${UPDATED[*]:-none}"
+          echo "Skipped stacks (no compose): ${SKIPPED[*]:-none}"
+
+      - name: Prune dangling images
+        shell: bash
+        run: docker image prune -f || true
