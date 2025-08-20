@@ -2,7 +2,7 @@ services:
 
   portainer:
     container_name: portainer
-    image: portainer/portainer-ce:2.32.0
+    image: portainer/portainer-ce:2.33.0
     command: -H unix:///var/run/docker.sock
     volumes:
       - $BASE_DIR/data/portainer:/data
@@ -45,7 +45,7 @@ services:
 
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n:1.107.2
+    image: docker.n8n.io/n8nio/n8n:1.108.1
     container_name: n8n
     restart: always
     ports:
