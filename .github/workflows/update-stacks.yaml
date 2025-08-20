@@ -77,3 +77,97 @@ jobs:
         run: |
           git --no-pager log -1 --oneline
           git status --short --branch
+
+  update_stacks:
+    name: Update stacks from /stacks (target ${{ github.event.inputs.stack || 'all' }})
+    needs: pull
+    runs-on: [ self-hosted, linux, docker, stacks ]
+    env:
+      REPO_DIR: ${{ secrets.REPO_DIR }}
+      STACK_NAME: ${{ github.event.inputs.stack }}
+
+    steps:
+      - name: Validate stacks directory
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if [ -z "${REPO_DIR:-}" ]; then
+            echo "::error ::REPO_DIR not set. Define repository Secret REPO_DIR."
+            exit 1
+          fi
+          if [ ! -d "$REPO_DIR/stacks" ]; then
+            echo "::error ::Stacks directory not found: $REPO_DIR/stacks"
+            exit 1
+          fi
+          echo "Stacks root: $REPO_DIR/stacks"
+
+      - name: Update containers (one or all stacks)
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          
+          # detect docker compose command
+          if docker compose version >/dev/null 2>&1; then
+            DC="docker compose"
+          elif docker-compose version >/dev/null 2>&1; then
+            DC="docker-compose"
+          else
+            echo "::error ::Neither 'docker compose' nor 'docker-compose' is available on this runner."
+            exit 1
+          fi
+          
+          shopt -s nullglob
+          
+          # Determine target stacks
+          if [ -z "${STACK_NAME:-}" ] || [ "${STACK_NAME,,}" = "all" ]; then
+            STACK_DIRS=( "$REPO_DIR/stacks"/* )
+            if [ ${#STACK_DIRS[@]} -eq 0 ]; then
+              echo "::warning ::No stack subfolders found under $REPO_DIR/stacks"
+              exit 0
+            fi
+          else
+            if [ -d "$REPO_DIR/stacks/$STACK_NAME" ]; then
+              STACK_DIRS=( "$REPO_DIR/stacks/$STACK_NAME" )
+            else
+              echo "::error ::Requested stack not found: $REPO_DIR/stacks/$STACK_NAME"
+              exit 1
+            fi
+          fi
+          
+          UPDATED=()
+          SKIPPED=()
+          
+          for dir in "${STACK_DIRS[@]}"; do
+            [ -d "$dir" ] || continue
+            stack="$(basename "$dir")"
+          
+            # choose compose file
+            if [ -f "$dir/compose.yaml" ]; then
+              COMPOSE_FILE="$dir/compose.yaml"
+            elif [ -f "$dir/docker-compose.yml" ]; then
+              COMPOSE_FILE="$dir/docker-compose.yml"
+            elif [ -f "$dir/compose.yml" ]; then
+              COMPOSE_FILE="$dir/compose.yml"
+            else
+              echo "::warning ::No compose file for stack '$stack' (compose.yaml / compose.yml / docker-compose.yml). Skipping."
+              SKIPPED+=( "$stack" )
+              continue
+            fi
+          
+            # stable project name per stack (avoid collisions)
+            export COMPOSE_PROJECT_NAME="stack_${stack//[^a-zA-Z0-9]/_}"
+          
+            echo "=== Updating stack: $stack ==="
+            echo "Compose file: $COMPOSE_FILE"
+            $DC -f "$COMPOSE_FILE" pull
+            $DC -f "$COMPOSE_FILE" up -d --remove-orphans
+            UPDATED+=( "$stack" )
+            echo "=== Done: $stack ==="
+          done
+          
+          echo "Updated stacks: ${UPDATED[*]:-none}"
+          echo "Skipped stacks: ${SKIPPED[*]:-none}"
+
+      - name: Prune dangling images (optional)
+        shell: bash
+        run: docker image prune -f || true
