@@ -7,15 +7,14 @@ services:
     container_name: gh-runner-stacks
     restart: unless-stopped
     environment:
-      - REPO_URL="https://github.com/${GH_ORG}/${GH_REPO}"
-      - RUNNER_SCOPE="repo"
-      - RUNNER_NAME="stacks-runner"
-      - LABELS="self-hosted,linux,docker,stacks"
-      - RUNNER_WORKDIR="/_work"
-#      - ACCESS_TOKEN="${GH_RUNNER_PAT}"
-      - RUNNER_TOKEN="${RUNNER_TOKEN}"
-      - DISABLE_AUTOMATIC_DEREGISTRATION="true"
-      - CONFIGURED_ACTIONS_RUNNER_FILES_DIR="/runner/data"
+      - REPO_URL=https://github.com/${GH_ORG}/${GH_REPO}
+      - RUNNER_SCOPE=repo
+      - RUNNER_NAME=stacks-runner
+      - LABELS=self-hosted,linux,docker,stacks
+      - RUNNER_WORKDIR=/_work
+      - RUNNER_TOKEN=${RUNNER_TOKEN}
+      - DISABLE_AUTOMATIC_DEREGISTRATION=true
+      - CONFIGURED_ACTIONS_RUNNER_FILES_DIR=/runner/data
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - $BASE_DIR/data/gh-runner:/runner/data
