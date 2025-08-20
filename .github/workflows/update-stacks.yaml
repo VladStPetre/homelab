@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: update-stacks-${{ secrets.REPO_DIR }}-main
+  group: server-pull-${{ github.repository_id }}-main
   cancel-in-progress: false
 
 jobs:
