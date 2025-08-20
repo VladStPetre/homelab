@@ -1,4 +1,4 @@
-name: update stacks (main only stash + ff-only)
+name: Update docker Stack(s)
 
 on:
   workflow_dispatch:
