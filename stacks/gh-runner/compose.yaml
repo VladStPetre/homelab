@@ -12,7 +12,9 @@ services:
       - RUNNER_NAME="stacks-runner"
       - LABELS="self-hosted,linux,docker,stacks"
       - RUNNER_WORKDIR="/_work"
-      - ACCESS_TOKEN="${GH_RUNNER_PAT}"
+#      - ACCESS_TOKEN="${GH_RUNNER_PAT}"
+      - RUNNER_TOKEN="${RUNNER_TOKEN}"
+      - DISABLE_AUTOMATIC_DEREGISTRATION="true"
       - CONFIGURED_ACTIONS_RUNNER_FILES_DIR="/runner/data"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
