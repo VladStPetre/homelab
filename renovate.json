@@ -1,6 +1,30 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "schedule:monthly"
+  ],
+
+  "enabledManagers": ["docker-compose"],
+  "dependencyDashboard": true,
+  "rebaseWhen": "behind-base-branch",
+
+  "packageRules": [
+    {
+      "matchManagers": ["docker-compose"],
+      "matchFileNames": ["stacks/*/**"],
+
+      "groupName": "stack: {{parentDir}}",
+      "groupSlug": "stack-{{parentDir}}",
+
+      "separateMajorMinor": false,
+      "separateMinorPatch": false,
+
+      "prTitle": "chore(stack/{{parentDir}}): monthly dependency updates",
+      "labels": ["dependencies", "renovate", "stack"],
+      "prBodyNotes": [
+        "This PR groups all Docker image updates found under `{{packageFileDir}}`."
+      ]
+    }
   ]
 }
