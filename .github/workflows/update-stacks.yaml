@@ -1,0 +1,79 @@
+name: update stacks (main only stash + ff-only)
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: update-stacks-${{ vars.REPO_DIR || secrets.REPO_DIR }}-main
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: [self-hosted, linux, docker, stacks]
+    env:
+      REPO_DIR: ${{ secrets.REPO_DIR }}
+      BRANCH: main
+      REMOTE: origin
+      STASH_TAG: gha-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Validate REPO_DIR & git safe.directory
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if [ -z "${REPO_DIR:-}" ]; then
+            echo "::error ::REPO_DIR not set. Define repository variable (Settings → Variables) or secret named REPO_DIR."
+            exit 1
+          fi
+          test -d "$REPO_DIR/.git" || { echo "::error ::$REPO_DIR is not a git repo"; exit 1; }
+          git config --global --add safe.directory "$REPO_DIR"
+          echo "Using repo at: $REPO_DIR"
+
+      - name: Stash changes (if any), checkout main, fast-forward pull, re-apply stash
+        shell: bash
+        working-directory: ${{ env.REPO_DIR }}
+        run: |
+          set -Eeuo pipefail
+
+          # Stash only if dirty (includes untracked; ignores .gitignored)
+          if ! git diff --quiet || ! git diff --quiet --cached || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+            echo "Repo is dirty; stashing changes..."
+            git stash push --include-untracked -m "$STASH_TAG"
+            STASHED=1
+          else
+            echo "Repo is clean; no stash required."
+            STASHED=0
+          fi
+
+          # Update from remote; fail on divergence/conflicts
+          git fetch --prune "$REMOTE"
+          git pull --ff-only "$REMOTE" "$BRANCH"
+
+          # Re-apply stash if we created one
+          if [ "$STASHED" -eq 1 ]; then
+            echo "Re-applying stash..."
+            STASH_REF=$(git stash list | awk -v tag="$STASH_TAG" -F: '$0 ~ tag {print $1; exit}')
+            if [ -z "${STASH_REF:-}" ]; then
+              echo "::warning ::No matching stash found to re-apply (already empty or dropped)."
+            else
+              set +e
+              git stash pop --index "$STASH_REF"
+              POP_STATUS=$?
+              set -e
+              # Fail explicitly on conflicts
+              if [ $POP_STATUS -ne 0 ] || [ -n "$(git ls-files -u)" ]; then
+                echo "::error ::Conflicts encountered when re-applying the stash ($STASH_TAG). Resolve manually."
+                exit 1
+              fi
+            fi
+          fi
+
+          echo "✅ Pull completed successfully on branch '$BRANCH'."
+
+      - name: Show current status (for logs)
+        if: ${{ success() }}
+        shell: bash
+        working-directory: ${{ env.REPO_DIR }}
+        run: |
+          git --no-pager log -1 --oneline
+          git status --short --branch
