@@ -1,3 +1,4 @@
+---
 services:
 
   portainer:
@@ -5,7 +6,7 @@ services:
     image: portainer/portainer-ce:2.32.0
     command: -H unix:///var/run/docker.sock
     volumes:
-      - $BASE_DIR/data/portainer:/data
+      - portainer-data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
       - "portainer.io/managed=true"
@@ -16,6 +17,9 @@ services:
       - "traefik.http.routers.portainer.tls=false"
       - "traefik.http.services.portainer-utils.loadbalancer.server.port=9000"
     restart: always
+    deploy:
+      update_config:
+        order: start-first
     networks:
       - hlcl
 
@@ -29,17 +33,35 @@ services:
       - SETTINGS_ENCRYPTION_KEY=${DUPLICATI_ENCRYPTION_KEY}
       - DUPLICATI__WEBSERVICE_PASSWORD=${DUPLICATI_WEB_PASS}
       - CLI_ARGS=--webservice-interface=any
-    volumes:
-      - $BASE_DIR/configs/duplicati:/config                      # Duplicati configs
-      - $BASE_DIR/configs:/source/configs:ro
-      - $BASE_DIR/data:/source/data:ro
-      - $BASE_DIR/data/backups:/backups                          # Backup destination (local disk or mount)
     ports:
       - 8200:8200
+    volumes:
+      - duplicati-config:/config                      # Duplicati configs
+      - duplicati-bkps:/backups                       # Backup destination (local disk or mount)
+      - grafana-data:/source/grafana:ro
+      - alloy-data:/source/alloy:ro
+      - prometheus-data:/source/prometheus:ro
+      - jellyfin:/source/jellyfin:ro
+      - qbittorrent:/source/qbittorrent:ro
+      - pihole:/source/pihole:ro
+      - wireguard:/source/wireguard:ro
+      - ha-data:/source/ha:ro
+      - influxdb2-data:/source/influxdb2-data:ro
+      - influxdb2-config:/source/influxdb2-config:ro
+      - mosquitto-config:/source/mosquitto-config:ro
+      - mosquitto-data:/source/mosquitto-data:ro
+      - mosquitto-logs:/source/mosquitto-logs:ro
+      - portainer-data:/source/portainer-data:ro
+      - duplicati-config:/source/duplicati-config:ro
+      - n8n-data:/source/n8n-data:ro
+      - n8n-local:/source/n8n-local:ro
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
     restart: always
+    deploy:
+      update_config:
+        order: start-first
     networks:
       - hlcl
 
@@ -47,11 +69,8 @@ services:
   n8n:
     image: docker.n8n.io/n8nio/n8n:1.107.2
     container_name: n8n
-    restart: always
     ports:
       - "5678:5678"
-    env_file:
-      - .env
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -68,10 +87,21 @@ services:
       - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
       - GENERIC_TIMEZONE=Europe/Bucharest
     volumes:
-      - $BASE_DIR/data/n8n:/home/node/.n8n
-      - $BASE_DIR/data/n8n/local-files:/files
+      - n8n-data:/home/node/.n8n
+      - n8n-local-files:/files
+    restart: always
+    deploy:
+      update_config:
+        order: start-first
     networks:
       - hlcl
+
+volumes:
+  portainer-data: {}
+  duplicati-config: {}
+  duplicati-bkps: {}
+  n8n-data: {}
+  n8n-local-files: {}
 
 networks:
   hlcl:

@@ -2,16 +2,15 @@
 services:
 
   grafana:
-    image: grafana/grafana-oss:11.5.8
     container_name: grafana
+    image: grafana/grafana-oss:11.5.8
     user: ${UID}
     security_opt:
       - no-new-privileges:true
-    restart: always
     environment:
       - GF_SECURITY_ALLOW_EMBEDDING=true
     volumes:
-      - $BASE_DIR/data/grafana:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -19,12 +18,16 @@ services:
       - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_NAME}`)"
       - "traefik.http.routers.grafana.entrypoints=web"
       - "traefik.http.routers.grafana.tls=false"
+    restart: always
+    deploy:
+      update_config:
+        order: start-first
     networks:
       - hlcl
 
   alloy:
-    image: grafana/alloy:v1.10.1
     container_name: alloy
+    image: grafana/alloy:v1.10.1
     hostname: echo
     command:
       - run
@@ -34,8 +37,9 @@ services:
     ports:
       - "12345:12345"
     volumes:
-      - $BASE_DIR/configs/alloy/config.alloy:/etc/alloy/config.alloy
-      - $BASE_DIR/data/alloy:/var/lib/alloy/data
+      #replace with configs
+#      - $BASE_DIR/configs/alloy/config.alloy:/etc/alloy/config.alloy
+      - alloy-data:/var/lib/alloy/data
       - /:/rootfs:ro
       - /run:/run:ro
       - /var/log:/var/log:ro
@@ -51,6 +55,9 @@ services:
       - "traefik.http.routers.alloy.tls=false"
       - "traefik.http.services.alloy.loadbalancer.server.port=12345"
     restart: always
+    deploy:
+      update_config:
+        order: start-first
     networks:
       - hlcl
 
@@ -72,23 +79,25 @@ services:
       - "traefik.http.routers.loki.entrypoints=web"
       - "traefik.http.routers.loki.tls=false"
       - "traefik.http.services.loki.loadbalancer.server.port=3100"
+    restart: always
+    deploy:
+      update_config:
+        order: start-first
     networks:
        - hlcl
 
-    restart: always
-
   prometheus:
-    image: prom/prometheus:v3.5.0
     container_name: prometheus
-    restart: always
+    image: prom/prometheus:v3.5.0
     user: root
     volumes:
-      - $BASE_DIR/configs/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
-      - $BASE_DIR/data/prometheus:/prometheus
+        # replace with configs
+#      - $BASE_DIR/configs/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
       - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=365d'
+      - '--storage.tsdb.retention.time=401d'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
@@ -100,8 +109,17 @@ services:
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN_NAME}`)"
       - "traefik.http.routers.prometheus.entrypoints=web"
       - "traefik.http.routers.prometheus.tls=false"
+    restart: always
+    deploy:
+      update_config:
+        order: start-first
     networks:
       - hlcl
+
+volumes:
+  grafana-data: {}
+  alloy-data: {}
+  prometheus-data: {}
 
 networks:
   hlcl:

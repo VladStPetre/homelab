@@ -1,4 +1,4 @@
-
+---
 services:
   homeassistant:
     container_name: homeassistant
@@ -6,9 +6,9 @@ services:
     ports:
       - "8123:8123"
     volumes:
-      - $BASE_DIR/configs/ha:/config
+#      - $BASE_DIR/configs/ha:/config
+      - ha-data:/config
       - /etc/localtime:/etc/localtime:ro
-    restart: always
     privileged: true
     devices:
       - /dev/ttyACM0:/dev/ttyACM0
@@ -19,7 +19,11 @@ services:
       - "traefik.http.routers.hass.rule=Host(`hass.${DOMAIN_NAME}`)"
       - "traefik.http.routers.hass.entrypoints=web"
       - "traefik.http.routers.hass.tls=false"
-      - "traefik.http.services.hass-utils.loadbalancer.server.port=8123"
+      - "traefik.http.services.hass.loadbalancer.server.port=8123"
+    restart: always
+    deploy:
+      update_config:
+        order: start-first
     networks:
       - hlcl
 
@@ -34,14 +38,13 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
       - DOCKER_INFLUXDB_INIT_RETENTION=${DOCKER_INFLUXDB_INIT_RETENTION}
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
-    security_opt:
-      - no-new-privileges:true
-    restart: always
     ports:
      - "8086:8086"
     volumes:
-      - $BASE_DIR/configs/influxdb2:/etc/influxdb2
-      - $BASE_DIR/data/influxdb2:/var/lib/influxdb2
+      - influxdb2-config:/etc/influxdb2
+      - influxdb2-data:/var/lib/influxdb2
+    security_opt:
+      - no-new-privileges:true
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -49,21 +52,25 @@ services:
       - "traefik.http.routers.influxdb.rule=Host(`influxdb.${DOMAIN_NAME}`)"
       - "traefik.http.routers.influxdb.entrypoints=web"
       - "traefik.http.routers.influxdb.tls=false"
-      - "traefik.http.services.influxdb-utils.loadbalancer.server.port=8086"
+      - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
+    restart: always
+    deploy:
+      update_config:
+        order: start-first
     networks:
       - hlcl
 
   mosquitto:
-    image: eclipse-mosquitto:2.0.22
     container_name: mosquitto
+    image: eclipse-mosquitto:2.0.22
     ports:
       - "1883:1883"
       - "9001:9001"  # Optional WebSocket
     volumes:
-      - $BASE_DIR/configs/mosquitto:/mosquitto/config
-      - $BASE_DIR/data/mosquitto/data:/mosquitto/data
-      - $BASE_DIR/data/mosquitto/log:/mosquitto/log
-    restart: always
+        # replace with configs
+#      - mosquitto-config:/mosquitto/config
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-logs:/mosquitto/log
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -71,7 +78,11 @@ services:
       - "traefik.http.routers.mosquitto.rule=Host(`mosquitto.${DOMAIN_NAME}`)"
       - "traefik.http.routers.mosquitto.entrypoints=web"
       - "traefik.http.routers.mosquitto.tls=false"
-      - "traefik.http.services.mosquitto-utils.loadbalancer.server.port=1883"
+      - "traefik.http.services.mosquitto.loadbalancer.server.port=1883"
+    restart: always
+    deploy:
+      update_config:
+        order: start-first
     networks:
       - hlcl
 
@@ -97,6 +108,14 @@ services:
 #      - "traefik.http.routers.esphome.tls=false"
 #      - "traefik.http.services.esphome-utils.loadbalancer.server.port=1883"
 #    network_mode: host
+
+volumes:
+  ha-data: {}
+  influxdb2-data: {}
+  influxdb2-config: {}
+  mosquitto-config: {}
+  mosquitto-data: {}
+  mosquitto-logs: {}
 
 networks:
   hlcl:
