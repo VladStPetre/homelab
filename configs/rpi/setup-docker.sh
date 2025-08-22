@@ -42,6 +42,10 @@ chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 echo "=== Docker Compose version installed ==="
 docker compose version
 
+echo "Create docker network..."
+docker network create --subnet=172.21.0.0/16 hlcl
+echo "Docker network created..."
+
 echo "=== Git version installed ==="
 git --version
 
