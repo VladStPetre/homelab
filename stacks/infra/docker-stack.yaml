@@ -6,32 +6,47 @@ services:
     environment:
       - TZ=${TIMEZONE}
       - FTLCONF_webserver_api_password=${PIHOLE_PASS}
-      - FTLCONF_dns_listeningMode='all'
-      - FTLCONF_dns_upstreams='1.1.1.1;1.0.0.1'
-      - PIHOLE_UID=${UID}
-      - PIHOLE_GID=${GID}
-      - VIRTUAL_HOST="pihole.${DOMAIN_NAME}"
+      - FTLCONF_dns_listeningMode=ALL
+      - FTLCONF_dns_upstreams=1.1.1.1;1.0.0.1
+      - VIRTUAL_HOST=pihole.${DOMAIN_NAME}
+      - DNSMASQ_USER=root
     ports:
       - "53:53/tcp"
       - "53:53/udp"
       - "81:80/tcp"
+#    ports:
+#      - target: 53
+#        published: 53
+#        protocol: tcp
+#        mode: host
+#      - target: 53
+#        published: 53
+#        protocol: udp
+#        mode: host
+#      - target: 80
+#        published: 81
+#        protocol: tcp
+#        mode: ingress
     volumes:
       - pihole-data:/etc/pihole
+      - pihole-dnsmasq-data:/etc/dnsmasq.d
     cap_add:
       - NET_ADMIN
       - SYS_TIME
       - SYS_NICE
+      - NET_BIND_SERVICE
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
+      - "traefik.docker.lbswarm=true"
       - "traefik.http.routers.pihole.rule=Host(`pihole.${DOMAIN_NAME}`)"
       - "traefik.http.routers.pihole.entrypoints=web"
       - "traefik.http.routers.pihole.tls=false"
-      - "traefik.http.services.pihole-utils.loadbalancer.server.port=80"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
     deploy:
       update_config:
-        order: start-first
+        order: stop-first
     networks:
       hlel:
         ipv4_address: 172.21.0.109
@@ -44,7 +59,7 @@ services:
     environment:
       - PUID=${UID}
       - PGID=${GID}
-      - TZ='hlel'
+      - TZ=${TIMEZONE}
       - SERVERURL=${WG_SERVER_URL}
       - SERVERPORT=${WG_SERVER_PORT}
       - PEERS=5 #optional
@@ -90,10 +105,11 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
+      - "traefik.docker.lbswarm=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_NAME}`)"
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.routers.traefik.tls=false"
-      - "traefik.http.services.traefik-utils.loadbalancer.server.port=8080"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
     deploy:
       update_config:
         order: start-first
@@ -109,6 +125,7 @@ configs:
 
 volumes:
   pihole-data: {}
+  pihole-dnsmasq-data: {}
   wireguard-data: {}
 
 networks:
