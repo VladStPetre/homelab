@@ -1,12 +1,10 @@
 ---
 services:
   homeassistant:
-    container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:2025.8.2
     ports:
       - "8123:8123"
     volumes:
-#      - $BASE_DIR/configs/ha:/config
       - ha-data:/config
       - /etc/localtime:/etc/localtime:ro
     privileged: true
@@ -20,24 +18,26 @@ services:
       - "traefik.http.routers.hass.entrypoints=web"
       - "traefik.http.routers.hass.tls=false"
       - "traefik.http.services.hass.loadbalancer.server.port=8123"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      - hlcl
+      - hlel
 
   influxdb:
     image: influxdb:2.7.12
-    container_name: influxdb
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=${DOCKER_INFLUXDB_INIT_USERNAME}
-      - DOCKER_INFLUXDB_INIT_PASSWORD=${DOCKER_INFLUXDB_INIT_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_USERNAME_FILE=/run/secrets/influxdb2-admin-username
+      - DOCKER_INFLUXDB_INIT_PASSWORD_FILE=/run/secrets/influxdb2-admin-password
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN_FILE=/run/secrets/influxdb2-admin-token
       - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
       - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
       - DOCKER_INFLUXDB_INIT_RETENTION=${DOCKER_INFLUXDB_INIT_RETENTION}
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
+    secrets:
+      - influxdb2-admin-username
+      - influxdb2-admin-password
+      - influxdb2-admin-token
     ports:
      - "8086:8086"
     volumes:
@@ -53,47 +53,38 @@ services:
       - "traefik.http.routers.influxdb.entrypoints=web"
       - "traefik.http.routers.influxdb.tls=false"
       - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      - hlcl
+      - hlel
 
   mosquitto:
-    container_name: mosquitto
     image: eclipse-mosquitto:2.0.22
     ports:
       - "1883:1883"
       - "9001:9001"  # Optional WebSocket
+    configs:
+      - source: mosquitto_config
+        target: /mosquitto/config/mosquitto.conf
     volumes:
-        # replace with configs
-#      - mosquitto-config:/mosquitto/config
       - mosquitto-data:/mosquitto/data
       - mosquitto-logs:/mosquitto/log
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
-      - "traefik.http.routers.mosquitto.rule=Host(`mosquitto.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.mosquitto.entrypoints=web"
-      - "traefik.http.routers.mosquitto.tls=false"
-      - "traefik.http.services.mosquitto.loadbalancer.server.port=1883"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      - hlcl
+      - hlel
 
 #  esphome:
-#    container_name: esphome
 #    image: esphome/esphome:2025.7.5
-#    restart: always
 #    ports:
 #      - 6052:6052
 #    environment:
-#      - TZ=Europe/Bucharest
+#      - TZ=${TIMEZONE}
 #    volumes:
 #      - $BASE_DIR/configs/esphome:/config
 #    privileged: true
@@ -109,6 +100,18 @@ services:
 #      - "traefik.http.services.esphome-utils.loadbalancer.server.port=1883"
 #    network_mode: host
 
+configs:
+  mosquitto_config:
+    file: ../../configs/mosquitto/mosquitto.conf
+
+secrets:
+  influxdb2-admin-username:
+    external: true
+  influxdb2-admin-password:
+    external: true
+  influxdb2-admin-token:
+    external: true
+
 volumes:
   ha-data: {}
   influxdb2-data: {}
@@ -118,6 +121,6 @@ volumes:
   mosquitto-logs: {}
 
 networks:
-  hlcl:
-    name: hlcl
+  hlel:
+    name: hlel
     external: true

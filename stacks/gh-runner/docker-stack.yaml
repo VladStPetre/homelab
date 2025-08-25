@@ -2,7 +2,6 @@
 services:
 
   gh-runner:
-    container_name: gh-runner-stacks
     image: myoung34/github-runner:latest
     environment:
       - REPO_URL=https://github.com/${GH_ORG}/${GH_REPO}
@@ -15,4 +14,6 @@ services:
       - CONFIGURED_ACTIONS_RUNNER_FILES_DIR=/runner/data
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    restart: always
+    deploy:
+      update_config:
+        order: start-first

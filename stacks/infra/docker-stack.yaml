@@ -2,10 +2,9 @@
 services:
 
   pihole:
-    container_name: pihole
     image: pihole/pihole:2025.08.0
     environment:
-      - TZ='Europe/Bucharest'
+      - TZ=${TIMEZONE}
       - FTLCONF_webserver_api_password=${PIHOLE_PASS}
       - FTLCONF_dns_listeningMode='all'
       - FTLCONF_dns_upstreams='1.1.1.1;1.0.0.1'
@@ -30,16 +29,14 @@ services:
       - "traefik.http.routers.pihole.entrypoints=web"
       - "traefik.http.routers.pihole.tls=false"
       - "traefik.http.services.pihole-utils.loadbalancer.server.port=80"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      hlcl:
+      hlel:
         ipv4_address: 172.21.0.109
 
   wireguard:
-    container_name: wireguard
     image: lscr.io/linuxserver/wireguard:1.0.20250521
     cap_add:
       - NET_ADMIN
@@ -47,7 +44,7 @@ services:
     environment:
       - PUID=${UID}
       - PGID=${GID}
-      - TZ='Europe/Bucharest'
+      - TZ='hlel'
       - SERVERURL=${WG_SERVER_URL}
       - SERVERPORT=${WG_SERVER_PORT}
       - PEERS=5 #optional
@@ -57,7 +54,7 @@ services:
       - PERSISTENTKEEPALIVE_PEERS=all #optional
       - LOG_CONFS=true #optional
     ports:
-      - 51820:51820/udp
+      - "51820:51820/udp"
     volumes:
       - wireguard-data:/config
       - /lib/modules:/lib/modules #optional
@@ -69,29 +66,26 @@ services:
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      - hlcl
+      - hlel
 
   traefik:
-    container_name: traefik
     image: traefik:v3.5.0
     ports:
-      - 80:80
-      - 443:443
-      - 8080:8080
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    configs:
+      - source: traefik_yaml_config
+        target: /etc/traefik/traefik.yml
+      - source: traefik_config_yaml_config
+        target: /etc/traefik/config.yml
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-
-        # replace with configs
-
-#      - $BASE_DIR/configs/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
-#      - $BASE_DIR/configs/traefik/certs/acme.json:/etc/traefik/certs/acme.json
-#      - $BASE_DIR/configs/traefik/config.yml:/etc/traefik/config.yml:ro
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -100,19 +94,24 @@ services:
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.routers.traefik.tls=false"
       - "traefik.http.services.traefik-utils.loadbalancer.server.port=8080"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      hlcl:
+      hlel:
         ipv4_address: 172.21.0.102
+
+configs:
+  traefik_yaml_config:
+    file: ../../configs/traefik/traefik.yml
+  traefik_config_yaml_config:
+    file: ../../configs/traefik/config.yml
 
 volumes:
   pihole-data: {}
   wireguard-data: {}
 
 networks:
-  hlcl:
-    name: hlcl
+  hlel:
+    name: hlel
     external: true

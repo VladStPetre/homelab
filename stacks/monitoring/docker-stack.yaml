@@ -2,7 +2,6 @@
 services:
 
   grafana:
-    container_name: grafana
     image: grafana/grafana-oss:11.5.8
     user: ${UID}
     security_opt:
@@ -18,15 +17,13 @@ services:
       - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_NAME}`)"
       - "traefik.http.routers.grafana.entrypoints=web"
       - "traefik.http.routers.grafana.tls=false"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      - hlcl
+      - hlel
 
   alloy:
-    container_name: alloy
     image: grafana/alloy:v1.10.1
     hostname: echo
     command:
@@ -36,9 +33,10 @@ services:
       - /etc/alloy/config.alloy
     ports:
       - "12345:12345"
+    configs:
+      - source: alloy_config
+        target: /etc/alloy/config.alloy
     volumes:
-      #replace with configs
-#      - $BASE_DIR/configs/alloy/config.alloy:/etc/alloy/config.alloy
       - alloy-data:/var/lib/alloy/data
       - /:/rootfs:ro
       - /run:/run:ro
@@ -54,23 +52,23 @@ services:
       - "traefik.http.routers.alloy.entrypoints=web"
       - "traefik.http.routers.alloy.tls=false"
       - "traefik.http.services.alloy.loadbalancer.server.port=12345"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      - hlcl
+      - hlel
 
   loki:
-    container_name: loki
     image: grafana/loki:3.5.3
     command: "-config.file=/etc/loki/config.yaml"
     user: ${UID}
     ports:
       - "3100:3100"
+    configs:
+      - source: loki_config
+        target: /etc/loki/config.yaml
     volumes:
-      - $BASE_DIR/configs/loki/config.yaml:/etc/loki/config.yaml:ro
-      - $BASE_DIR/data/loki:/loki:rw
+      - loki-data:/loki:rw
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
@@ -79,20 +77,19 @@ services:
       - "traefik.http.routers.loki.entrypoints=web"
       - "traefik.http.routers.loki.tls=false"
       - "traefik.http.services.loki.loadbalancer.server.port=3100"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-       - hlcl
+       - hlel
 
   prometheus:
-    container_name: prometheus
     image: prom/prometheus:v3.5.0
     user: root
+    configs:
+      - source: prom_config
+        target: /etc/prometheus/prometheus.yaml
     volumes:
-        # replace with configs
-#      - $BASE_DIR/configs/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
       - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
@@ -109,19 +106,27 @@ services:
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN_NAME}`)"
       - "traefik.http.routers.prometheus.entrypoints=web"
       - "traefik.http.routers.prometheus.tls=false"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      - hlcl
+      - hlel
+
+configs:
+  alloy_config:
+    file: ../../configs/alloy/config.alloy
+  loki_config:
+    file: ../../configs/loki/config.yaml
+  prom_config:
+    file: ../../configs/prometheus/prometheus.yaml
 
 volumes:
   grafana-data: {}
   alloy-data: {}
   prometheus-data: {}
+  loki-data: {}
 
 networks:
-  hlcl:
-    name: hlcl
+  hlel:
+    name: hlel
     external: true

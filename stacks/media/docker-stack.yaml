@@ -1,13 +1,12 @@
 ---
 services:
   jellyfin:
-    container_name: jellyfin
     image: jellyfin/jellyfin:2025081805
     user: root
     environment:
       - PUID=${UID}
       - PGID=${GID}
-      - TZ=Europe/Bucharest
+      - TZ=${TIMEZONE}
     ports:
       - "8096:8096"
     volumes:
@@ -21,15 +20,13 @@ services:
       - "traefik.http.routers.jellyfin.entrypoints=web"
       - "traefik.http.routers.jellyfin.tls=false"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      - hlcl
+      - hlel
 
   qbittorrent:
-    container_name: qbittorrent
     image: linuxserver/qbittorrent:5.1.2
     ports:
       - "8081:8081"              # web UI
@@ -38,7 +35,7 @@ services:
     environment:
       - PUID=${UID}                # your local user ID
       - PGID=${GID}                # your local group ID
-      - TZ=Europe/Bucharest
+      - TZ=${TIMEZONE}
       - WEBUI_PORT=8081
       - UMASK_SET=000            # sensible file perms
     volumes:
@@ -54,18 +51,17 @@ services:
       - "traefik.http.routers.qbittorrent.entrypoints=web"
       - "traefik.http.routers.qbittorrent.tls=false"
       - "traefik.http.services.qbittorrent-utils.loadbalancer.server.port=8081"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      - hlcl
+      - hlel
 
 volumes:
   jellyfin-data: {}
   qbittorrent-data: {}
 
 networks:
-  hlcl:
-    name: hlcl
+  hlel:
+    name: hlel
     external: true

@@ -43,7 +43,10 @@ echo "=== Docker Compose version installed ==="
 docker compose version
 
 echo "Create docker network..."
-docker network create --subnet=172.21.0.0/16 hlcl
+# compose
+# docker network create --subnet=172.21.0.0/16 hlcl
+# swarm
+docker network create --subnet=172.21.0.0/16 -d overlay hlel
 echo "Docker network created..."
 
 echo "=== Git version installed ==="

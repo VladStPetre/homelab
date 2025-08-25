@@ -2,7 +2,6 @@
 services:
 
   portainer:
-    container_name: portainer
     image: portainer/portainer-ce:2.32.0
     command: -H unix:///var/run/docker.sock
     volumes:
@@ -16,59 +15,55 @@ services:
       - "traefik.http.routers.portainer.entrypoints=web"
       - "traefik.http.routers.portainer.tls=false"
       - "traefik.http.services.portainer-utils.loadbalancer.server.port=9000"
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      - hlcl
+      - hlel
 
-  duplicati:
-    image: lscr.io/linuxserver/duplicati:2.1.0
-    container_name: duplicati
-    environment:
-      - PUID=${UID}
-      - PGID=${GID}
-      - TZ='Europe/Bucharest'
-      - SETTINGS_ENCRYPTION_KEY=${DUPLICATI_ENCRYPTION_KEY}
-      - DUPLICATI__WEBSERVICE_PASSWORD=${DUPLICATI_WEB_PASS}
-      - CLI_ARGS=--webservice-interface=any
-    ports:
-      - 8200:8200
-    volumes:
-      - duplicati-config:/config                      # Duplicati configs
-      - duplicati-bkps:/backups                       # Backup destination (local disk or mount)
-      - grafana-data:/source/grafana:ro
-      - alloy-data:/source/alloy:ro
-      - prometheus-data:/source/prometheus:ro
-      - jellyfin:/source/jellyfin:ro
-      - qbittorrent:/source/qbittorrent:ro
-      - pihole:/source/pihole:ro
-      - wireguard:/source/wireguard:ro
-      - ha-data:/source/ha:ro
-      - influxdb2-data:/source/influxdb2-data:ro
-      - influxdb2-config:/source/influxdb2-config:ro
-      - mosquitto-config:/source/mosquitto-config:ro
-      - mosquitto-data:/source/mosquitto-data:ro
-      - mosquitto-logs:/source/mosquitto-logs:ro
-      - portainer-data:/source/portainer-data:ro
-      - duplicati-config:/source/duplicati-config:ro
-      - n8n-data:/source/n8n-data:ro
-      - n8n-local:/source/n8n-local:ro
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
-    restart: always
-    deploy:
-      update_config:
-        order: start-first
-    networks:
-      - hlcl
+#  duplicati:
+#    image: lscr.io/linuxserver/duplicati:2.1.0
+#    environment:
+#      - PUID=${UID}
+#      - PGID=${GID}
+#      - TZ=${TIMEZONE}
+#      - SETTINGS_ENCRYPTION_KEY=${DUPLICATI_ENCRYPTION_KEY}
+#      - DUPLICATI__WEBSERVICE_PASSWORD=${DUPLICATI_WEB_PASS}
+#      - CLI_ARGS=--webservice-interface=any
+#    ports:
+#      - 8200:8200
+#    volumes:
+#      - duplicati-config:/config                      # Duplicati configs
+#      - duplicati-bkps:/backups                       # Backup destination (local disk or mount)
+#      - grafana-data:/source/grafana:ro
+#      - alloy-data:/source/alloy:ro
+#      - prometheus-data:/source/prometheus:ro
+#      - jellyfin:/source/jellyfin:ro
+#      - qbittorrent:/source/qbittorrent:ro
+#      - pihole:/source/pihole:ro
+#      - wireguard:/source/wireguard:ro
+#      - ha-data:/source/ha:ro
+#      - influxdb2-data:/source/influxdb2-data:ro
+#      - influxdb2-config:/source/influxdb2-config:ro
+#      - mosquitto-config:/source/mosquitto-config:ro
+#      - mosquitto-data:/source/mosquitto-data:ro
+#      - mosquitto-logs:/source/mosquitto-logs:ro
+#      - portainer-data:/source/portainer-data:ro
+#      - duplicati-config:/source/duplicati-config:ro
+#      - n8n-data:/source/n8n-data:ro
+#      - n8n-local:/source/n8n-local:ro
+#    labels:
+#      - "portainer.io/managed=true"
+#      - "io.portainer.accesscontrol.users=admin"
+#    deploy:
+#      update_config:
+#        order: start-first
+#    networks:
+#      - hlel
 
 
   n8n:
     image: docker.n8n.io/n8nio/n8n:1.107.2
-    container_name: n8n
     ports:
       - "5678:5678"
     labels:
@@ -84,17 +79,17 @@ services:
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - NODE_ENV=production
+      - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE}
       - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
-      - GENERIC_TIMEZONE=Europe/Bucharest
+      - GENERIC_TIMEZONE=${TIMEZONE}
     volumes:
       - n8n-data:/home/node/.n8n
       - n8n-local-files:/files
-    restart: always
     deploy:
       update_config:
         order: start-first
     networks:
-      - hlcl
+      - hlel
 
 volumes:
   portainer-data: {}
@@ -104,6 +99,6 @@ volumes:
   n8n-local-files: {}
 
 networks:
-  hlcl:
-    name: hlcl
+  hlel:
+    name: hlel
     external: true
