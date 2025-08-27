@@ -7,8 +7,6 @@ services:
       - PUID=${UID}
       - PGID=${GID}
       - TZ=${TIMEZONE}
-    ports:
-      - "8096:8096"
     volumes:
       - jellyfin-date:/config
       - /mnt/media:/media

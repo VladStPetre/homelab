@@ -35,5 +35,8 @@ limits_config:
   max_streams_per_user: 10000
   max_line_size: 256000
 
+analytics:
+  reporting_enabled: false
+
 ruler:
   alertmanager_url: http://localhost:9093

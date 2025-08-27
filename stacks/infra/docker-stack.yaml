@@ -13,20 +13,7 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "81:80/tcp"
-#    ports:
-#      - target: 53
-#        published: 53
-#        protocol: tcp
-#        mode: host
-#      - target: 53
-#        published: 53
-#        protocol: udp
-#        mode: host
-#      - target: 80
-#        published: 81
-#        protocol: tcp
-#        mode: ingress
+#      - "81:80/tcp"
     volumes:
       - pihole-data:/etc/pihole
       - pihole-dnsmasq-data:/etc/dnsmasq.d
@@ -93,7 +80,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
     configs:
       - source: traefik_yaml_config
         target: /etc/traefik/traefik.yml

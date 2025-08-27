@@ -66,8 +66,6 @@ services:
 
   n8n:
     image: docker.n8n.io/n8nio/n8n:1.107.2
-    ports:
-      - "5678:5678"
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"

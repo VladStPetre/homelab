@@ -2,8 +2,6 @@
 services:
   homeassistant:
     image: ghcr.io/home-assistant/home-assistant:2025.8.2
-    ports:
-      - "8123:8123"
     volumes:
       - ha-data:/config
       - /etc/localtime:/etc/localtime:ro
@@ -40,8 +38,6 @@ services:
       - influxdb2-admin-username
       - influxdb2-admin-password
       - influxdb2-admin-token
-    ports:
-     - "8086:8086"
     volumes:
       - influxdb2-config:/etc/influxdb2
       - influxdb2-data:/var/lib/influxdb2
