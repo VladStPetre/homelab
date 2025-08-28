@@ -1,15 +1,20 @@
-/* Grafana Alloy Configuration Examples
- * ---
- * LINK: For more details, visit https://github.com/grafana/alloy-scenarios
-*/
+/* Grafana Alloy Configuration – fixed River syntax (1 attribute per line) */
 
-// SECTION: TARGETS
+// ============================
+// DISCOVERY
+// ============================
+discovery.docker "docker" {
+  host = "unix:///var/run/docker.sock"
+}
 
+// ============================
+// REMOTES (unchanged endpoints)
+// ============================
 loki.write "echo" {
-	endpoint {
-		url = "http://loki.echo.local/loki/api/v1/push"
-	}
-	external_labels = {}
+  endpoint {
+    url = "http://loki.echo.local/loki/api/v1/push"
+  }
+  external_labels = {}
 }
 
 prometheus.remote_write "echo" {
@@ -18,30 +23,54 @@ prometheus.remote_write "echo" {
   }
 }
 
-// !SECTION
-
-// SECTION: SYSTEM LOGS & JOURNAL
-
-loki.source.journal "journal" {
-  max_age       = "24h0m0s"
-  relabel_rules = discovery.relabel.journal.rules
-  forward_to    = [loki.write.echo.receiver]
-  labels        = {component = string.format("%s-journal", constants.hostname)}
-  // NOTE: This is important to fix https://github.com/grafana/alloy/issues/924
-  path          = "/var/log/journal"
-}
-
+// ============================
+// SYSTEM LOGS (files)
+// ============================
 local.file_match "system" {
   path_targets = [{
     __address__ = "localhost",
     __path__    = "/var/log/{syslog,messages,*.log}",
     instance    = constants.hostname,
-    job         = string.format("%s-logs", constants.hostname),
+    job         = "host-logs",
   }]
 }
 
-discovery.relabel "journal" {
+loki.relabel "file_std" {
+  forward_to = [loki.process.host_logs.receiver]
+
+  // Normalize labels
+  rule {
+    action       = "replace"
+    target_label = "node"
+    replacement  = constants.hostname
+  }
+  rule {
+    action       = "replace"
+    target_label = "job"
+    replacement  = "host-logs"
+  }
+}
+
+loki.source.file "system" {
+  targets    = local.file_match.system.targets
+  forward_to = [loki.relabel.file_std.receiver]
+}
+
+loki.process "host_logs" {
+  forward_to = [loki.write.echo.receiver]
+  // Non-destructive attempt to parse JSON lines
+  stage.json {
+    expressions     = { level = "level", msg = "msg", t = "time" }
+    drop_malformed  = false
+  }
+}
+
+// ============================
+// JOURNAL LOGS (both paths)
+// ============================
+discovery.relabel "journal_enrich" {
   targets = []
+
   rule {
     source_labels = ["__journal__systemd_unit"]
     target_label  = "unit"
@@ -58,37 +87,109 @@ discovery.relabel "journal" {
     source_labels = ["__journal_priority_keyword"]
     target_label  = "level"
   }
-}
-
-loki.source.file "system" {
-  targets    = local.file_match.system.targets
-  forward_to = [loki.write.echo.receiver]
-}
-
-// !SECTION
-
-// SECTION: SYSTEM METRICS
-
-discovery.relabel "metrics" {
-  targets = prometheus.exporter.unix.metrics.targets
   rule {
-    target_label = "instance"
+    target_label = "node"
     replacement  = constants.hostname
   }
   rule {
     target_label = "job"
-    replacement = string.format("%s-metrics", constants.hostname)
+    replacement  = "journald"
   }
 }
 
+// /run/log/journal
+loki.source.journal "journal_run" {
+  path          = "/run/log/journal"
+  max_age       = "24h0m0s"
+  relabel_rules = discovery.relabel.journal_enrich.rules
+  labels        = { component = string.format("%s-journal", constants.hostname) }
+  forward_to    = [loki.write.echo.receiver]
+}
+
+// /var/log/journal (your original)
+loki.source.journal "journal_var" {
+  path          = "/var/log/journal"
+  max_age       = "24h0m0s"
+  relabel_rules = discovery.relabel.journal_enrich.rules
+  labels        = { component = string.format("%s-journal", constants.hostname) }
+  forward_to    = [loki.write.echo.receiver]
+}
+
+// ============================
+// DOCKER LOGS (with richer labels)
+// ============================
+discovery.relabel "dockerlogs" {
+  targets = []
+
+  // Container name -> container (strip leading '/')
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_id"]
+    target_label  = "container_id"
+  }
+  rule {
+    source_labels = ["__meta_docker_image"]
+    target_label  = "image"
+  }
+  rule {
+    source_labels = ["__meta_docker_label_com_docker_stack_namespace"]
+    target_label  = "stack"
+  }
+  rule {
+    source_labels = ["__meta_docker_label_com_docker_swarm_service_name"]
+    target_label  = "swarm_service"
+  }
+  rule {
+    source_labels = ["__meta_docker_label_com_docker_swarm_task_id"]
+    target_label  = "swarm_task"
+  }
+  // Static/normalized labels
+  rule {
+    target_label = "platform"
+    replacement  = "docker"
+  }
+  rule {
+    target_label = "node"
+    replacement  = constants.hostname
+  }
+  rule {
+    target_label = "job"
+    replacement  = "docker"
+  }
+}
+
+loki.source.docker "docker" {
+  host          = "unix:///var/run/docker.sock"
+  targets       = discovery.docker.docker.targets
+  relabel_rules = discovery.relabel.dockerlogs.rules
+  forward_to    = [loki.process.docker_logs.receiver]
+}
+
+loki.process "docker_logs" {
+  forward_to = [loki.write.echo.receiver]
+  stage.json {
+    expressions    = { level = "level", msg = "msg", t = "time" }
+    drop_malformed = false
+  }
+}
+
+// ============================
+// METRICS: host (node_exporter)
+// ============================
 prometheus.exporter.unix "metrics" {
   disable_collectors = ["ipvs", "btrfs", "infiniband", "xfs", "zfs"]
-  enable_collectors = ["meminfo"]
+  enable_collectors  = ["meminfo"]
+
   filesystem {
     fs_types_exclude     = "^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|tmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$"
     mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+)($|/)"
     mount_timeout        = "5s"
   }
+
   netclass {
     ignored_devices = "^(veth.*|cali.*|[a-f0-9]{15})$"
   }
@@ -97,52 +198,58 @@ prometheus.exporter.unix "metrics" {
   }
 }
 
-prometheus.scrape "metrics" {
-scrape_interval = "15s"
-  targets    = discovery.relabel.metrics.output
-  forward_to = [prometheus.remote_write.echo.receiver]
+discovery.relabel "metrics_targets" {
+  targets = prometheus.exporter.unix.metrics.targets
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
+  }
+  rule {
+    target_label = "job"
+    replacement  = "node-metrics"
+  }
+  rule {
+    target_label = "node"
+    replacement  = constants.hostname
+  }
 }
 
-// !SECTION
+prometheus.scrape "metrics" {
+  scrape_interval = "15s"
+  targets         = discovery.relabel.metrics_targets.output
+  forward_to      = [prometheus.remote_write.echo.receiver]
+}
 
-// SECTION: DOCKER METRICS
-
+// ============================
+// METRICS: Docker via cAdvisor
+// ============================
 prometheus.exporter.cadvisor "dockermetrics" {
-  docker_host = "unix:///var/run/docker.sock"
+  docker_host      = "unix:///var/run/docker.sock"
   storage_duration = "5m"
 }
 
-prometheus.scrape "dockermetrics" {
-  targets    = prometheus.exporter.cadvisor.dockermetrics.targets
-  forward_to = [ prometheus.remote_write.echo.receiver ]
-  scrape_interval = "15s"
-}
+prometheus.relabel "cadvisor_labels" {
+  forward_to = []
 
-//!SECTION
-
-// SECTION: DOCKER LOGS
-
-discovery.docker "dockerlogs" {
-  host = "unix:///var/run/docker.sock"
-}
-
-discovery.relabel "dockerlogs" {
-      targets = []
-
-      rule {
-          source_labels = ["__meta_docker_container_name"]
-          regex = "/(.*)"
-          target_label = "service_name"
-      }
-
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
   }
-
-loki.source.docker "echo" {
-  host       = "unix:///var/run/docker.sock"
-  targets    = discovery.docker.dockerlogs.targets
-  labels     = {"platform" = "docker"}
-  relabel_rules = discovery.relabel.dockerlogs.rules
-  forward_to = [loki.write.echo.receiver]
+  rule {
+    target_label = "node"
+    replacement  = constants.hostname
+  }
+  rule {
+    target_label = "job"
+    replacement  = "cadvisor"
+  }
 }
 
-// !SECTION
+prometheus.scrape "dockermetrics" {
+  scrape_interval = "15s"
+  targets         = prometheus.exporter.cadvisor.dockermetrics.targets
+  forward_to      = [
+    prometheus.relabel.cadvisor_labels.receiver,
+    prometheus.remote_write.echo.receiver,
+  ]
+}
