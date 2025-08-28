@@ -8,7 +8,7 @@ services:
       - PGID=${GID}
       - TZ=${TIMEZONE}
     volumes:
-      - jellyfin-date:/config
+      - jellyfin-data:/config
       - /mnt/media:/media
     labels:
       - "portainer.io/managed=true"
@@ -52,7 +52,7 @@ services:
       - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN_NAME}`)"
       - "traefik.http.routers.qbittorrent.entrypoints=web"
       - "traefik.http.routers.qbittorrent.tls=false"
-      - "traefik.http.services.qbittorrent-utils.loadbalancer.server.port=8081"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8081"
     deploy:
       update_config:
         order: start-first
