@@ -1,4 +1,19 @@
-## Steps 
+## Dev machine
+
+create docker context
+```commandline 
+docker context create echo --description "Docker on G3 - host: echo" --docker "host=ssh://echo.local"```
+```
+
+set env variables from .env file
+```commandline
+set -a; . ./.env; set +a
+```
+Create docker secrets
+```commandline
+printf 'supersecretsecret' | docker secret create <secret-name> -
+```
+## Server Steps 
 
 Setup env by running the following scripts:
 

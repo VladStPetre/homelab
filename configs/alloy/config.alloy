@@ -38,7 +38,6 @@ local.file_match "system" {
 loki.relabel "file_std" {
   forward_to = [loki.process.host_logs.receiver]
 
-  // Normalize labels
   rule {
     action       = "replace"
     target_label = "node"
@@ -47,6 +46,11 @@ loki.relabel "file_std" {
   rule {
     action       = "replace"
     target_label = "job"
+    replacement  = "host-logs"
+  }
+  rule {
+    action       = "replace"
+    target_label = "service_name"
     replacement  = "host-logs"
   }
 }
@@ -95,6 +99,11 @@ discovery.relabel "journal_enrich" {
     target_label = "job"
     replacement  = "journald"
   }
+  // NEW: unify with docker/host by providing a service_name
+  rule {
+    target_label = "service_name"
+    replacement  = "journald"
+  }
 }
 
 // /run/log/journal
@@ -121,7 +130,7 @@ loki.source.journal "journal_var" {
 discovery.relabel "dockerlogs" {
   targets = []
 
-  // Container name -> container (strip leading '/')
+  // --- Base labels we always keep ---
   rule {
     source_labels = ["__meta_docker_container_name"]
     regex         = "/(.*)"
@@ -140,15 +149,6 @@ discovery.relabel "dockerlogs" {
     target_label  = "stack"
   }
   rule {
-    source_labels = ["__meta_docker_label_com_docker_swarm_service_name"]
-    target_label  = "swarm_service"
-  }
-  rule {
-    source_labels = ["__meta_docker_label_com_docker_swarm_task_id"]
-    target_label  = "swarm_task"
-  }
-  // Static/normalized labels
-  rule {
     target_label = "platform"
     replacement  = "docker"
   }
@@ -160,7 +160,57 @@ discovery.relabel "dockerlogs" {
     target_label = "job"
     replacement  = "docker"
   }
+
+  // --- Derive a default service_name from the container name ---
+  // 1) Keep a clean copy of the container name (no leading '/')
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "__tmp_container"
+  }
+
+  // 2) Default service_name = whole container name (safe fallback)
+  rule {
+    source_labels = ["__tmp_container"]
+    regex         = "(.+)"
+    target_label  = "service_name"
+    replacement   = "$1"
+  }
+
+  // 3) If it looks like a Swarm task name (stack_service.N.ID or service.N.ID), extract just the service
+  //    Examples:
+  //      echo_logs.1.7uf...  -> echo_logs
+  //      mystack_api.3.k9a.. -> api   (drops "mystack_" prefix)
+  rule {
+    source_labels = ["__tmp_container"]
+    regex         = "^(?:[^_]+_)?([^\\.]+)\\..+$"
+    target_label  = "service_name"
+    replacement   = "$1"
+  }
+
+  // 4) If Compose service label exists, prefer it
+  rule {
+    source_labels = ["__meta_docker_label_com_docker_compose_service"]
+    regex         = "(.+)"           // only apply when present
+    target_label  = "service_name"
+    replacement   = "$1"
+  }
+
+  // 5) If Swarm service label exists, prefer it (highest priority)
+  rule {
+    source_labels = ["__meta_docker_label_com_docker_swarm_service_name"]
+    regex         = "(.+)"           // only apply when present
+    target_label  = "service_name"
+    replacement   = "$1"
+  }
+
+  // Cleanup temp labels
+  rule {
+    action = "labeldrop"
+    regex  = "__tmp_.*"
+  }
 }
+
 
 loki.source.docker "docker" {
   host          = "unix:///var/run/docker.sock"
