@@ -68,8 +68,8 @@ jobs:
         uses: cssnr/stack-deploy-action@v1
         with:
           name: ${{ inputs.stack_name }}
-          file: ${{ github.workspace }}/stacks/${{ inputs.stack_name }}/docker-stack.yaml
+          file: stacks/${{ inputs.stack_name }}/docker-stack.yaml
           host: ${{ secrets.DOMAIN_NAME }}
           user: deploy
           ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
-          env_file:  ${{ github.workspace }}/envfile
+          env_file:  envfile
