@@ -6,6 +6,9 @@
   ],
 
   "enabledManagers": ["docker-compose"],
+  "docker-compose": {
+    "managerFilePatterns": ["/(^|/)docker-stack\\.ya?ml$/"]
+  },
   "dependencyDashboard": true,
   "rebaseWhen": "behind-base-branch",
 
