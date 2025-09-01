@@ -22,6 +22,12 @@ services:
         order: start-first
     networks:
       - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:9000/api/status >/dev/null || curl -kfsS https://127.0.0.1:9443/api/status >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
 #  duplicati:
 #    image: lscr.io/linuxserver/duplicati:2.1.0
@@ -92,6 +98,12 @@ services:
         order: start-first
     networks:
       - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:5678/healthz >/dev/null || curl -fsS http://127.0.0.1:5678/ >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 volumes:
   portainer-data: {}

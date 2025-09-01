@@ -42,6 +42,12 @@ services:
     networks:
       hlel:
         ipv4_address: 172.21.0.109
+    healthcheck:
+      test: [ "CMD-SHELL", "dig +time=2 +tries=1 @127.0.0.1 pi.hole >/dev/null 2>&1 || nslookup pi.hole 127.0.0.1 >/dev/null 2>&1 || exit 1" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   wireguard:
     image: lscr.io/linuxserver/wireguard:1.0.20250521
@@ -78,6 +84,12 @@ services:
         order: start-first
     networks:
       - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "wg show >/dev/null 2>&1 && ip link show | grep -q '^\\s*wg'" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
   traefik:
     image: traefik:v3.5.0
@@ -108,6 +120,12 @@ services:
     networks:
       hlel:
         ipv4_address: 172.21.0.102
+    healthcheck:
+      test: [ "CMD-SHELL", "traefik healthcheck --ping >/dev/null 2>&1 || curl -fsS http://127.0.0.1/ >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
 configs:
   traefik_yaml_config:
