@@ -27,12 +27,12 @@ services:
         order: start-first
     networks:
       - hlel
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:3000/api/health | grep -q '\"database\":\"ok\"'" ]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 25s
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:3000/api/health | grep -q '\"database\":\"ok\"'" ]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 25s
 
   alloy:
     image: grafana/alloy:v1.10.1
@@ -68,12 +68,12 @@ services:
         order: start-first
     networks:
       - hlel
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:12345/-/ready >/dev/null || curl -fsS http://127.0.0.1:12345/-/healthy >/dev/null" ]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:12345/-/ready >/dev/null || curl -fsS http://127.0.0.1:12345/-/healthy >/dev/null" ]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 20s
 
   loki:
     image: grafana/loki:3.5.3
@@ -99,12 +99,12 @@ services:
         order: start-first
     networks:
        - hlel
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:3100/ready >/dev/null" ]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:3100/ready >/dev/null" ]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 20s
 
   prometheus:
     image: prom/prometheus:v3.5.0
@@ -136,12 +136,12 @@ services:
         order: start-first
     networks:
       - hlel
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:9090/-/ready >/dev/null" ]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:9090/-/ready >/dev/null" ]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 20s
 
 configs:
   alloy_config:
