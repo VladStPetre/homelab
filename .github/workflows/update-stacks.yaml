@@ -41,7 +41,6 @@ jobs:
           TIMEZONE=TIMEZONE=Europe/Bucharest
           GH_ORG=VladStPetre
           GH_REPO=homelab
-          RUNNER_TOKEN=${{ secrets.RUNNER_TOKEN }}
           DOCKER_INFLUXDB_INIT_ORG=${{ secrets.DOCKER_INFLUXDB_INIT_ORG }}
           DOCKER_INFLUXDB_INIT_BUCKET=${{ secrets.DOCKER_INFLUXDB_INIT_BUCKET }}
           DOCKER_INFLUXDB_INIT_RETENTION=55w
@@ -66,7 +65,7 @@ jobs:
         uses: cssnr/stack-deploy-action@v1
         with:
           name: ${{ inputs.stack_name }}
-          file: ./stacks/${{ inputs.stack_name }}/docker-stack.yaml
+          file: stacks/${{ inputs.stack_name }}/docker-stack.yaml
           host: ${{ secrets.DOMAIN_NAME }}
           user: deploy
           ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
