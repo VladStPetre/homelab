@@ -56,7 +56,6 @@ jobs:
           N8N_SECURE_COOKIE=false
           NODE_ENV=production
           EOF
-          chmod 600 ./envfile
 
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
