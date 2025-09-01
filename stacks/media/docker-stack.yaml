@@ -1,7 +1,7 @@
 ---
 services:
   jellyfin:
-    image: jellyfin/jellyfin:2025081805
+    image: jellyfin/jellyfin:2025090105
     user: root
     environment:
       - PUID=${CUID}
@@ -33,7 +33,7 @@ services:
       start_period: 45s
 
   qbittorrent:
-    image: linuxserver/qbittorrent:5.1.2
+    image: linuxserver/qbittorrent:20.04.1
     ports:
       - "8081:8081"              # web UI
       - "6881:6881"              # torrent traffic TCP
