@@ -38,7 +38,7 @@ jobs:
           DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}
           UID=${{ secrets.UID }}
           GID=${{ secrets.GID }}
-          TIMEZONE=TIMEZONE=Europe/Bucharest
+          TIMEZONE=Europe/Bucharest
           GH_ORG=VladStPetre
           GH_REPO=homelab
           DOCKER_INFLUXDB_INIT_ORG=${{ secrets.DOCKER_INFLUXDB_INIT_ORG }}
