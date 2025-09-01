@@ -2,7 +2,7 @@
 services:
 
   portainer:
-    image: portainer/portainer-ce:2.32.0
+    image: portainer/portainer-ce:2.33.1
     command: -H unix:///var/run/docker.sock
     volumes:
       - portainer-data:/data
@@ -71,7 +71,7 @@ services:
 
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n:1.107.2
+    image: docker.n8n.io/n8nio/n8n:1.109.1
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
