@@ -1,0 +1,144 @@
+---
+services:
+
+  pihole:
+    image: pihole/pihole:2025.08.0
+    environment:
+      - TZ=${TIMEZONE}
+      - FTLCONF_webserver_api_password=${PIHOLE_PASS}
+      - FTLCONF_dns_listeningMode=ALL
+      - FTLCONF_dns_upstreams=1.1.1.1;1.0.0.1
+      - VIRTUAL_HOST=pihole.${DOMAIN_NAME}
+      - DNSMASQ_USER=root
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    volumes:
+      - pihole-data:/etc/pihole
+      - pihole-dnsmasq-data:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
+      - SYS_TIME
+      - SYS_NICE
+      - NET_BIND_SERVICE
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.pihole.entrypoints=web"
+      - "traefik.http.routers.pihole.tls=false"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+    deploy:
+      update_config:
+        order: stop-first
+      restart_policy:
+        condition: any         # restart even on exit 0
+        delay: 5s
+        max_attempts: 0        # unlimited
+        window: 30s
+    networks:
+      hlel:
+        ipv4_address: 172.21.0.109
+    healthcheck:
+      test: [ "CMD-SHELL", "dig +time=2 +tries=1 @127.0.0.1 pi.hole >/dev/null 2>&1 || nslookup pi.hole 127.0.0.1 >/dev/null 2>&1 || exit 1" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  wireguard:
+    image: lscr.io/linuxserver/wireguard:1.0.20250521
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE #optional
+    environment:
+      - PUID=${UID}
+      - PGID=${GID}
+      - TZ=${TIMEZONE}
+      - SERVERURL=${WG_SERVER_URL}
+      - SERVERPORT=${WG_SERVER_PORT}
+      - PEERS=5 #optional
+      - PEERDNS=auto #optional
+      - INTERNAL_SUBNET=10.13.13.0 #optional
+      - ALLOWEDIPS=0.0.0.0/0 #optional
+      - PERSISTENTKEEPALIVE_PEERS=all #optional
+      - LOG_CONFS=true #optional
+    ports:
+      - "51820:51820/udp"
+    volumes:
+      - wireguard-data:/config
+      - /lib/modules:/lib/modules #optional
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+    dns:
+      - 192.168.7.124
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+    deploy:
+      update_config:
+        order: start-first
+    networks:
+      - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "wg show >/dev/null 2>&1 && ip link show | grep -q '^\\s*wg'" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  traefik:
+    image: traefik:v3.5.0
+    ports:
+      - "80:80"
+      - "443:443"
+    configs:
+      - source: traefik_yaml_config
+        target: /etc/traefik/traefik.yml
+      - source: traefik_config_yaml_config
+        target: /etc/traefik/config.yml
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.tls=false"
+      - "traefik.http.routers.traefik.service=api@internal"
+    deploy:
+      update_config:
+        order: start-first
+    networks:
+      hlel:
+        ipv4_address: 172.21.0.102
+    healthcheck:
+      test: [ "CMD-SHELL", "traefik healthcheck --ping >/dev/null 2>&1 || curl -fsS http://127.0.0.1/ >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+configs:
+  traefik_yaml_config:
+    file: ../../configs/traefik/traefik.yml
+  traefik_config_yaml_config:
+    file: ../../configs/traefik/config.yml
+
+volumes:
+  pihole-data: {}
+  pihole-dnsmasq-data: {}
+  wireguard-data: {}
+
+networks:
+  hlel:
+    name: hlel
+    external: true

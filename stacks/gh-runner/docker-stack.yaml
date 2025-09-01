@@ -1,11 +1,8 @@
 ---
-
 services:
 
   gh-runner:
     image: myoung34/github-runner:latest
-    container_name: gh-runner-stacks
-    restart: unless-stopped
     environment:
       - REPO_URL=https://github.com/${GH_ORG}/${GH_REPO}
       - RUNNER_SCOPE=repo
@@ -16,6 +13,11 @@ services:
       - DISABLE_AUTOMATIC_DEREGISTRATION=true
       - CONFIGURED_ACTIONS_RUNNER_FILES_DIR=/runner/data
     volumes:
+      - runner-data:/runner/data
       - /var/run/docker.sock:/var/run/docker.sock
-      - $BASE_DIR/data/gh-runner:/runner/data
-      - $BASE_DIR:$BASE_DIR
+    deploy:
+      update_config:
+        order: start-first
+
+volumes:
+  runner-data: {}
