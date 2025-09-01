@@ -23,12 +23,12 @@ services:
         order: start-first
     networks:
       - hlel
-    healthcheck:
-      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:8123/ >/dev/null 2>&1 || exit 1" ]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 120s
+#    healthcheck:
+#      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:8123/ >/dev/null 2>&1 || exit 1" ]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 120s
 
   influxdb:
     image: influxdb:2.7.12
@@ -64,12 +64,12 @@ services:
         order: start-first
     networks:
       - hlel
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8086/health >/dev/null || curl -fsSI http://127.0.0.1:8086/ping >/dev/null" ]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8086/health >/dev/null || curl -fsSI http://127.0.0.1:8086/ping >/dev/null" ]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 30s
 
   mosquitto:
     image: eclipse-mosquitto:2.0.22
@@ -90,12 +90,12 @@ services:
         order: start-first
     networks:
       - hlel
-    healthcheck:
-      test: [ "CMD-SHELL", "mosquitto_pub -h 127.0.0.1 -p 1883 -t healthcheck -m ok -q 1 -r && mosquitto_sub -h 127.0.0.1 -p 1883 -t healthcheck -C 1 -W 5 >/dev/null" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
+#    healthcheck:
+#      test: [ "CMD-SHELL", "mosquitto_pub -h 127.0.0.1 -p 1883 -t healthcheck -m ok -q 1 -r && mosquitto_sub -h 127.0.0.1 -p 1883 -t healthcheck -C 1 -W 5 >/dev/null" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 20s
 
 #  esphome:
 #    image: esphome/esphome:2025.7.5
