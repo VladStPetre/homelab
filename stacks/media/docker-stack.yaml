@@ -4,8 +4,8 @@ services:
     image: jellyfin/jellyfin:2025081805
     user: root
     environment:
-      - PUID=${UID}
-      - PGID=${GID}
+      - PUID=${CUID}
+      - PGID=${CGID}
       - TZ=${TIMEZONE}
     volumes:
       - jellyfin-data:/config
@@ -39,8 +39,8 @@ services:
       - "6881:6881"              # torrent traffic TCP
       - "6881:6881/udp"          # torrent traffic UDP
     environment:
-      - PUID=${UID}                # your local user ID
-      - PGID=${GID}                # your local group ID
+      - PUID=${CUID}                # your local user ID
+      - PGID=${CGID}                # your local group ID
       - TZ=${TIMEZONE}
       - WEBUI_PORT=8081
       - UMASK_SET=000            # sensible file perms

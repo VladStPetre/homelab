@@ -3,7 +3,7 @@ services:
 
   grafana:
     image: grafana/grafana-oss:11.5.8
-    user: ${UID}
+    user: ${CUID}
     security_opt:
       - no-new-privileges:true
     environment:
@@ -78,7 +78,7 @@ services:
   loki:
     image: grafana/loki:3.5.3
     command: "-config.file=/etc/loki/config.yaml"
-    user: ${UID}
+    user: ${CUID}
     configs:
       - source: loki_config
         target: /etc/loki/config.yaml

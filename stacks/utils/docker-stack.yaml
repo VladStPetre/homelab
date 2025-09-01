@@ -32,8 +32,8 @@ services:
 #  duplicati:
 #    image: lscr.io/linuxserver/duplicati:2.1.0
 #    environment:
-#      - PUID=${UID}
-#      - PGID=${GID}
+#      - PUID=${CUID}
+#      - PGID=${CGID}
 #      - TZ=${TIMEZONE}
 #      - SETTINGS_ENCRYPTION_KEY=${DUPLICATI_ENCRYPTION_KEY}
 #      - DUPLICATI__WEBSERVICE_PASSWORD=${DUPLICATI_WEB_PASS}

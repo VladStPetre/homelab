@@ -55,8 +55,8 @@ services:
       - NET_ADMIN
       - SYS_MODULE #optional
     environment:
-      - PUID=${UID}
-      - PGID=${GID}
+      - PUID=${CUID}
+      - PGID=${CGID}
       - TZ=${TIMEZONE}
       - SERVERURL=${WG_SERVER_URL}
       - SERVERPORT=${WG_SERVER_PORT}
