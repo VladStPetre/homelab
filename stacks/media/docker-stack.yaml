@@ -64,12 +64,12 @@ services:
         order: start-first
     networks:
       - hlel
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8080/api/v2/app/version >/dev/null" ]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8080/api/v2/app/version >/dev/null" ]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 20s
 
 volumes:
   jellyfin-data: {}

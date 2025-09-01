@@ -56,14 +56,6 @@ jobs:
           EOF
           chmod 644 envfile
 
-          echo "Repo root is: $GITHUB_WORKSPACE"
-          ls -la
-          echo "Stack dir listing:"
-          ls -la "stacks/${{ inputs.stack_name }}"
-
-          # Optional sanity check to fail early if the stack file is missing
-          test -f "stacks/${{ inputs.stack_name }}/docker-stack.yaml"
-
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
         with:
