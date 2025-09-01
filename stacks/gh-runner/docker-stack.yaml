@@ -14,6 +14,7 @@ services:
       - CONFIGURED_ACTIONS_RUNNER_FILES_DIR=/runner/data
     volumes:
       - runner-data:/runner/data
+      - /_work:/_work
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
       update_config:

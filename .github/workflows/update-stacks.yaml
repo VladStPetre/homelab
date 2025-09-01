@@ -36,8 +36,8 @@ jobs:
           set -euo pipefail
           cat > envfile <<'EOF'
           DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}
-          UID=${{ secrets.UID }}
-          GID=${{ secrets.GID }}
+          CUID=${{ secrets.UID }}
+          CGID=${{ secrets.GID }}
           TIMEZONE=Europe/Bucharest
           GH_ORG=VladStPetre
           GH_REPO=homelab
