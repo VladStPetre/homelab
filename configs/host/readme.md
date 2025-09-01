@@ -20,6 +20,7 @@ Setup env by running the following scripts:
 - setup-docker.sh -> install docker, docker compose and creates main docker network
 - setup-python.sh -> install python 3, pip and paho-mqtt deps
 - install ser2net for zigbee device (See below)
+- install ext-hdd mount from jellyfin/
 
 ### Optional:
 
