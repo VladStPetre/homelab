@@ -34,7 +34,7 @@ jobs:
       - name: create env file
         run: |
           set -euo pipefail
-          cat > ./envfile <<'EOF'
+          cat > envfile <<'EOF'
           DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}
           UID=${{ secrets.UID }}
           GID=${{ secrets.GID }}
@@ -55,6 +55,12 @@ jobs:
           N8N_SECURE_COOKIE=false
           NODE_ENV=production
           EOF
+          chmod 600 envfile
+          echo "Generated envfile:"
+          wc -l envfile
+          echo "Listing workspace to verify file location:"
+          ls -la
+          pwd
 
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
@@ -64,4 +70,4 @@ jobs:
           host: ${{ secrets.DOMAIN_NAME }}
           user: deploy
           ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
-          env_file: ./envfile
+          env_file: envfile
