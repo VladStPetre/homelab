@@ -54,12 +54,15 @@ jobs:
           N8N_SECURE_COOKIE=false
           NODE_ENV=production
           EOF
-          chmod 600 envfile
-          echo "Generated envfile:"
-          wc -l envfile
-          echo "Listing workspace to verify file location:"
+          chmod 644 envfile
+
+          echo "Repo root is: $GITHUB_WORKSPACE"
           ls -la
-          pwd
+          echo "Stack dir listing:"
+          ls -la "stacks/${{ inputs.stack_name }}"
+
+          # Optional sanity check to fail early if the stack file is missing
+          test -f "stacks/${{ inputs.stack_name }}/docker-stack.yaml"
 
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
