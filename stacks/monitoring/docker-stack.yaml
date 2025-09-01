@@ -3,39 +3,50 @@ services:
 
   grafana:
     image: grafana/grafana-oss:11.5.8
-    container_name: grafana
     user: ${UID}
     security_opt:
       - no-new-privileges:true
-    restart: always
     environment:
       - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_ANALYTICS_REPORTING_ENABLED=false          # stop calls to stats.grafana.org
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false          # optional: reduce other outbound checks
+      - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false   # optional
     volumes:
-      - $BASE_DIR/data/grafana:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
       - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_NAME}`)"
       - "traefik.http.routers.grafana.entrypoints=web"
       - "traefik.http.routers.grafana.tls=false"
+    deploy:
+      update_config:
+        order: start-first
     networks:
-      - hlcl
+      - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:3000/api/health | grep -q '\"database\":\"ok\"'" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
 
   alloy:
     image: grafana/alloy:v1.10.1
-    container_name: alloy
     hostname: echo
     command:
       - run
       - --server.http.listen-addr=0.0.0.0:12345
       - --storage.path=/var/lib/alloy/data
       - /etc/alloy/config.alloy
-    ports:
-      - "12345:12345"
+    configs:
+      - source: alloy_config
+        target: /etc/alloy/config.alloy
     volumes:
-      - $BASE_DIR/configs/alloy/config.alloy:/etc/alloy/config.alloy
-      - $BASE_DIR/data/alloy:/var/lib/alloy/data
+      - alloy-data:/var/lib/alloy/data
       - /:/rootfs:ro
       - /run:/run:ro
       - /var/log:/var/log:ro
@@ -46,49 +57,67 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
       - "traefik.http.routers.alloy.rule=Host(`alloy.${DOMAIN_NAME}`)"
       - "traefik.http.routers.alloy.entrypoints=web"
       - "traefik.http.routers.alloy.tls=false"
       - "traefik.http.services.alloy.loadbalancer.server.port=12345"
-    restart: always
+    deploy:
+      update_config:
+        order: start-first
     networks:
-      - hlcl
+      - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:12345/-/ready >/dev/null || curl -fsS http://127.0.0.1:12345/-/healthy >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   loki:
-    container_name: loki
     image: grafana/loki:3.5.3
     command: "-config.file=/etc/loki/config.yaml"
     user: ${UID}
-    ports:
-      - "3100:3100"
+    configs:
+      - source: loki_config
+        target: /etc/loki/config.yaml
     volumes:
-      - $BASE_DIR/configs/loki/config.yaml:/etc/loki/config.yaml:ro
-      - $BASE_DIR/data/loki:/loki:rw
+      - loki-data:/loki:rw
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
       - "traefik.http.routers.loki.rule=Host(`loki.${DOMAIN_NAME}`)"
       - "traefik.http.routers.loki.entrypoints=web"
       - "traefik.http.routers.loki.tls=false"
       - "traefik.http.services.loki.loadbalancer.server.port=3100"
+    deploy:
+      update_config:
+        order: start-first
     networks:
-       - hlcl
-
-    restart: always
+       - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:3100/ready >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   prometheus:
     image: prom/prometheus:v3.5.0
-    container_name: prometheus
-    restart: always
     user: root
+    configs:
+      - source: prom_config
+        target: /etc/prometheus/prometheus.yaml
     volumes:
-      - $BASE_DIR/configs/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
-      - $BASE_DIR/data/prometheus:/prometheus
+      - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
       - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=365d'
+      - '--storage.tsdb.retention.time=401d'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
@@ -97,13 +126,38 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN_NAME}`)"
       - "traefik.http.routers.prometheus.entrypoints=web"
       - "traefik.http.routers.prometheus.tls=false"
+    deploy:
+      update_config:
+        order: start-first
     networks:
-      - hlcl
+      - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:9090/-/ready >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+configs:
+  alloy_config:
+    file: ../../configs/alloy/config.alloy
+  loki_config:
+    file: ../../configs/loki/config.yaml
+  prom_config:
+    file: ../../configs/prometheus/prometheus.yaml
+
+volumes:
+  grafana-data: {}
+  alloy-data: {}
+  prometheus-data: {}
+  loki-data: {}
 
 networks:
-  hlcl:
-    name: hlcl
+  hlel:
+    name: hlel
     external: true

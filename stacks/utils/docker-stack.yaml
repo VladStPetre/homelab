@@ -1,0 +1,118 @@
+---
+services:
+
+  portainer:
+    image: portainer/portainer-ce:2.32.0
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - portainer-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.portainer.entrypoints=web"
+      - "traefik.http.routers.portainer.tls=false"
+      - "traefik.http.services.portainer-utils.loadbalancer.server.port=9000"
+    deploy:
+      update_config:
+        order: start-first
+    networks:
+      - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:9000/api/status >/dev/null || curl -kfsS https://127.0.0.1:9443/api/status >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+#  duplicati:
+#    image: lscr.io/linuxserver/duplicati:2.1.0
+#    environment:
+#      - PUID=${UID}
+#      - PGID=${GID}
+#      - TZ=${TIMEZONE}
+#      - SETTINGS_ENCRYPTION_KEY=${DUPLICATI_ENCRYPTION_KEY}
+#      - DUPLICATI__WEBSERVICE_PASSWORD=${DUPLICATI_WEB_PASS}
+#      - CLI_ARGS=--webservice-interface=any
+#    ports:
+#      - 8200:8200
+#    volumes:
+#      - duplicati-config:/config                      # Duplicati configs
+#      - duplicati-bkps:/backups                       # Backup destination (local disk or mount)
+#      - grafana-data:/source/grafana:ro
+#      - alloy-data:/source/alloy:ro
+#      - prometheus-data:/source/prometheus:ro
+#      - jellyfin:/source/jellyfin:ro
+#      - qbittorrent:/source/qbittorrent:ro
+#      - pihole:/source/pihole:ro
+#      - wireguard:/source/wireguard:ro
+#      - ha-data:/source/ha:ro
+#      - influxdb2-data:/source/influxdb2-data:ro
+#      - influxdb2-config:/source/influxdb2-config:ro
+#      - mosquitto-config:/source/mosquitto-config:ro
+#      - mosquitto-data:/source/mosquitto-data:ro
+#      - mosquitto-logs:/source/mosquitto-logs:ro
+#      - portainer-data:/source/portainer-data:ro
+#      - duplicati-config:/source/duplicati-config:ro
+#      - n8n-data:/source/n8n-data:ro
+#      - n8n-local:/source/n8n-local:ro
+#    labels:
+#      - "portainer.io/managed=true"
+#      - "io.portainer.accesscontrol.users=admin"
+#    deploy:
+#      update_config:
+#        order: start-first
+#    networks:
+#      - hlel
+
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:1.107.2
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.n8n.entrypoints=web"
+      - "traefik.http.routers.n8n.tls=false"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+    environment:
+      - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE}
+      - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
+      - GENERIC_TIMEZONE=${TIMEZONE}
+    volumes:
+      - n8n-data:/home/node/.n8n
+      - n8n-local-files:/files
+    deploy:
+      update_config:
+        order: start-first
+    networks:
+      - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:5678/healthz >/dev/null || curl -fsS http://127.0.0.1:5678/ >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  portainer-data: {}
+  duplicati-config: {}
+  duplicati-bkps: {}
+  n8n-data: {}
+  n8n-local-files: {}
+
+networks:
+  hlel:
+    name: hlel
+    external: true

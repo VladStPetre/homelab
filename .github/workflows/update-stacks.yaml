@@ -3,211 +3,67 @@ name: Update docker Stack(s)
 on:
   workflow_dispatch:
     inputs:
-      TARGET_STACK:
-        description: "Stack under REPO_DIR/stacks to update (blank or 'all' = update all)"
-        required: false
-        default: ""
+      stack_name:
+        description: "Select the stack to deploy"
+        type: choice
+        required: true
+        options:
+          - ha
+          - infra
+          - media
+          - monitoring
+          - utils
 
 concurrency:
-  group: server-pull-${{ github.repository_id }}-main
+  group: server-deploy-${{ github.repository_id }}-main
   cancel-in-progress: false
 
+run-name: "Deploy ➜ ${{ inputs.stack_name }}"
+
 jobs:
-  pull:
+  deploy:
+    name: "Deploy ${{ inputs.stack_name }}"
     runs-on: [self-hosted, linux, docker, stacks]
-    env:
-      REPO_DIR: ${{ secrets.REPO_DIR }}
-      BRANCH: main
-      REMOTE: origin
-      STASH_TAG: gha-${{ github.run_id }}-${{ github.run_attempt }}
+    permissions:
+      contents: read
 
     steps:
-      - name: Validate REPO_DIR & git safe.directory
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: create env file
         shell: bash
         run: |
-          set -Eeuo pipefail
-          if [ -z "${REPO_DIR:-}" ]; then
-            echo "::error ::REPO_DIR not set. Define repository variable (Settings → Variables) or secret named REPO_DIR."
-            exit 1
-          fi
-          test -d "$REPO_DIR/.git" || { echo "::error ::$REPO_DIR is not a git repo"; exit 1; }
-          git config --global --add safe.directory "$REPO_DIR"
-          echo "Using repo at: $REPO_DIR"
+          set -euo pipefail
+          cat > ./envfile <<'EOF'
+          DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}
+          UID=${{ secrets.UID }}
+          GID=${{ secrets.GID }}
+          TIMEZONE=TIMEZONE=Europe/Bucharest
+          GH_ORG=VladStPetre
+          GH_REPO=homelab
+          RUNNER_TOKEN=${{ secrets.RUNNER_TOKEN }}
+          DOCKER_INFLUXDB_INIT_ORG=${{ secrets.DOCKER_INFLUXDB_INIT_ORG }}
+          DOCKER_INFLUXDB_INIT_BUCKET=${{ secrets.DOCKER_INFLUXDB_INIT_BUCKET }}
+          DOCKER_INFLUXDB_INIT_RETENTION=55w
+          PIHOLE_PASS=${{ secrets.PIHOLE_PASS }}
+          WG_SERVER_URL=${{ secrets.WG_SERVER_URL }}
+          WG_SERVER_PORT=${{ secrets.WG_SERVER_PORT }}
+          SUBDOMAIN=n8n
+          N8N_HOST=${{ secrets.N8N_HOST }}
+          N8N_PROTOCOL=http
+          WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
+          N8N_SECURE_COOKIE=false
+          NODE_ENV=production
+          EOF
+          chmod 600 ./envfile
 
-      - name: Stash changes (if any), checkout main, fast-forward pull, re-apply stash
-        shell: bash
-        working-directory: ${{ env.REPO_DIR }}
-        run: |
-          set -Eeuo pipefail
-
-          # Stash only if dirty (includes untracked; ignores .gitignored)
-          if ! git diff --quiet || ! git diff --quiet --cached || [ -n "$(git ls-files --others --exclude-standard)" ]; then
-            echo "Repo is dirty; stashing changes..."
-            git stash push --include-untracked -m "$STASH_TAG"
-            STASHED=1
-          else
-            echo "Repo is clean; no stash required."
-            STASHED=0
-          fi
-
-          # Update from remote; fail on divergence/conflicts
-          git fetch --prune "$REMOTE"
-          git pull --ff-only "$REMOTE" "$BRANCH"
-
-          # Re-apply stash if we created one
-          if [ "$STASHED" -eq 1 ]; then
-            echo "Re-applying stash..."
-            STASH_REF=$(git stash list | awk -v tag="$STASH_TAG" -F: '$0 ~ tag {print $1; exit}')
-            if [ -z "${STASH_REF:-}" ]; then
-              echo "::warning ::No matching stash found to re-apply (already empty or dropped)."
-            else
-              set +e
-              git stash pop --index "$STASH_REF"
-              POP_STATUS=$?
-              set -e
-              # Fail explicitly on conflicts
-              if [ $POP_STATUS -ne 0 ] || [ -n "$(git ls-files -u)" ]; then
-                echo "::error ::Conflicts encountered when re-applying the stash ($STASH_TAG). Resolve manually."
-                exit 1
-              fi
-            fi
-          fi
-
-          echo "✅ Pull completed successfully on branch '$BRANCH'."
-
-      - name: Show current status (for logs)
-        if: ${{ success() }}
-        shell: bash
-        working-directory: ${{ env.REPO_DIR }}
-        run: |
-          git --no-pager log -1 --oneline
-          git status --short --branch
-
-  update_stacks:
-    name: Update stacks from /stacks (target ${{ github.event.inputs.stack || 'all' }})
-    needs: pull
-    runs-on: [ self-hosted, linux, docker, stacks ]
-    env:
-      REPO_DIR: ${{ secrets.REPO_DIR }}
-      TARGET_STACK: ${{ github.event.inputs.TARGET_STACK }}   # "" or "all" = all stacks; otherwise a single stack name
-      STACK_EXCLUDE: ${{ vars.STACK_EXCLUDE }}                 # optional: comma/space-separated list
-
-    steps:
-      - name: Validate stacks directory
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          if [ -z "${REPO_DIR:-}" ]; then
-            echo "::error ::REPO_DIR not set. Define repository Secret REPO_DIR."
-            exit 1
-          fi
-          if [ ! -d "$REPO_DIR/stacks" ]; then
-            echo "::error ::Stacks directory not found: $REPO_DIR/stacks"
-            exit 1
-          fi
-          echo "Stacks root: $REPO_DIR/stacks"
-          echo "Target stack: '${TARGET_STACK:-<all>}'"
-          echo "Exclude list: '${STACK_EXCLUDE:-<none>}'"
-
-      - name: Update containers (one or all stacks with exclusion list)
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          
-          # Detect docker compose command
-          if docker compose version >/dev/null 2>&1; then
-            DC="docker compose"
-          elif docker-compose version >/devnull 2>&1; then
-            DC="docker-compose"
-          else
-            echo "::error ::Neither 'docker compose' nor 'docker-compose' is available on this runner."
-            exit 1
-          fi
-          
-          shopt -s nullglob
-          
-          # Normalize exclusion list (lowercase, space-separated)
-          EXC_LIST=""
-          if [ -n "${STACK_EXCLUDE:-}" ]; then
-            EXC_LIST=$(echo "$STACK_EXCLUDE" | tr ',;|\t' ' ' | tr -s ' ' | tr '[:upper:]' '[:lower:]')
-          fi
-          
-          is_excluded () {
-            local candidate_lc="$1"
-            for e in $EXC_LIST; do
-              if [ "$candidate_lc" = "$e" ]; then
-                return 0
-              fi
-            done
-            return 1
-          }
-          
-          # Build target list
-          TARGET_DIRS=()
-          if [ -z "${TARGET_STACK:-}" ] || [ "${TARGET_STACK,,}" = "all" ]; then
-            for d in "$REPO_DIR/stacks"/*; do
-              [ -d "$d" ] || continue
-              name="$(basename "$d")"
-              name_lc="$(echo "$name" | tr '[:upper:]' '[:lower:]')"
-              if is_excluded "$name_lc"; then
-                echo "::warning ::Skipping excluded stack: $name"
-                continue
-              fi
-              TARGET_DIRS+=( "$d" )
-            done
-          else
-            TDIR="$REPO_DIR/stacks/$TARGET_STACK"
-            if [ ! -d "$TDIR" ]; then
-              echo "::error ::Requested stack not found: $TDIR"
-              exit 1
-            fi
-            name_lc="$(echo "$TARGET_STACK" | tr '[:upper:]' '[:lower:]')"
-            if is_excluded "$name_lc"; then
-              echo "::warning ::Requested stack '$TARGET_STACK' is excluded — nothing to do."
-              exit 0
-            fi
-            TARGET_DIRS=( "$TDIR" )
-          fi
-          
-          if [ ${#TARGET_DIRS[@]} -eq 0 ]; then
-            echo "::notice ::No stacks selected for update."
-            exit 0
-          fi
-          
-          UPDATED=()
-          SKIPPED=()
-          
-          for dir in "${TARGET_DIRS[@]}"; do
-            [ -d "$dir" ] || continue
-            stack="$(basename "$dir")"
-          
-            # Choose compose file
-            if [ -f "$dir/compose.yaml" ]; then
-              COMPOSE_FILE="$dir/compose.yaml"
-            elif [ -f "$dir/docker-compose.yml" ]; then
-              COMPOSE_FILE="$dir/docker-compose.yml"
-            elif [ -f "$dir/compose.yml" ]; then
-              COMPOSE_FILE="$dir/compose.yml"
-            else
-              echo "::warning ::No compose file for stack '$stack' (compose.yaml / compose.yml / docker-compose.yml). Skipping."
-              SKIPPED+=( "$stack" )
-              continue
-            fi
-          
-            # Stable project name per stack (avoid collisions)
-            export COMPOSE_PROJECT_NAME="stack_${stack//[^a-zA-Z0-9]/_}"
-          
-            echo "=== Updating stack: $stack ==="
-            echo "Compose file: $COMPOSE_FILE"
-            $DC -f "$COMPOSE_FILE" pull
-            $DC -f "$COMPOSE_FILE" up -d --remove-orphans
-            UPDATED+=( "$stack" )
-            echo "=== Done: $stack ==="
-          done
-          
-          echo "Updated stacks: ${UPDATED[*]:-none}"
-          echo "Skipped stacks (no compose): ${SKIPPED[*]:-none}"
-
-      - name: Prune dangling images
-        shell: bash
-        run: docker image prune -f || true
+      - name: Docker Stack Deploy
+        uses: cssnr/stack-deploy-action@v1
+        with:
+          name: ${{ inputs.stack_name }}
+          file: ./stacks/${{ inputs.stack_name }}/docker-stack.yaml
+          host: ${{ secrets.DOMAIN_NAME }}
+          user: deploy
+          ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          env_file: ./envfile

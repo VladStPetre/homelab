@@ -1,62 +1,81 @@
-
+---
 services:
   jellyfin:
     image: jellyfin/jellyfin:2025081805
-    container_name: jellyfin
-    restart: always
     user: root
-    volumes:
-      - $BASE_DIR/configs/jellyfin:/config
-      - $BASE_DIR/configs/jellyfin/cache:/cache
-      - /mnt/media:/media
     environment:
       - PUID=${UID}
       - PGID=${GID}
-      - TZ=Europe/Bucharest
-    ports:
-      - "8096:8096"
+      - TZ=${TIMEZONE}
+    volumes:
+      - jellyfin-data:/config
+      - /mnt/media:/media
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN_NAME}`)"
       - "traefik.http.routers.jellyfin.entrypoints=web"
       - "traefik.http.routers.jellyfin.tls=false"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+    deploy:
+      update_config:
+        order: start-first
     networks:
-      - hlcl
+      - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8096/web/index.html >/dev/null || curl -kfsS https://127.0.0.1:8920/web/index.html >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
 
   qbittorrent:
     image: linuxserver/qbittorrent:5.1.2
-    container_name: qbittorrent
-    restart: always
-    environment:
-      - PUID=${UID}                # your local user ID
-      - PGID=${GID}                # your local group ID
-      - TZ=Europe/Bucharest
-      - WEBUI_PORT=8081
-      - UMASK_SET=000            # sensible file perms
-    volumes:
-      - $BASE_DIR/configs/qbittorrent/config:/config # needs manual creation
-      - /mnt/media/Movies:/movies
-      - /mnt/media/Series:/series
-      - /mnt/media/Watch:/watch
     ports:
       - "8081:8081"              # web UI
       - "6881:6881"              # torrent traffic TCP
       - "6881:6881/udp"          # torrent traffic UDP
+    environment:
+      - PUID=${UID}                # your local user ID
+      - PGID=${GID}                # your local group ID
+      - TZ=${TIMEZONE}
+      - WEBUI_PORT=8081
+      - UMASK_SET=000            # sensible file perms
+    volumes:
+      - qbittorrent-data:/config
+      - /mnt/media/Movies:/movies
+      - /mnt/media/Series:/series
+      - /mnt/media/Watch:/watch
     labels:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
       - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN_NAME}`)"
       - "traefik.http.routers.qbittorrent.entrypoints=web"
       - "traefik.http.routers.qbittorrent.tls=false"
-      - "traefik.http.services.qbittorrent-utils.loadbalancer.server.port=8081"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8081"
+    deploy:
+      update_config:
+        order: start-first
     networks:
-      - hlcl
+      - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8080/api/v2/app/version >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  jellyfin-data: {}
+  qbittorrent-data: {}
 
 networks:
-  hlcl:
-    name: hlcl
+  hlel:
+    name: hlel
     external: true

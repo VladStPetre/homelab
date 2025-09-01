@@ -1,0 +1,150 @@
+---
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:2025.8.2
+    volumes:
+      - ha-data:/config
+      - /etc/localtime:/etc/localtime:ro
+    privileged: true
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
+      - "traefik.http.routers.hass.rule=Host(`hass.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.hass.entrypoints=web"
+      - "traefik.http.routers.hass.tls=false"
+      - "traefik.http.services.hass.loadbalancer.server.port=8123"
+    deploy:
+      update_config:
+        order: start-first
+    networks:
+      - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:8123/ >/dev/null 2>&1 || exit 1" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+
+  influxdb:
+    image: influxdb:2.7.12
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME_FILE=/run/secrets/influxdb2-admin-username
+      - DOCKER_INFLUXDB_INIT_PASSWORD_FILE=/run/secrets/influxdb2-admin-password
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN_FILE=/run/secrets/influxdb2-admin-token
+      - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
+      - DOCKER_INFLUXDB_INIT_RETENTION=${DOCKER_INFLUXDB_INIT_RETENTION}
+    secrets:
+      - influxdb2-admin-username
+      - influxdb2-admin-password
+      - influxdb2-admin-token
+    volumes:
+      - influxdb2-config:/etc/influxdb2
+      - influxdb2-data:/var/lib/influxdb2
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+      - "traefik.enable=true"
+      - "traefik.docker.network=hlel"
+      - "traefik.docker.lbswarm=true"
+      - "traefik.http.routers.influxdb.rule=Host(`influxdb.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.influxdb.entrypoints=web"
+      - "traefik.http.routers.influxdb.tls=false"
+      - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
+    deploy:
+      update_config:
+        order: start-first
+    networks:
+      - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8086/health >/dev/null || curl -fsSI http://127.0.0.1:8086/ping >/dev/null" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  mosquitto:
+    image: eclipse-mosquitto:2.0.22
+    ports:
+      - "1883:1883"
+      - "9001:9001"  # Optional WebSocket
+    configs:
+      - source: mosquitto_config
+        target: /mosquitto/config/mosquitto.conf
+    volumes:
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-logs:/mosquitto/log
+    labels:
+      - "portainer.io/managed=true"
+      - "io.portainer.accesscontrol.users=admin"
+    deploy:
+      update_config:
+        order: start-first
+    networks:
+      - hlel
+    healthcheck:
+      test: [ "CMD-SHELL", "mosquitto_pub -h 127.0.0.1 -p 1883 -t healthcheck -m ok -q 1 -r && mosquitto_sub -h 127.0.0.1 -p 1883 -t healthcheck -C 1 -W 5 >/dev/null" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+#  esphome:
+#    image: esphome/esphome:2025.7.5
+#    ports:
+#      - 6052:6052
+#    environment:
+#      - TZ=${TIMEZONE}
+#    volumes:
+#      - $BASE_DIR/configs/esphome:/config
+#    privileged: true
+#    devices:
+#      - /dev/ttyUSB0:/dev/ttyUSB0
+#    labels:
+#      - "portainer.io/managed=true"
+#      - "io.portainer.accesscontrol.users=admin"
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.esphome.rule=Host(`esphome.${DOMAIN_NAME}`)"
+#      - "traefik.http.routers.esphome.entrypoints=web"
+#      - "traefik.http.routers.esphome.tls=false"
+#      - "traefik.http.services.esphome-utils.loadbalancer.server.port=1883"
+#    network_mode: host
+#healthcheck:
+#  test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:6052/ >/dev/null"]
+#  interval: 30s
+#  timeout: 5s
+#  retries: 5
+#  start_period: 60s
+
+configs:
+  mosquitto_config:
+    file: ../../configs/mosquitto/mosquitto.conf
+
+secrets:
+  influxdb2-admin-username:
+    external: true
+  influxdb2-admin-password:
+    external: true
+  influxdb2-admin-token:
+    external: true
+
+volumes:
+  ha-data: {}
+  influxdb2-data: {}
+  influxdb2-config: {}
+  mosquitto-config: {}
+  mosquitto-data: {}
+  mosquitto-logs: {}
+
+networks:
+  hlel:
+    name: hlel
+    external: true
