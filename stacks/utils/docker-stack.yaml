@@ -11,11 +11,11 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.docker.network=hlel"
-      - "traefik.docker.lbswarm=true"
+      - "traefik.swarm.network=hlel"
       - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.portainer.entrypoints=web"
-      - "traefik.http.routers.portainer.tls=false"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls=true"
+      - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
       - "traefik.http.services.portainer-utils.loadbalancer.server.port=9000"
     deploy:
       update_config:
@@ -76,11 +76,11 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.docker.network=hlel"
-      - "traefik.docker.lbswarm=true"
+      - "traefik.swarm.network=hlel"
       - "traefik.http.routers.n8n.rule=Host(`n8n.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.n8n.entrypoints=web"
-      - "traefik.http.routers.n8n.tls=false"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls=true"
+      - "traefik.http.routers.n8n.tls.certresolver=cloudflare"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
     environment:
       - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}

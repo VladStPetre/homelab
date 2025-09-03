@@ -8,17 +8,17 @@ services:
     privileged: true
     devices:
       - /dev/ttyACM0:/dev/ttyACM0
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
-      - "traefik.docker.network=hlel"
-      - "traefik.docker.lbswarm=true"
-      - "traefik.http.routers.hass.rule=Host(`hass.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.hass.entrypoints=web"
-      - "traefik.http.routers.hass.tls=false"
-      - "traefik.http.services.hass.loadbalancer.server.port=8123"
     deploy:
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.hass.rule=Host(`hass.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.hass.entrypoints=websecure"
+        - "traefik.http.routers.hass.tls=true"
+        - "traefik.http.routers.hass.tls.certresolver=cloudflare"
+        - "traefik.http.services.hass.loadbalancer.server.port=8123"
       update_config:
         order: start-first
     networks:
@@ -53,11 +53,12 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.docker.network=hlel"
-      - "traefik.docker.lbswarm=true"
+      - "traefik.swarm.network=hlel"
+      #- "traefik.docker.lbswarm=true"
       - "traefik.http.routers.influxdb.rule=Host(`influxdb.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.influxdb.entrypoints=web"
-      - "traefik.http.routers.influxdb.tls=false"
+      - "traefik.http.routers.influxdb.entrypoints=websecure"
+      - "traefik.http.routers.influxdb.tls=true"
+      - "traefik.http.routers.influxdb.tls.certresolver=cloudflare"
       - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
     deploy:
       update_config:
