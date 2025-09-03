@@ -14,23 +14,23 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.docker.network=hlel"
-      - "traefik.docker.lbswarm=true"
+      - "traefik.swarm.network=hlel"
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.jellyfin.entrypoints=web"
-      - "traefik.http.routers.jellyfin.tls=false"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.tls=true"
+      - "traefik.http.routers.jellyfin.tls.certresolver=cloudflare"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
     deploy:
       update_config:
         order: start-first
     networks:
       - hlel
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8096/web/index.html >/dev/null || curl -kfsS https://127.0.0.1:8920/web/index.html >/dev/null" ]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 45s
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8096/web/index.html >/dev/null || curl -kfsS https://127.0.0.1:8920/web/index.html >/dev/null" ]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 45s
 
   qbittorrent:
     image: linuxserver/qbittorrent:20.04.1
@@ -53,11 +53,11 @@ services:
       - "portainer.io/managed=true"
       - "io.portainer.accesscontrol.users=admin"
       - "traefik.enable=true"
-      - "traefik.docker.network=hlel"
-      - "traefik.docker.lbswarm=true"
+      - "traefik.swarm.network=hlel"
       - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.qbittorrent.entrypoints=web"
-      - "traefik.http.routers.qbittorrent.tls=false"
+      - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent.tls=true"
+      - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port=8081"
     deploy:
       update_config:
