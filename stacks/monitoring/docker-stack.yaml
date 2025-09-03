@@ -13,17 +13,17 @@ services:
       - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false   # optional
     volumes:
       - grafana-data:/var/lib/grafana
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
-      - "traefik.swarm.network=hlel"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.grafana.entrypoints=websecure"
-      - "traefik.http.routers.grafana.tls=true"
-      - "traefik.http.routers.grafana.tls.certresolver=cloudflare"
-      - "traefik.http.services.grafana.loadbalancer.server.port=80"
     deploy:
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.grafana.entrypoints=websecure"
+        - "traefik.http.routers.grafana.tls=true"
+        - "traefik.http.routers.grafana.tls.certresolver=cloudflare"
+        - "traefik.http.services.grafana.loadbalancer.server.port=80"
       update_config:
         order: start-first
     networks:
@@ -54,17 +54,17 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker/:ro
       - /run/udev/data:/run/udev/data:ro
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
-      - "traefik.swarm.network=hlel"
-      - "traefik.http.routers.alloy.rule=Host(`alloy.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.alloy.entrypoints=websecure"
-      - "traefik.http.routers.alloy.tls=true"
-      - "traefik.http.routers.alloy.tls.certresolver=cloudflare"
-      - "traefik.http.services.alloy.loadbalancer.server.port=12345"
     deploy:
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.alloy.rule=Host(`alloy.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.alloy.entrypoints=websecure"
+        - "traefik.http.routers.alloy.tls=true"
+        - "traefik.http.routers.alloy.tls.certresolver=cloudflare"
+        - "traefik.http.services.alloy.loadbalancer.server.port=12345"
       update_config:
         order: start-first
     networks:
@@ -85,17 +85,17 @@ services:
         target: /etc/loki/config.yaml
     volumes:
       - loki-data:/loki:rw
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
-      - "traefik.swarm.network=hlel"
-      - "traefik.http.routers.loki.rule=Host(`loki.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.loki.entrypoints=websecure"
-      - "traefik.http.routers.loki.tls=true"
-      - "traefik.http.routers.loki.tls.certresolver=cloudflare"
-      - "traefik.http.services.loki.loadbalancer.server.port=3100"
     deploy:
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.loki.rule=Host(`loki.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.loki.entrypoints=websecure"
+        - "traefik.http.routers.loki.tls=true"
+        - "traefik.http.routers.loki.tls.certresolver=cloudflare"
+        - "traefik.http.services.loki.loadbalancer.server.port=3100"
       update_config:
         order: start-first
     networks:
@@ -123,17 +123,17 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
       - '--web.enable-remote-write-receiver'
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
-      - "traefik.swarm.network=hlel"
-      - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.prometheus.entrypoints=websecure"
-      - "traefik.http.routers.prometheus.tls=true"
-      - "traefik.http.routers.prometheus.tls.certresolver=cloudflare"
-      - "traefik.http.services.prometheus.loadbalancer.server.port=80"
     deploy:
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.prometheus.entrypoints=websecure"
+        - "traefik.http.routers.prometheus.tls=true"
+        - "traefik.http.routers.prometheus.tls.certresolver=cloudflare"
+        - "traefik.http.services.prometheus.loadbalancer.server.port=80"
       update_config:
         order: start-first
     networks:

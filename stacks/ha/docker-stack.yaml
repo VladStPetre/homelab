@@ -5,9 +5,6 @@ services:
     volumes:
       - ha-data:/config
       - /etc/localtime:/etc/localtime:ro
-    privileged: true
-    devices:
-      - /dev/ttyACM0:/dev/ttyACM0
     deploy:
       labels:
         - "portainer.io/managed=true"
@@ -47,20 +44,17 @@ services:
     volumes:
       - influxdb2-config:/etc/influxdb2
       - influxdb2-data:/var/lib/influxdb2
-    security_opt:
-      - no-new-privileges:true
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
-      - "traefik.enable=true"
-      - "traefik.swarm.network=hlel"
-      #- "traefik.docker.lbswarm=true"
-      - "traefik.http.routers.influxdb.rule=Host(`influxdb.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.influxdb.entrypoints=websecure"
-      - "traefik.http.routers.influxdb.tls=true"
-      - "traefik.http.routers.influxdb.tls.certresolver=cloudflare"
-      - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
     deploy:
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.influxdb.rule=Host(`influxdb.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.influxdb.entrypoints=websecure"
+        - "traefik.http.routers.influxdb.tls=true"
+        - "traefik.http.routers.influxdb.tls.certresolver=cloudflare"
+        - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
       update_config:
         order: start-first
     networks:
@@ -83,10 +77,10 @@ services:
     volumes:
       - mosquitto-data:/mosquitto/data
       - mosquitto-logs:/mosquitto/log
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
     deploy:
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
       update_config:
         order: start-first
     networks:
