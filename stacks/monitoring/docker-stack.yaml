@@ -23,7 +23,7 @@ services:
         - "traefik.http.routers.grafana.entrypoints=websecure"
         - "traefik.http.routers.grafana.tls=true"
         - "traefik.http.routers.grafana.tls.certresolver=cloudflare"
-        - "traefik.http.services.grafana.loadbalancer.server.port=80"
+        - "traefik.http.services.grafana.loadbalancer.server.port=3000"
       update_config:
         order: start-first
     networks:
@@ -133,7 +133,7 @@ services:
         - "traefik.http.routers.prometheus.entrypoints=websecure"
         - "traefik.http.routers.prometheus.tls=true"
         - "traefik.http.routers.prometheus.tls.certresolver=cloudflare"
-        - "traefik.http.services.prometheus.loadbalancer.server.port=80"
+        - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
       update_config:
         order: start-first
     networks:
