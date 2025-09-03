@@ -51,7 +51,7 @@ jobs:
           N8N_HOST=${{ secrets.N8N_HOST }}
           N8N_PROTOCOL=http
           WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
-          N8N_SECURE_COOKIE=false
+          N8N_SECURE_COOKIE=true
           NODE_ENV=production
           EOF
           chmod 644 envfile
