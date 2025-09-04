@@ -12,14 +12,14 @@ discovery.docker "docker" {
 // ============================
 loki.write "echo" {
   endpoint {
-    url = "http://loki.echo.local/loki/api/v1/push"
+    url = "https://loki.dalvv.org/loki/api/v1/push"
   }
   external_labels = {}
 }
 
 prometheus.remote_write "echo" {
   endpoint {
-    url = "http://prometheus.echo.local/api/v1/write"
+    url = "https://prometheus.dalvv.org/api/v1/write"
   }
 }
 

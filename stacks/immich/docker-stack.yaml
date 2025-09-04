@@ -1,0 +1,100 @@
+---
+services:
+  database:
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PASSWORD_FILE=/run/secrets/immich_pg_password
+      - POSTGRES_INITDB_ARGS="--data-checksums"
+      # DB_STORAGE_TYPE: "HDD"   # uncomment if your DB disk is HDD
+    secrets:
+      - immich_pg_password
+    volumes:
+      - immich_postgres:/var/lib/postgresql/data
+    deploy:
+      restart_policy:
+        condition: any
+    shm_size: "128M"
+    networks:
+      - hlel
+
+  redis:
+    # Immich uses Valkey (Redis-compatible)
+    image: docker.io/valkey/valkey:8-bookworm
+    deploy:
+      restart_policy:
+        condition: any
+    networks:
+      - hlel
+
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:release
+    # For HW accel, use tags like :release-cuda / :release-openvino / :release-rocm / :release-armnn
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - immich_model_cache:/cache
+    deploy:
+      restart_policy:
+        condition: any
+    networks:
+      - hlel
+
+  immich-server:
+    image: ghcr.io/immich-app/immich-server:v1.140.1
+    environment:
+      - TZ=${TIMEZONE}
+      # DB (must match database service)
+      - DB_HOSTNAME=database
+      - DB_USERNAME=${POSTGRES_USER}
+      - DB_PASSWORD_FILE=/run/secrets/immich_pg_password
+      - DB_DATABASE_NAME=${POSTGRES_DB}
+      - REDIS_HOSTNAME=redis
+      - REDIS_PORT=6379
+      - CREDENTIALS_DIRECTORY=/run/secrets
+    secrets:
+      - immich_pg_password
+    volumes:
+      - immich_library:/data
+      - /etc/localtime:/etc/localtime:ro
+#    ports:
+#      - target: 2283
+#        published: 2283
+#        protocol: tcp
+#        mode: ingress
+    deploy:
+      update_config:
+        order: start-first
+      restart_policy:
+        condition: any
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.immich.rule=Host(`${EXT_DOMAIN_NAME}`)"
+        - "traefik.http.routers.immich.entrypoints=websecure"
+        - "traefik.http.routers.immich.tls=true"
+        - "traefik.http.routers.immich.tls.certresolver=aduh-ext"
+        - "traefik.http.services.immich.loadbalancer.server.port=2283"
+    networks:
+      - hlel
+
+secrets:
+  immich_pg_password:
+    external: true
+
+volumes:
+  immich_postgres:
+    external: true
+  immich_library:
+    external: true
+  immich_model_cache:
+    external: true
+
+networks:
+  hlel:
+    name: hlel
+    external: true
+

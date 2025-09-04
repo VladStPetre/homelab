@@ -21,9 +21,6 @@ entryPoints:
 
   websecure:
     address: :443
-    http:
-      tls: 
-        certResolver: cloudflare
 
 # Configure your CertificateResolver here...
 # ---
@@ -37,6 +34,14 @@ certificatesResolvers:
         resolvers:
           - "1.1.1.1:53"
           - "1.0.0.1:53"
+  aduh-ext:
+    acme:
+      email: vladstefan.petre@outlook.com
+      storage: /etc/traefik/acme-aduh-ext.json
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: websecure
+      tlsChallenge: { }
 
 providers:
   swarm:
