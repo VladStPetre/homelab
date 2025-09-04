@@ -76,6 +76,9 @@ services:
 #      retries: 5
 #      start_period: 20s
 
+# needs the volume to be owned by the user it's using
+# sudo chown -R ${CUID} /var/lib/docker/volumes/monitoring_loki-data
+
   loki:
     image: grafana/loki:3.5.3
     command: "-config.file=/etc/loki/config.yaml"
