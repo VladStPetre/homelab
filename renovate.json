@@ -1,10 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
-    "schedule:monthly"
+    "config:recommended"
   ],
 
+  "timezone": "Europe/Bucharest",
+  "schedule": ["on the 2nd day of the month"],
+  
   "enabledManagers": ["docker-compose"],
   "docker-compose": {
     "managerFilePatterns": ["/(^|/)docker-stack\\.ya?ml$/"]
