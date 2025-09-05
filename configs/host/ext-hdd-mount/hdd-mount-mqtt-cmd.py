@@ -6,38 +6,53 @@ import logging
 MQTT_BROKER = os.environ.get('MQTT_BROKER_IP')
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
-def wait_for_state(desired, timeout=15):
+def wait_for_state(mount_point, desired, timeout=15):
     for _ in range(timeout):
-        if is_mounted("/mnt/media") == desired:
+        if is_mounted(mount_point) == desired:
             return True
         time.sleep(1)
     return False
+
 
 def is_mounted(mount_point):
     with open('/proc/mounts') as f:
         return any(mount_point in line for line in f)
 
+
+def handle_mnt_point(mount_point, cmd_topic, payload, client, sensor_topic):
+
+    if payload == "off":
+        os.system("sudo umount {}".format(mount_point))
+        wait_for_state(mount_point,True, timeout=15)
+    elif payload == "on":
+        os.system("sudo mount {}".format(mount_point))
+        wait_for_state(mount_point, False, timeout=15)
+
+        # Always check and publish ACTUAL status after running the command
+    logging.info("mqtt-cmd :: received -> {} -> %s".format(cmd_topic), payload)
+
+    state = "on" if is_mounted(mount_point) else "off"
+    client.publish(sensor_topic, state, retain=True)
+
+    logging.info("mqtt-cmd :: published -> {} -> %s".format(sensor_topic), state)
+
+
 def on_message(client, userdata, msg):
     topic = msg.topic
     payload = msg.payload.decode()
 
+    mnt_nas = "/mnt/nas"
+    mnt_media = "/mnt/media"
+
+    vexthdd_topic = "echo/vexthdd/state"
+    nfsnas_topic = "echo/nfsnas/state"
+
     if topic == "echo/command/vexthddmount":
-        if payload == "off":
-            os.system("sudo umount /mnt/media")
-            wait_for_state(True, timeout=15)
-        elif payload == "on":
-            os.system("sudo mount /mnt/media")
-            wait_for_state(False, timeout=15)
-
-        # Always check and publish ACTUAL status after running the command
-        logging.info("received -> echo/command/vexthddmount -> %s", payload)
-
-        state = "on" if is_mounted("/mnt/media") else "off"
-        client.publish("echo/vexthdd/state", state, retain=True)
-
-        logging.info("published -> echo/vexthdd/state -> %s", state)
+        handle_mnt_point(mnt_media, topic, payload, client, vexthdd_topic)
+    elif topic == "echo/command/nfsnasmount":
+        handle_mnt_point(mnt_nas, topic, payload, client, nfsnas_topic)
     else:
-        logging.info("hdd-mount-cmd topic is -> %s", topic)
+        logging.info("mqtt-cmd :: topic is -> %s", topic)
 
 
 client = mqtt.Client()

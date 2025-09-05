@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # === Make scripts executable ===
-chmod +x /home/adu/homelab/configs/rpi/ext-hdd-mount/hdd-mount-mqtt-*.py
+chmod +x /home/adu/homelab/configs/host/ext-hdd-mount/hdd-mount-mqtt-*.py
 
 # === Create sensor service ===
 cat <<EOF | sudo tee /etc/systemd/system/hdd-mount-mqtt-sensors.service > /dev/null
@@ -12,10 +12,10 @@ After=network.target
 [Service]
 Environment="MQTT_BROKER_IP=$MQTT_BROKER_IP"
 ExecStartPre=/bin/sleep 40
-ExecStart=/usr/bin/python3 /home/adu/homelab/configs/rpi/ext-hdd-mount/hdd-mount-mqtt-sensors.py
-Restart=on-failure
+ExecStart=/usr/bin/python3 /home/adu/homelab/configs/host/ext-hdd-mount/hdd-mount-mqtt-sensors.py
+Restart=always
 User=adu
-WorkingDirectory=/home/adu/homelab/configs/rpi/ext-hdd-mount
+WorkingDirectory=/home/adu/homelab/configs/host/ext-hdd-mount
 StandardOutput=journal
 StandardError=journal
 
@@ -32,10 +32,10 @@ After=network.target
 [Service]
 Environment="MQTT_BROKER_IP=$MQTT_BROKER_IP"
 ExecStartPre=/bin/sleep 40
-ExecStart=/usr/bin/python3 /home/adu/homelab/configs/rpi/ext-hdd-mount/hdd-mount-mqtt-cmd.py
-Restart=on-failure
+ExecStart=/usr/bin/python3 /home/adu/homelab/configs/host/ext-hdd-mount/hdd-mount-mqtt-cmd.py
+Restart=always
 User=adu
-WorkingDirectory=/home/adu/homelab/configs/rpi/ext-hdd-mount
+WorkingDirectory=/home/adu/homelab/configs/host/ext-hdd-mount
 StandardOutput=journal
 StandardError=journal
 
