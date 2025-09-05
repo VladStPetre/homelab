@@ -1,0 +1,121 @@
+- Home Automation:
+    - Home Assistant:
+        icon: si-homeassistant
+        href: "https://hass.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Automations & dashboards
+        server: docker
+        container: ha_homeassistant
+        widget:
+          type: homeassistant
+          url: "${HASS_URL}"
+          key: "${HASS_TOKEN}"
+
+    - InfluxDB:
+        icon: si-influxdb
+        href: "https://influxdb.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Time-series DB
+        server: docker
+        container: ha_influxdb
+
+- Media:
+    - Jellyfin:
+        icon: si-jellyfin
+        href: "https://jellyfin.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Media server
+        server: docker
+        container: media_jellyfin
+        widget:
+          type: jellyfin
+          url: "${JELLYFIN_URL}"
+          key: "${JELLYFIN_API_KEY}"
+
+    - qBittorrent:
+        icon: si-qbittorrent
+        href: "https://qb.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Torrent client
+        server: docker
+        container: media_qbittorrent
+        widget:
+          type: qbittorrent
+          url: "${QBIT_URL}"
+          username: "${QBIT_USER}"
+          password: "${QBIT_PASS}"
+
+- Monitoring:
+    - Grafana:
+        icon: si-grafana
+        href: "https://grafana.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Dashboards
+        server: docker
+        container: monitoring_grafana
+        widget:
+          type: grafana
+          url: "${GRAFANA_URL}"
+          apikey: "${GRAFANA_API_KEY}"
+
+    - Prometheus:
+        icon: si-prometheus
+        href: "https://prometheus.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Metrics TSDB
+        server: docker
+        container: monitoring_prometheus
+
+    - Alloy (Grafana Agent/Alloy):
+        icon: si-grafana
+        href: "https://alloy.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Telemetry collector
+        server: docker
+        container: monitoring_alloy
+
+- Infra & Networking:
+    - Traefik:
+        icon: si-traefikproxy
+        href: "https://traefik.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Edge router
+        server: docker
+        container: infra_traefik
+
+    - Pi-hole:
+        icon: si-pihole
+        href: "https://pihole.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: DNS sinkhole
+        server: docker
+        container: infra_pihole
+        widget:
+          type: pihole
+          url: "${PIHOLE_URL}"
+          key: "${PIHOLE_TOKEN}"
+
+- Photos (Immich):
+    - Immich Server:
+        icon: si-googlephotos
+        href: "https://immich.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Photo library
+        server: docker
+        container: immich_immich-server
+
+- Utils:
+    - n8n:
+        icon: si-n8n
+        href: "https://n8n.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Automations
+        server: docker
+        container: utils_n8n
+
+    - Portainer:
+        icon: si-portainer
+        href: "https://portainer.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Docker UI
+        server: docker
+        container: utils_portainer
+        widget:
+          type: portainer
+          url: "${PORTAINER_URL}"
+          key: "${PORTAINER_API_KEY}"
+
+    - pgBackRest / Backups:
+        icon: si-databricks
+        href: "https://backrest.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Backup orchestrator
+        server: docker
+        container: backup_backrest

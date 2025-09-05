@@ -1,0 +1,6 @@
+docker:
+  socket: /var/run/docker.sock
+  # Turn this on so Homepage shows live state for each container:
+  watchContainers: true
+  # Let Homepage understand Swarm services:
+  swarm: true
