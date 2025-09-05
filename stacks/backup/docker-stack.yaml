@@ -1,0 +1,62 @@
+---
+services:
+  backrest:
+    image: garethgeorge/backrest:v1.9.2
+    hostname: echo
+    environment:
+      - BACKREST_DATA=/data
+      - BACKREST_CONFIG=/config/config.json
+      - XDG_CACHE_HOME=/cache
+      - TMPDIR=/tmp
+      - TZ=${TIMEZONE}
+    volumes:
+      # Backrest internal state
+      - backrest_data:/data
+      - backrest_config:/config
+      - backrest_cache:/cache
+      - backrest_tmp:/tmp
+      # Mount the SAME service volumes read-only so Backrest can back them up
+      - immich_library:/data/immich_library:ro
+#      - app_data:/userdata/app:ro
+#      - db_data:/userdata/db:ro
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        order: start-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.backrest.rule=Host(`backrest.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.backrest.entrypoints=websecure"
+        - "traefik.http.routers.backrest.tls=true"
+        - "traefik.http.routers.backrest.tls.certresolver=cloudflare"
+        - "traefik.http.services.backrest.loadbalancer.server.port=9898"
+        # helpful for service discovery / ops
+        - "com.backups.role=backrest"
+    networks:
+      - hlel
+#    healthcheck:
+#      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9898/healthz"]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+
+volumes:
+  # Backrest internal state/cache/config
+  backrest_data:
+  backrest_config:
+  backrest_cache:
+  backrest_tmp:
+  # Reuse the SAME volume names your services use.
+  immich_library:
+    external: true
+#  db_data:
+#    external: true
+
+networks:
+  hlel:
+    name: hlel
+    external: true
