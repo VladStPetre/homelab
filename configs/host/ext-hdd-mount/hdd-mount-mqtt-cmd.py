@@ -51,6 +51,9 @@ def on_message(client, userdata, msg):
         handle_mnt_point(mnt_media, topic, payload, client, vexthdd_topic)
     elif topic == "echo/command/nfsnasmount":
         handle_mnt_point(mnt_nas, topic, payload, client, nfsnas_topic)
+    elif topic == "echo/command/naswol":
+        os.system("wakeonlan -i 192.168.7.255 -p 9 24:5E:BE:48:32:E1")
+        logging.info("mqtt-cmd :: sent magic packet -> %s", topic)
     else:
         logging.info("mqtt-cmd :: topic is -> %s", topic)
 
