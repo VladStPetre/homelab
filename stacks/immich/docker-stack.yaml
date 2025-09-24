@@ -1,7 +1,7 @@
 ---
 services:
   database:
-    image: ghcr.io/immich-app/postgres:16-vectorchord0.4.3-pgvectors0.2.0
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_DB=${POSTGRES_DB}
@@ -20,8 +20,9 @@ services:
       - hlel
 
   redis:
-    # Immich uses Valkey (Redis-compatible)
     image: docker.io/valkey/valkey:8-bookworm
+    volumes:
+      - immich_valkey_data:/data
     deploy:
       restart_policy:
         condition: any
@@ -91,6 +92,8 @@ volumes:
   immich_library:
     external: true
   immich_model_cache:
+    external: true
+  immich_valkey_data:
     external: true
 
 networks:
