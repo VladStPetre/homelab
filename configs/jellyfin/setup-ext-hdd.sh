@@ -43,7 +43,7 @@ if [ ! -d "$MOUNTPOINT" ]; then
 fi
 
 # 7. Add to /etc/fstab
-FSTAB_LINE="UUID=${UUID}   ${MOUNTPOINT}   ntfs-3g   defaults,nofail,uid=${USR_ID},gid=${GRP_ID},umask=${UMASK},x-systemd.automount   0   0"
+FSTAB_LINE="UUID=${UUID}   ${MOUNTPOINT}   ntfs-3g   defaults,nofail,noauto,uid=${USR_ID},gid=${GRP_ID},umask=${UMASK},x-systemd.automount,x-systemd.idle-timeout=600,x-systemd.device-timeout=30   0   0"
 
 echo "Adding the following line to /etc/fstab:"
 echo "$FSTAB_LINE"

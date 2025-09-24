@@ -17,7 +17,9 @@ services:
       - backrest_tmp:/tmp
       # Mount the SAME service volumes read-only so Backrest can back them up
       - immich_library:/data/immich_library:ro
-#      - app_data:/userdata/app:ro
+      - wireguard-data:/data/wireguard:ro
+      - /mnt/nas:/data/nfsnas
+      - /mnt/media:/data/vexthdd
 #      - db_data:/userdata/db:ro
     deploy:
       restart_policy:
@@ -52,6 +54,8 @@ volumes:
   backrest_tmp:
   # Reuse the SAME volume names your services use.
   immich_library:
+    external: true
+  wireguard-data:
     external: true
 #  db_data:
 #    external: true

@@ -1,6 +1,6 @@
-## Dev machine
+## Server Host
 
-create docker context
+Create docker context
 ```commandline 
 docker context create echo --description "Docker on G3 - host: echo" --docker "host=ssh://echo.local"```
 ```
@@ -20,12 +20,20 @@ Setup env by running the following scripts:
 - setup-docker.sh -> install docker, docker compose and creates main docker network
 - setup-python.sh -> install python 3, pip and paho-mqtt deps
 - install ser2net for zigbee device (See below)
+- configure fstab for nfs mounting
 - install ext-hdd mount from jellyfin/
 
 ### Optional:
 
-For host where media stack is installed, run content of directory: ,/ext-hdd-mount 
+For host where media stack is installed, run content of directory: ./ext-hdd-mount 
 
+
+### Configure nfs from NAS
+Add line to /etc/fstab
+```commandline
+# NAS NFS share
+nas.local:/nfs-share  /mnt/nas  nfs  defaults,soft,nofail,noauto,x-systemd.automount,_netdev,timeo=25,x-systemd.idle-timeout=600,retrans=2  0  0
+```
 
 ### Install and configure ser2net
 
