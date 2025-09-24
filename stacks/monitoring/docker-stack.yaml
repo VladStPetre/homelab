@@ -2,7 +2,7 @@
 services:
 
   grafana:
-    image: grafana/grafana-oss:11.5.8
+    image: grafana/grafana-oss:12.1.1
     user: ${CUID}
     security_opt:
       - no-new-privileges:true
@@ -36,7 +36,7 @@ services:
 #      start_period: 25s
 
   alloy:
-    image: grafana/alloy:v1.10.1
+    image: grafana/alloy:v1.10.2
     hostname: echo
     command:
       - run
@@ -80,7 +80,7 @@ services:
 # sudo chown -R ${CUID} /var/lib/docker/volumes/monitoring_loki-data
 
   loki:
-    image: grafana/loki:3.5.3
+    image: grafana/loki:3.5.5
     command: "-config.file=/etc/loki/config.yaml"
     user: ${CUID}
     configs:
@@ -111,7 +111,7 @@ services:
 #      start_period: 20s
 
   prometheus:
-    image: prom/prometheus:v3.5.0
+    image: prom/prometheus:v3.6.0
     user: root
     configs:
       - source: prom_config
