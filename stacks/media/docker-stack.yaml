@@ -1,7 +1,7 @@
 ---
 services:
   jellyfin:
-    image: jellyfin/jellyfin:2025090105
+    image: jellyfin/jellyfin:2025092205
     user: root
     environment:
       - PUID=${CUID}
