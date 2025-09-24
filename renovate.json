@@ -35,5 +35,12 @@
         "This PR groups all Docker image updates found under `{{packageFileDir}}`."
       ]
     }
+  ,
+    {
+      "matchManagers": ["docker-compose"],
+      "matchPackageNames": ["postgres"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
   ]
 }
