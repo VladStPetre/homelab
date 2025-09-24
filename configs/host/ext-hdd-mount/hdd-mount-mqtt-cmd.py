@@ -55,6 +55,22 @@ def handle_mnt_point(mount_point, mount_svc, cmd_topic, payload, client, sensor_
 
     logging.info("mqtt-cmd :: published -> %s -> %s", sensor_topic, state)
 
+def handle_backrest_scale(payload):
+    scale = 0 if payload == "down" else 1
+
+    logging.info("mqtt-cmd :: backrest scaling to -> %s", scale)
+
+    r = subprocess.run(
+        ["docker", "service", "scale", "backup_backrest={}".format(scale)],
+        capture_output=True,
+        text=True,
+        timeout=15
+    )
+
+    if r.returncode == 0:
+        logging.info("mqtt-cmd :: backrest scaled to -> %s", scale)
+    else:
+        logging.info("mqtt-cmd :: backrest scaling failed -> %s", r.stderr)
 
 def on_message(client, userdata, msg):
     topic = msg.topic
@@ -86,6 +102,9 @@ def on_message(client, userdata, msg):
 
         if r.returncode != 0:
             logging.info("mqtt-cmd :: WOL failed -> %s", r.stderr)
+
+    elif topic == "echo/command/backrestscale":
+        handle_backrest_scale(payload)
 
     else:
         logging.info("mqtt-cmd :: topic is -> %s", topic)
