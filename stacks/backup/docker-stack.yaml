@@ -17,7 +17,6 @@ services:
       - backrest_tmp:/tmp
       # Mount the SAME service volumes read-only so Backrest can back them up
       - immich_library:/data/immich_library:ro
-      - wireguard-data:/data/wireguard:ro
       - /mnt/nas:/data/nfsnas
       - /mnt/media:/data/vexthdd
 #      - db_data:/userdata/db:ro
@@ -46,6 +45,39 @@ services:
 #      timeout: 5s
 #      retries: 5
 
+  syncthing-src:
+    image: lscr.io/linuxserver/syncthing:2.0.10
+    ports:
+      - "22000:22000/tcp"   # Sync TCP
+      - "22000:22000/udp"   # Sync QUIC/UDP
+      - "21027:21027/udp"   # Local discovery
+    environment:
+      - PUID=${CUID}
+      - PGID=${CGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+      - GUI_ADDRESS=0.0.0.0:8384
+    volumes:
+      - syncthing_src_config:/config
+      - immich_library:/data/immich_library
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        order: start-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.syncthing.rule=Host(`syncthing.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.syncthing.entrypoints=websecure"
+        - "traefik.http.routers.syncthing.tls=true"
+        - "traefik.http.routers.syncthing.tls.certresolver=cloudflare"
+        - "traefik.http.services.syncthing.loadbalancer.server.port=8384"
+    networks:
+      - hlel
+
 volumes:
   # Backrest internal state/cache/config
   backrest_data:
@@ -57,8 +89,8 @@ volumes:
     external: true
   wireguard-data:
     external: true
-#  db_data:
-#    external: true
+  syncthing_src_config:
+    external: true
 
 networks:
   hlel:
