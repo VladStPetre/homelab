@@ -121,7 +121,7 @@ services:
 
 configs:
   mosquitto_config:
-    file: ../../configs/mosquitto/mosquitto.conf
+    external: true
 
 secrets:
   influxdb2-admin-username:
