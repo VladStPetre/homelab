@@ -150,11 +150,11 @@ services:
 
 configs:
   alloy_config:
-    file: ../../configs/alloy/config.alloy
+    external: true
   loki_config:
-    file: ../../configs/loki/config.yaml
+    external: true
   prom_config:
-    file: ../../configs/prometheus/prometheus.yaml
+    external: true
 
 volumes:
   grafana-data: {}

@@ -147,9 +147,9 @@ secrets:
 
 configs:
   traefik_yaml_config:
-    file: ../../configs/traefik/traefik.yml
+    external: true
   traefik_config_yaml_config:
-    file: ../../configs/traefik/config.yml
+    external: true
 
 volumes:
   pihole-data: {}

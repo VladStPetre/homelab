@@ -13,6 +13,16 @@ Create docker secrets
 ```commandline
 printf 'supersecretsecret' | docker secret create <secret-name> -
 ```
+
+Create docker configs
+```commandline
+docker config create traefik_yaml_config ./configs/traefik/traefik.yml
+docker config create traefik_config_yaml_config ./configs/traefik/config.yml
+docker config create mosquitto_config ./configs/mosquitto/mosquitto.conf
+docker config create alloy_config ./configs/alloy/config.alloy
+docker config create loki_config ./configs/loki/config.yaml
+ docker config create prom_config ./configs/prometheus/prometheus.yaml
+```
 ## Server Steps 
 
 Setup env by running the following scripts:

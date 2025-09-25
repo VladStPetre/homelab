@@ -29,46 +29,6 @@ services:
 #      retries: 5
 #      start_period: 15s
 
-#  duplicati:
-#    image: lscr.io/linuxserver/duplicati:2.1.0
-#    environment:
-#      - PUID=${CUID}
-#      - PGID=${CGID}
-#      - TZ=${TIMEZONE}
-#      - SETTINGS_ENCRYPTION_KEY=${DUPLICATI_ENCRYPTION_KEY}
-#      - DUPLICATI__WEBSERVICE_PASSWORD=${DUPLICATI_WEB_PASS}
-#      - CLI_ARGS=--webservice-interface=any
-#    ports:
-#      - 8200:8200
-#    volumes:
-#      - duplicati-config:/config                      # Duplicati configs
-#      - duplicati-bkps:/backups                       # Backup destination (local disk or mount)
-#      - grafana-data:/source/grafana:ro
-#      - alloy-data:/source/alloy:ro
-#      - prometheus-data:/source/prometheus:ro
-#      - jellyfin:/source/jellyfin:ro
-#      - qbittorrent:/source/qbittorrent:ro
-#      - pihole:/source/pihole:ro
-#      - wireguard:/source/wireguard:ro
-#      - ha-data:/source/ha:ro
-#      - influxdb2-data:/source/influxdb2-data:ro
-#      - influxdb2-config:/source/influxdb2-config:ro
-#      - mosquitto-config:/source/mosquitto-config:ro
-#      - mosquitto-data:/source/mosquitto-data:ro
-#      - mosquitto-logs:/source/mosquitto-logs:ro
-#      - portainer-data:/source/portainer-data:ro
-#      - duplicati-config:/source/duplicati-config:ro
-#      - n8n-data:/source/n8n-data:ro
-#      - n8n-local:/source/n8n-local:ro
-#    labels:
-#      - "portainer.io/managed=true"
-#      - "io.portainer.accesscontrol.users=admin"
-#    deploy:
-#      update_config:
-#        order: start-first
-#    networks:
-#      - hlel
-
 
   n8n:
     image: docker.n8n.io/n8nio/n8n:1.113.2
