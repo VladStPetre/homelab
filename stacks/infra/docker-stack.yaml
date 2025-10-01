@@ -94,7 +94,7 @@ services:
 #      start_period: 15s
 
   traefik:
-    image: traefik:v3.5.2
+    image: traefik:v3.5.3
     ports:
       - "80:80"
       - "443:443"
