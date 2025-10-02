@@ -36,7 +36,7 @@ services:
 #      start_period: 25s
 
   alloy:
-    image: grafana/alloy:v1.10.2
+    image: grafana/alloy:v1.11.0
     hostname: echo
     command:
       - run
