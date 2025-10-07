@@ -19,5 +19,5 @@ in Docker and grew into several services for infra/monitoring/media/utils.
 - Reverse proxy & load balancing
 
 ## Quick links
-- [Services](services/index.md)
+- [Services](services/_index.md)
 - [Changelog](changelog.md)

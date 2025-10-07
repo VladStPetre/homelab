@@ -28,7 +28,13 @@ plugins:
 nav:
   - Home: index.md
   - Services:
-      - services/index.md
+      - Overview: services/_index.md
+      - Home Assistant: services/home-assistant.md
+      - Traefik: services/traefik.md
+      - Observability: services/observability.md
+      - Media: services/media.md
+      - DNS & Networking: services/dns-networking.md
+      - Backups: services/backups.md
   - Changelog: changelog.md
 
 markdown_extensions:
