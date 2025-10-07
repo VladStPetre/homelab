@@ -38,9 +38,9 @@
   ,
     {
       "matchManagers": ["docker-compose"],
-      "matchPackageNames": ["postgres"],
-      "matchUpdateTypes": ["major"],
-      "enabled": false
+      "matchDatasources": ["docker"],
+      "matchDepNames": ["ghcr.io/immich-app/postgres"],
+      "allowedVersions": "14.x"
     }
   ]
 }
