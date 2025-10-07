@@ -21,10 +21,11 @@ layout:
       style: row
       columns: 4
 
+
 providers:
   openweathermap: null
 
-favicon: https://github.com/NX211/homer-icons/blob/master/png/hubitat.png
+favicon: https://raw.githubusercontent.com/NX211/homer-icons/master/png/hubitat.png
 #headerStyle: clean
 
 quicklaunch:

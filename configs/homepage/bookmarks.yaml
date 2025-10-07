@@ -1,2 +1,5 @@
-- Utils:
-    - GH - homelab: { href: "https://github.com/VladStPetre/homelab" }
+- Links:
+    - GH - Homelab:
+      - icon: github
+        href: https://github.com/VladStPetre/homelab
+        description: Homelab repo
