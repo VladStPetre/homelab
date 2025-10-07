@@ -1,11 +1,9 @@
 name: Build & Deploy docs
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-    types:
-      - closed
   workflow_dispatch:
 
 permissions:
@@ -15,7 +13,7 @@ permissions:
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'GH-PAGES - ')
+    if: startsWith(github.event.head_commit.message, 'GH-PAGES - ')
     runs-on: [self-hosted, linux, docker, stacks]
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +39,7 @@ jobs:
           path: site
 
   deploy:
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'GH-PAGES - ')
+    if: startsWith(github.event.head_commit.message, 'GH-PAGES - ')
     needs: build
     runs-on: [self-hosted, linux, docker, stacks]
     environment:
