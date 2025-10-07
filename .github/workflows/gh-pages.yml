@@ -20,20 +20,20 @@ jobs:
           python-version: '3.12'
 
       # Create and activate an isolated environment
-      - name: Set up venv
-        run: |
-          python -m venv .venv
-          . .venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install "mkdocs>=1.6" mkdocs-material mkdocs-minify-plugin
-          python -V
-          python -m pip show mkdocs mkdocs-material mkdocs-minify-plugin
-          python -m mkdocs --version
+#      - name: Set up venv
+#        run: |
+#          python -m venv .venv
+#          . .venv/bin/activate
+#          python -m pip install --upgrade pip
+#          pip install "mkdocs>=1.6" mkdocs-material mkdocs-minify-plugin
+#          python -V
+#          python -m pip show mkdocs mkdocs-material mkdocs-minify-plugin
+#          python -m mkdocs --version
 
       - name: Build site
         run: |
-          . .venv/bin/activate
-          python -m mkdocs build --strict
+#          . .venv/bin/activate
+          docker run --rm -v "$PWD":/docs squidfunk/mkdocs-material:9.6.21 build --strict
 
       - uses: actions/upload-pages-artifact@v3
         with:
