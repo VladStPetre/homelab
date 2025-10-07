@@ -23,17 +23,13 @@ jobs:
       - name: Set up venv
         run: |
           python -m venv .venv
-          . .venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install "mkdocs>=1.6" mkdocs-material mkdocs-minify-plugin
-          python -V
-          python -m pip show mkdocs mkdocs-material mkdocs-minify-plugin
-          python -m mkdocs --version
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install "mkdocs>=1.6.1" mkdocs-material mkdocs-minify-plugin
+          .venv/bin/python -m mkdocs --version
 
       - name: Build site
         run: |
-          . .venv/bin/activate
-          python -m mkdocs build --strict
+          .venv/bin/python -m mkdocs build --strict
 
       - uses: actions/upload-pages-artifact@v3
         with:
