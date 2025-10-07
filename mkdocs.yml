@@ -22,7 +22,7 @@ theme:
 
 plugins:
   - search
-  - sitemap
+#  - sitemap
   - mkdocs-minify-plugin
 
 nav:
