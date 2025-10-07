@@ -23,7 +23,7 @@ theme:
 plugins:
   - search
 #  - sitemap
-  - mkdocs-minify-plugin
+#  - mkdocs-minify-plugin
 
 nav:
   - Home: index.md
