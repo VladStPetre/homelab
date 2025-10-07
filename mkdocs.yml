@@ -28,7 +28,7 @@ plugins:
 nav:
   - Home: index.md
   - Services:
-      - services/_index.md
+      - services/index.md
   - Changelog: changelog.md
 
 markdown_extensions:

@@ -1,6 +1,6 @@
 ---
 title: Vlad’s Homelab
-description: My tiny-but-mighty homelab: topology, services, and lessons learned.
+description: My tiny-but-mighty homelab - topology, services, and lessons learned.
 ---
 
 # Homelab Overview
@@ -19,5 +19,5 @@ in Docker and grew into several services for infra/monitoring/media/utils.
 - Reverse proxy & load balancing
 
 ## Quick links
-- [Services](services/_index.md)
+- [Services](services/index.md)
 - [Changelog](changelog.md)
