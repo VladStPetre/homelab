@@ -11,20 +11,20 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, docker, stacks]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install mkdocs-material mkdocs-minify-plugin mkdocs-sitemap-plugin
+      - run: pip install "mkdocs>=1.6" mkdocs-material mkdocs-minify-plugin
       - run: mkdocs build --strict
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, docker, stacks]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
