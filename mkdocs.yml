@@ -22,7 +22,9 @@ theme:
 
 plugins:
   - search
-  - sitemap
+  - mkdocs.contrib.sitemap:
+      changefreq: daily
+      priority: 0.5
   - mkdocs-minify-plugin
 
 nav:
