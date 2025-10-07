@@ -65,12 +65,61 @@ services:
 #      retries: 5
 #      start_period: 30s
 
+  homepage:
+    image: ghcr.io/gethomepage/homepage:v1.4.6
+    environment:
+      - TZ=Europe/Bucharest
+      - HOMEPAGE_ALLOWED_HOSTS=home.${DOMAIN_NAME}
+      - HOMEPAGE_VAR_BASE_DOMAIN=${DOMAIN_NAME}
+      - HOMEPAGE_VAR_NAS_ADDR=${NAS_ADDR}
+      - HOMEPAGE_VAR_EXT_DOMAIN_NAME=${EXT_DOMAIN_NAME}
+    configs:
+      - source: homepage_settings_yaml
+        target: /app/config/settings.yaml
+#      - source: homepage_docker_yaml
+#        target: /app/config/docker.yaml
+      - source: homepage_services_yaml
+        target: /app/config/services.yaml
+      - source: homepage_bookmarks_yaml
+        target: /app/config/bookmarks.yaml
+      - source: homepage_widgets_yaml
+        target: /app/config/widgets.yaml
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Optional: persistent user assets (custom icons/backgrounds):
+      - homepage-data:/app/config/user
+    deploy:
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.homepage.rule=Host(`home.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.homepage.entrypoints=websecure"
+        - "traefik.http.routers.homepage.tls=true"
+        - "traefik.http.routers.homepage.tls.certresolver=cloudflare"
+        - "traefik.http.services.homepage.loadbalancer.server.port=3000"
+    networks:
+      - hlel
+
+configs:
+  homepage_settings_yaml:
+    external: true
+#  homepage_docker_yaml:
+#    external: true
+  homepage_services_yaml:
+    external: true
+  homepage_bookmarks_yaml:
+    external: true
+  homepage_widgets_yaml:
+    external: true
+
 volumes:
-  portainer-data: {}
-  duplicati-config: {}
-  duplicati-bkps: {}
-  n8n-data: {}
-  n8n-local-files: {}
+    homepage-data:
+      external: true
+    portainer-data: {}
+    n8n-data: {}
+    n8n-local-files: {}
 
 networks:
   hlel:

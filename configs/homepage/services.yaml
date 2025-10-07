@@ -1,0 +1,75 @@
+- Utils:
+    - Home Assistant:
+        icon: si-homeassistant
+        href: "https://hass.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Automations & dashboards
+
+    - InfluxDB:
+        icon: si-influxdb
+        href: "https://influxdb.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Time-series DB
+
+    - Portainer:
+        icon: si-portainer
+        href: "https://portainer.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Docker UI
+
+    - Backrest:
+        icon: si-databricks
+        href: "https://backrest.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Backup orchestrator
+
+    - n8n:
+        icon: si-n8n
+        href: "https://n8n.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Automations
+
+
+- Infra:
+    - Traefik:
+        icon: si-traefikproxy
+        href: "https://traefik.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Edge router
+
+    - Pi-hole:
+        icon: si-pihole
+        href: "https://pihole.{{HOMEPAGE_VAR_BASE_DOMAIN}}/admin"
+        description: DNS sinkhole
+
+    - Grafana:
+        icon: si-grafana
+        href: "https://grafana.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Dashboards
+
+    - Prometheus:
+        icon: si-prometheus
+        href: "https://prometheus.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Metrics TSDB
+
+    - Alloy (Grafana Agent/Alloy):
+        icon: si-grafana
+        href: "https://alloy.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Telemetry collector
+
+- Other:
+    - Jellyfin:
+        icon: si-jellyfin
+        href: "https://jellyfin.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Media server
+
+    - qBittorrent:
+        icon: si-qbittorrent
+        href: "https://qb.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Torrent client
+
+    - Immich:
+        icon: si-googlephotos
+        href: "https://{{HOMEPAGE_VAR_EXT_DOMAIN_NAME}}"
+        description: Photo library
+
+    - NAS:
+        icon: si-qnap
+        href: "https://{{HOMEPAGE_VAR_NAS_ADDR}}"
+        description: NAS - Qnap
+
+

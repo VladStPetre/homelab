@@ -1,0 +1,19 @@
+- greeting:
+    text_size: xl
+
+- datetime:
+    format:
+      dateStyle: short
+      timeStyle: short
+
+- resources:
+    cpu: true
+    memory: true
+    disk: ["/"]
+
+- openmeteo:
+    label: "Now"
+    latitude: 44.43
+    longitude: 26.10
+    timezone: Europe/Bucharest
+    units: metric

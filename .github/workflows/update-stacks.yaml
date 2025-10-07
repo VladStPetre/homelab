@@ -36,9 +36,11 @@ jobs:
           set -euo pipefail
           cat > envfile <<'EOF'
           DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}
+          EXT_DOMAIN_NAME=${{ secrets.EXT_DOMAIN_NAME }}
           CUID=${{ secrets.UID }}
           CGID=${{ secrets.GID }}
           TIMEZONE=Europe/Bucharest
+          NAS_ADDR=${{ secrets.NAS_ADDR }}
           GH_ORG=VladStPetre
           GH_REPO=homelab
           DOCKER_INFLUXDB_INIT_ORG=${{ secrets.DOCKER_INFLUXDB_INIT_ORG }}
