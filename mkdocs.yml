@@ -22,8 +22,8 @@ theme:
 
 plugins:
   - search
-  - sitemap
-  - mkdocs-minify-plugin
+#  - sitemap
+#  - mkdocs-minify-plugin
 
 nav:
   - Home: index.md
