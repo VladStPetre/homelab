@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  <meta name="author" content="Vlad Petre">
+  <meta property="og:title" content="{{ config.site_name }}">
+  <meta property="og:description" content="{{ config.site_description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ config.site_url }}">
+  <link rel="icon" href="{{ base_url }}/assets/favicon.png">
+{% endblock %}
+
+{% block content %}
+  {{ super() }}
+  <footer class="custom-footer">
+    <p>© {{ config.site_name }} — Built with MkDocs Material</p>
+  </footer>
+{% endblock %}

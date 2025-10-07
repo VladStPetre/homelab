@@ -1,0 +1,50 @@
+site_name: Vlad’s Homelab
+site_description: Tiny-but-mighty homelab: topology, services and lessons learned.
+site_url: https://vladstpetre.github.io/homelab/
+repo_url: https://github.com/VladStPetre/homelab
+use_directory_urls: true
+
+theme:
+  name: material
+  custom_dir: overrides
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: amber
+  features:
+    - navigation.tabs
+    - navigation.instant
+    - content.code.copy
+    - toc.integrate
+  font:
+    text: Inter
+    code: Fira Code
+
+plugins:
+  - search
+  - sitemap
+  - mkdocs-minify-plugin
+
+nav:
+  - Home: index.md
+  - Services:
+      - services/_index.md
+  - Changelog: changelog.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/VladStPetre
+
+extra_css:
+  - assets/stylesheets/extra.css
+extra_javascript:
+  - assets/scripts/custom.js
