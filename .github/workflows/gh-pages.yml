@@ -14,14 +14,31 @@ jobs:
     runs-on: [self-hosted, linux, docker, stacks]
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install "mkdocs>=1.6" mkdocs-material mkdocs-minify-plugin
-      - run: mkdocs build --strict
+
+      # Create and activate an isolated environment
+      - name: Set up venv
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install "mkdocs>=1.6" mkdocs-material mkdocs-minify-plugin
+          python -V
+          python -m pip show mkdocs mkdocs-material mkdocs-minify-plugin
+          python -m mkdocs --version
+
+      - name: Build site
+        run: |
+          . .venv/bin/activate
+          python -m mkdocs build --strict
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
+
   deploy:
     needs: build
     runs-on: [self-hosted, linux, docker, stacks]
