@@ -1,5 +1,5 @@
 site_name: Vlad’s Homelab
-site_description: Tiny-but-mighty homelab: topology, services and lessons learned.
+site_description: Tiny-but-mighty homelab - topology, services and lessons learned.
 site_url: https://vladstpetre.github.io/homelab/
 repo_url: https://github.com/VladStPetre/homelab
 use_directory_urls: true
