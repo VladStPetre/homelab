@@ -20,15 +20,12 @@ jobs:
           python-version: '3.12'
 
       # Create and activate an isolated environment
-      - name: Set up venv
+      - name: Build site
         run: |
           python -m venv .venv
           .venv/bin/python -m pip install --upgrade pip
           .venv/bin/python -m pip install "mkdocs>=1.6.1" mkdocs-material mkdocs-minify-plugin
           .venv/bin/python -m mkdocs --version
-
-      - name: Build site
-        run: |
           .venv/bin/python -m mkdocs build --strict
 
       - uses: actions/upload-pages-artifact@v3
