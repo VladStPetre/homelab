@@ -1,7 +1,7 @@
 ---
 services:
   database:
-    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+    image: ghcr.io/immich-app/postgres:16-vectorchord0.4.3-pgvectors0.2.0
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_DB=${POSTGRES_DB}
@@ -43,7 +43,7 @@ services:
       - hlel
 
   immich-server:
-    image: ghcr.io/immich-app/immich-server:v1.143.1
+    image: ghcr.io/immich-app/immich-server:v2.0.1
     environment:
       - TZ=${TIMEZONE}
       # DB (must match database service)
