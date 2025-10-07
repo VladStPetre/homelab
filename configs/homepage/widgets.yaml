@@ -2,9 +2,11 @@
     text_size: xl
 
 - datetime:
+    locale: ro-RO
     format:
       dateStyle: short
       timeStyle: short
+      hourCycle: h23
 
 - resources:
     cpu: true
