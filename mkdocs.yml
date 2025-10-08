@@ -6,6 +6,9 @@ use_directory_urls: true
 
 theme:
   name: material
+  logo:
+    icon: assets/images/logo_yellow_icon.png
+    image: assets/images/logo_black_transparent_400x400.png
   palette:
     - scheme: slate        # dark theme
       primary: teal
@@ -37,13 +40,16 @@ nav:
   - Home: index.md
   - Services:
       - Overview: services/_index.md
+      - Backup: services/backup.md
+      - Gh-Runner: services/gh-runner.md
       - Home Assistant: services/home-assistant.md
-      - Traefik: services/traefik.md
-      - Observability: services/observability.md
+      - Immich: services/immich.md
+      - Infra: services/infra.md
       - Media: services/media.md
-      - DNS & Networking: services/dns-networking.md
-      - Backups: services/backups.md
+      - Monitoring: services/monitoring.md
+      - Utils: services/utils.md
   - Changelog: changelog.md
+  - About: about.md
 
 markdown_extensions:
   - admonition

@@ -1,31 +1,22 @@
 ---
 title: Media Services
-description: Media stack (e.g., Jellyfin/Plex, qBittorrent, Sonarr/Radarr, Bazarr, Prowlarr).
-tags: [media, jellyfin, plex, sonarr, radarr]
+description: Media stack for personal movie/series library
+tags: [media, jellyfin, movies, shows, series, self-host]
 ---
 
+# Media Stack
+
+## jellyfin
+## qbittorrent
+
 ## Compose (example)
-```yaml
-services:
-  jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Bucharest
-    volumes:
-      - ./data/jellyfin/config:/config
-      - /mnt/media:/media
-    ports:
-      - "8096:8096"
-    restart: unless-stopped
-```
+// WIP
 
 ## Reverse proxy
-- Use Traefik with a subdomain and TLS.
+// WIP
 
 ## Storage
-- Separate library and transcode paths. Prefer SSD for transcode.
+// WIP
 
 ## Notes
-- Hardware transcoding requires device pass-through (QuickSync/NVENC).
+// WIP

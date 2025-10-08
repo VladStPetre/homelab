@@ -3,3 +3,7 @@
       - icon: github
         href: https://github.com/VladStPetre/homelab
         description: Homelab repo
+    - GH Pages - Homelab:
+        - icon: github
+          href: https://vladstpetre.github.io/homelab/
+          description: Pages for Homelab

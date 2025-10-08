@@ -1,23 +1,33 @@
 ---
 title: Vlad’s Homelab
-description: My tiny-but-mighty homelab - topology, services, and lessons learned.
+description: My tiny-but-mighty homelab - stories, services, and lessons learned.
 ---
 
-# Homelab Overview
+# Welcome
 
-Hi there! this is Vlad — and I am a software developer that has a hobby of DIY / self-hosting / trying new things.
-This repo came out of curiosity and taught me things that helped me on my job as well. It started with hosting Home Assistant
-in Docker and grew into several services for infra/monitoring/media/utils.
+Hi there! This is my my _tiny-but-mighty_ homelab where you'll find short stories about what I self-host, how i configured and what I've learned in this journey.
+
+This is built out of curiosity, became a small hobby and provided both frustration and satisfaction of achieving something.
+
+My homelab is also aimed to work with low to no budget and just for personal use.
+
+I feel that will a continuous _work in progress_, especially for educational purposes. 
+
+## Homelab Overview
+
+My homelab is actually a **Docker Swarm** suite split in stacks serving different purposes.
+
+For more details, please go to [Services](services/_index.md)
 
 ## What I’ve learned
 - Self-hosting
-- Docker Compose
-- Docker Swarm
+- Docker Compose & Docker Swarm
+- basic Python
 - GitHub Actions
 - Logs/metrics scraping and visualization
 - Service integration
 - Reverse proxy & load balancing
+- AI prompting
+- Debugging and failing 
 
-## Quick links
-- [Services](services/_index.md)
-- [Changelog](changelog.md)
+And the list can continue
