@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build:
-    if: startsWith(github.event.head_commit.message, 'GH-PAGES - ')
+    if: startsWith(github.event.head_commit.message, 'gh-pages - ')
     runs-on: [self-hosted, linux, docker, stacks]
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +39,7 @@ jobs:
           path: site
 
   deploy:
-    if: startsWith(github.event.head_commit.message, 'GH-PAGES - ')
+    if: startsWith(github.event.head_commit.message, 'gh-pages - ')
     needs: build
     runs-on: [self-hosted, linux, docker, stacks]
     environment:

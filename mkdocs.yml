@@ -8,14 +8,14 @@ theme:
   name: material
   palette:
     - scheme: slate        # dark theme
-      primary: indigo
-      accent: indigo
+      primary: teal
+      accent: amber
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
     - scheme: default      # light theme
-      primary: indigo
-      accent: indigo
+      primary: lime
+      accent: amber
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
