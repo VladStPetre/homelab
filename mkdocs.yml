@@ -6,9 +6,8 @@ use_directory_urls: true
 
 theme:
   name: material
-  logo:
-    icon: assets/images/logo_yellow_icon.png
-    image: assets/images/logo_black_transparent_400x400.png
+  logo: assets/images/logo_black_transparent_400x400.png
+  favicon: assets/images/logo_yellow_icon.png
   palette:
     - scheme: slate        # dark theme
       primary: teal
