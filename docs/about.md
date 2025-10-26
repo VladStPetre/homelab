@@ -13,7 +13,7 @@ This repo came up out of curiosity and taught me things that helped me on my job
 Last, but not least, it gave me the satisfaction of doing it yourself and working ^^
 
 
-## What is is?
+## What is it?
 
 This is a small homelab that suits a very small home and a space where to learn new things.
 

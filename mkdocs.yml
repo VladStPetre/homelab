@@ -47,7 +47,6 @@ nav:
       - Media: services/media.md
       - Monitoring: services/monitoring.md
       - Utils: services/utils.md
-  - Changelog: changelog.md
   - About: about.md
 
 markdown_extensions:
@@ -57,6 +56,9 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.details
   - pymdownx.tabbed
+  - pymdownx.blocks.caption
+  - attr_list
+  - md_in_html
 
 extra:
   social:

@@ -5,9 +5,24 @@ tags: [Github, Actions, workflow, self-hosted, runner]
 ---
 
 # Gh-Runner stack
+Github Self-hosted runner - to run stack updates from Github actions
+
 
 ## Compose
-// WIP
-
-## Github link
-// WIP
+```yaml
+  gh-runner:
+    image: myoung34/github-runner:latest
+    environment:
+      - REPO_URL=https://github.com/${GH_ORG}/${GH_REPO}
+      - RUNNER_SCOPE=repo
+      - RUNNER_NAME=stacks-runner
+      - LABELS=self-hosted,linux,docker,stacks
+      - RUNNER_WORKDIR=/_work
+      - RUNNER_TOKEN=${RUNNER_TOKEN}
+      - DISABLE_AUTOMATIC_DEREGISTRATION=true
+      - CONFIGURED_ACTIONS_RUNNER_FILES_DIR=/runner/data
+    volumes:
+      - runner-data:/runner/data
+      - /_work:/_work
+      - /var/run/docker.sock:/var/run/docker.sock
+```

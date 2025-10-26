@@ -3,6 +3,8 @@ services:
   jellyfin:
     image: jellyfin/jellyfin:2025100605
     user: root
+    ports:
+      - "8096:8096" # need for direct connection on TV
     environment:
       - PUID=${CUID}
       - PGID=${CGID}

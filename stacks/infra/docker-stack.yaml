@@ -78,10 +78,10 @@ services:
       - net.ipv4.ip_forward=1
     dns:
       - 192.168.7.124
-    labels:
-      - "portainer.io/managed=true"
-      - "io.portainer.accesscontrol.users=admin"
     deploy:
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
       update_config:
         order: start-first
     networks:

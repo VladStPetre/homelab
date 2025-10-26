@@ -8,6 +8,13 @@ Here you'll find the services I self-host, some configurations and notes.
 
 The service are split by stacks serving its own purpose. Each [stack](https://github.com/VladStPetre/homelab/tree/main/stacks) has related it's related [config](https://github.com/VladStPetre/homelab/tree/main/configs)
 
+![Services list](../assets/images/homepage-services-list.png)
+/// caption
+_Services list_
+///
+
+
+Services:
 - [Backup](backup.md)
   - [Bakcrest](backup.md)
 - [Gh-Runner](gh-runner.md)
