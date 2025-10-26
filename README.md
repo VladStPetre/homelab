@@ -12,6 +12,8 @@ This is a small homelab that suits a very small home and a space where to learn 
 
 It started with hosting Home Assistant in docker, went with the flow and now there are several services for - infra/monitoring/media/utils.
 
+For a bit more details please check more [blog-like docs](https://vladstpetre.github.io/homelab/)
+
 ## what I learn doing it?
 
 - Self-hosting
