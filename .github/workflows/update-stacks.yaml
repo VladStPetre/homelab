@@ -60,7 +60,8 @@ jobs:
 
       - name: check envfile
         run: |
-          cat envfile
+          cp envfile test.txt
+          cat test.txt
 
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
