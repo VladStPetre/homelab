@@ -57,11 +57,13 @@ jobs:
           NODE_ENV=production
           EOF
           chmod 644 envfile
+          base64 envfile > env.b64
 
-      - name: check envfile
-        run: |
-          cp envfile test.txt
-          cat test.txt
+      - name: Upload encoded .env
+        uses: actions/upload-artifact@v4
+        with:
+          name: encoded-envfile
+          path: env.b64
 
       - name: Docker Stack Deploy
         uses: cssnr/stack-deploy-action@v1
