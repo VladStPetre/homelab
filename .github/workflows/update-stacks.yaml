@@ -57,6 +57,9 @@ jobs:
           NODE_ENV=production
           EOF
           chmod 644 envfile
+
+      - name: check envfile
+        run: |
           cat envfile
 
       - name: Docker Stack Deploy
