@@ -83,4 +83,4 @@ jobs:
             chmod 600 ~/.ssh/deploy_key
         
             ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
-              "$SSH_USER@$SSH_HOST" "verify ${STACK_NAME}"
+              "$SSH_USER@$SSH_HOST" "/home/$SSH_USER/.ci/swarm-verify '${STACK_NAME}'"
