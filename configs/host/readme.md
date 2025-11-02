@@ -21,14 +21,14 @@ docker config create traefik_config_yaml_config ./configs/traefik/config.yml
 docker config create mosquitto_config ./configs/mosquitto/mosquitto.conf
 docker config create alloy_config ./configs/alloy/config.alloy
 docker config create loki_config ./configs/loki/config.yaml
- docker config create prom_config ./configs/prometheus/prometheus.yaml
+docker config create prom_config ./configs/prometheus/prometheus.yaml
 ```
 ## Server Steps 
 
 Setup env by running the following scripts:
 
 - setup-docker.sh -> install docker, docker compose and creates main docker network
-- setup-python.sh -> install python 3, pip and paho-mqtt deps
+- setup-python.sh -> install python 3, pip and paho-mtt deps
 - install ser2net for zigbee device (See below)
 - configure fstab for nfs mounting
 - install ext-hdd mount from jellyfin/
@@ -66,4 +66,18 @@ YAML
 sudo systemctl enable --now ser2net
 sudo systemctl start ser2net
 sudo ss -lntp | grep 3333
+```
+
+### setup deploy user
+Restrict the deploy user just for docker commands
+Add line to authorized_keys:
+
+```commandline
+command="docker system dial-stdio" ssh-ed25519 <auth_key>
+```
+
+### install swarm-verify script
+script should be locate din /home/<deploy_user>/,ci/verify-swarm
+```commandline
+sudo -u <deploy_user> install -m 0700 <patb_to_repo>/configs/host/verify-swarm-deploy.sh /home/deploy/.ci/swarm-verify
 ```

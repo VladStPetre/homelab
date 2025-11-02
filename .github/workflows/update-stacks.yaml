@@ -67,3 +67,24 @@ jobs:
           user: deploy
           ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
           env_file:  envfile
+          resolve_image: changed
+          prune: true
+
+      - name: Wait for stack to settle
+        if: success()
+        run: sleep 30
+
+      - name: Verify Swarm Rollout
+        if: success()
+        env:
+           STACK_NAME: ${{ inputs.stack_name }}
+           SSH_HOST: ${{ secrets.DOMAIN_NAME }}
+           SSH_USER: deploy
+        run: |
+            set -euo pipefail
+            install -m 700 -d ~/.ssh
+            printf '%s\n' "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+            chmod 600 ~/.ssh/deploy_key
+        
+            ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+              "$SSH_USER@$SSH_HOST" "/home/$SSH_USER/.ci/swarm-verify '${STACK_NAME}'"
