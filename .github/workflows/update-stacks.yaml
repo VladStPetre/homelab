@@ -67,3 +67,117 @@ jobs:
           user: deploy
           ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
           env_file:  envfile
+
+      # ---  verify the rollout on the Swarm manager via SSH ---
+      - name: Verify Swarm Rollout
+        env:
+           STACK_NAME: ${{ inputs.stack_name }}
+           SSH_HOST: ${{ secrets.DOMAIN_NAME }}
+           SSH_USER: deploy
+        run: |
+           set -euo pipefail
+           
+           # Write the SSH key from the repo secret to a temp file
+           install -m 700 -d ~/.ssh
+           printf '%s\n' "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+           chmod 600 ~/.ssh/deploy_key
+           
+           ssh_common_args="-i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+           
+           # Copy a verifier script over SSH (or run inline with a here-doc)
+           ssh $ssh_common_args "$SSH_USER@$SSH_HOST" /bin/bash <<'REMOTE'
+             set -euo pipefail
+           
+             STACK="${STACK_NAME}"
+           
+             if ! docker stack ls --format '{{.Name}}' | grep -qx "$STACK"; then
+               echo "::error::Stack '$STACK' not found on target"
+               exit 1
+             fi
+           
+             # Tunables
+             PER_SERVICE_TIMEOUT_SEC=600     # 10 minutes per service
+             SLEEP_BETWEEN_POLLS_SEC=5
+           
+             # Keep a list of failures to summarize at the end
+             failed_services=()
+           
+             # Get all services in the stack (IDs)
+             mapfile -t service_ids < <(docker stack services "$STACK" -q)
+             if [ "${#service_ids[@]}" -eq 0 ]; then
+               echo "::error::Stack '$STACK' has no services"
+               exit 1
+             fi
+           
+             now_ts() { date +%s; }
+           
+             echo "Verifying rollout for stack: $STACK"
+             for sid in "${service_ids[@]}"; do
+               sname="$(docker service inspect -f '{{.Spec.Name}}' "$sid")" || sname="$sid"
+               desired_replicas="$(docker service inspect -f '{{if .Spec.Mode.Replicated}}{{.Spec.Mode.Replicated.Replicas}}{{else}}1{{end}}' "$sid")"
+               spec_image="$(docker service inspect -f '{{.Spec.TaskTemplate.ContainerSpec.Image}}' "$sid")"
+           
+               echo "• Service: $sname (desired replicas: $desired_replicas)"
+               start="$(now_ts)"
+               ok=0
+           
+               while :; do
+                 # Number of running tasks at desired state
+                 running_cnt="$(docker service ps "$sid" \
+                   --filter desired-state=running \
+                   --format '{{.CurrentState}}' | grep -c '^Running')"
+           
+                 # Any tasks with failed/error state?
+                 failed_cnt="$(docker service ps "$sid" --no-trunc \
+                   --format '{{.CurrentState}} {{.Error}}' \
+                   | awk '/(Failed|Rejected|Shutdown|Complete)/ && $0 !~ /Running/ {c++} END{print c+0}')"
+           
+                 # Check image match between tasks and spec
+                 mismatch_cnt=0
+                 while IFS= read -r tid; do
+                   timg="$(docker inspect "$tid" -f '{{.Spec.ContainerSpec.Image}}' || true)"
+                   if [ -n "$timg" ] && [ "$timg" != "$spec_image" ]; then
+                     mismatch_cnt=$((mismatch_cnt+1))
+                   fi
+                 done < <(docker service ps "$sid" -q --no-trunc)
+           
+                 # Converged?
+                 if [ "$running_cnt" = "$desired_replicas" ] && [ "$failed_cnt" = "0" ] && [ "$mismatch_cnt" = "0" ]; then
+                   ok=1
+                   break
+                 fi
+           
+                 # Timeout?
+                 elapsed=$(( $(now_ts) - start ))
+                 if [ "$elapsed" -ge "$PER_SERVICE_TIMEOUT_SEC" ]; then
+                   echo "::warning::Timeout waiting for $sname to converge"
+                   break
+                 fi
+           
+                 sleep "$SLEEP_BETWEEN_POLLS_SEC"
+               done
+           
+               if [ "$ok" -eq 1 ]; then
+                 echo "  ✓ Converged: $sname → $spec_image"
+               else
+                 echo "  ✗ Not converged: $sname"
+                 echo "    — Spec image: $spec_image"
+                 echo "    — Status snapshot:"
+                 docker service ps "$sid" --no-trunc --format '      {{.ID}}  {{.Name}}  {{.CurrentState}}  {{.Error}}  {{.Image}}' | tail -n 20
+                 # Also surface UpdateStatus if present
+                 upd_state="$(docker service inspect -f '{{with .UpdateStatus}}{{.State}}: {{.Message}}{{end}}' "$sid")" || true
+                 if [ -n "$upd_state" ]; then
+                   echo "    — UpdateStatus: $upd_state"
+                 fi
+                 failed_services+=("$sname")
+               fi
+             done
+           
+             if [ "${#failed_services[@]}" -gt 0 ]; then
+               echo ""
+               echo "::error::The following services failed rollout: ${failed_services[*]}"
+               exit 2
+             fi
+           
+             echo "All services converged successfully."
+            REMOTE
