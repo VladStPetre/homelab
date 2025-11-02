@@ -71,9 +71,11 @@ jobs:
           prune: true
 
       - name: Wait for stack to settle
+        if: success()
         run: sleep 30
 
       - name: Verify Swarm Rollout
+        if: success()
         env:
            STACK_NAME: ${{ inputs.stack_name }}
            SSH_HOST: ${{ secrets.DOMAIN_NAME }}
