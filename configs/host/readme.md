@@ -75,3 +75,9 @@ Add line to authorized_keys:
 ```commandline
 command="docker system dial-stdio" ssh-ed25519 <auth_key>
 ```
+
+### install swarm-verify script
+script should be locate din /home/<deploy_user>/,ci/verify-swarm
+```commandline
+sudo -u <deploy_user> install -m 0700 <patb_to_repo>/configs/host/verify-swarm-deploy.sh /home/deploy/.ci/swarm-verify
+```

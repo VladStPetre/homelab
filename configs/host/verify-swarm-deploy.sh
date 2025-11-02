@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Always talk to the local Docker Engine (avoid proxies / DOCKER_HOST overrides)
-unset DOCKER_HOST
-export DOCKER_HOST=unix:///var/run/docker.sock
-
 # Parse stack name from SSH_ORIGINAL_COMMAND or first argument
 STACK="${1:-}"
 if [ -z "${STACK:-}" ] && [ -n "${SSH_ORIGINAL_COMMAND:-}" ]; then
@@ -22,17 +18,12 @@ if [ -z "${STACK:-}" ]; then
   exit 64
 fi
 
-if ! command -v docker >/dev/null; then
-  echo "::error::docker CLI not available on host"
-  exit 127
-fi
-
 if ! docker stack ls --format '{{.Name}}' | grep -qx "$STACK"; then
   echo "::error::Stack '$STACK' not found on target"
   exit 2
 fi
 
-PER_SERVICE_TIMEOUT_SEC=600   # adjust as needed
+PER_SERVICE_TIMEOUT_SEC=200   # adjust as needed
 SLEEP_BETWEEN_POLLS_SEC=5
 failed_services=()
 
@@ -44,11 +35,19 @@ fi
 
 now_ts() { date +%s; }
 
+# Extract just the tag (text after the last colon but before any @sha256)
+img_tag() {
+  local img="$1"
+  img="${img%@sha256*}"      # remove digest if present
+  echo "${img##*:}"           # extract tag (after last colon)
+}
+
 echo "Verifying rollout for stack: $STACK"
 for sid in "${service_ids[@]}"; do
   sname="$(docker service inspect -f '{{.Spec.Name}}' "$sid")" || sname="$sid"
   desired_replicas="$(docker service inspect -f '{{if .Spec.Mode.Replicated}}{{.Spec.Mode.Replicated.Replicas}}{{else}}1{{end}}' "$sid")"
   spec_image="$(docker service inspect -f '{{.Spec.TaskTemplate.ContainerSpec.Image}}' "$sid")"
+  spec_tag="$(img_tag "$spec_image")"
 
   echo "• Service: $sname (desired replicas: $desired_replicas)"
   start="$(now_ts)"
@@ -56,17 +55,22 @@ for sid in "${service_ids[@]}"; do
 
   while :; do
     running_cnt="$(docker service ps "$sid" --filter desired-state=running --format '{{.CurrentState}}' | grep -c '^Running' || true)"
-    failed_cnt="$(docker service ps "$sid" --no-trunc --format '{{.CurrentState}} {{.Error}}' | \
+    failed_cnt="$(docker service ps "$sid" --filter desired-state=running --no-trunc --format '{{.CurrentState}} {{.Error}}' | \
       awk '/(Failed|Rejected|Shutdown|Complete)/ && $0 !~ /Running/ {c++} END{print c+0}')"
 
     mismatch_cnt=0
     while IFS= read -r tid; do
       timg="$(docker inspect "$tid" -f '{{.Spec.ContainerSpec.Image}}' || true)"
-      if [ -n "$timg" ] && [ "$timg" != "$spec_image" ]; then
+      timg_tag="$(img_tag "$timg")"
+
+      echo "• desired tag: $spec_tag / actual tag $timg_tag)"
+
+      if [ -n "$timg_tag" ] && [ "$timg_tag" != "$spec_tag" ]; then
         mismatch_cnt=$((mismatch_cnt+1))
       fi
-    done < <(docker service ps "$sid" -q --no-trunc)
+    done < <(docker service ps "$sid" -filter desired-state=running -q --no-trunc)
 
+      echo "• running_cnt: $running_cnt / failed_cnt $failed_cnt) / mismatch_cnt $mismatch_cnt"
     if [ "$running_cnt" = "$desired_replicas" ] && [ "$failed_cnt" = "0" ] && [ "$mismatch_cnt" = "0" ]; then
       ok=1; break
     fi
