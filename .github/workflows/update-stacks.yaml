@@ -67,6 +67,8 @@ jobs:
           user: deploy
           ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
           env_file:  envfile
+          resolve_image: changed
+          prune: true
 
       # ---  verify the rollout on the Swarm manager via SSH ---
       - name: Verify Swarm Rollout
@@ -80,5 +82,5 @@ jobs:
             printf '%s\n' "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
             chmod 600 ~/.ssh/deploy_key
         
-            ssh -p "$SSH_PORT" -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+            ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
               "$SSH_USER@$SSH_HOST" "verify ${STACK_NAME}"
