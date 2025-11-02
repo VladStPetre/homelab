@@ -180,4 +180,4 @@ jobs:
              fi
            
              echo "All services converged successfully."
-            REMOTE
+           REMOTE
