@@ -43,7 +43,7 @@ services:
       - hlel
 
   immich-server:
-    image: ghcr.io/immich-app/immich-server:v2.0.1
+    image: ghcr.io/immich-app/immich-server:v2.2.1
     environment:
       - TZ=${TIMEZONE}
       # DB (must match database service)
