@@ -2,7 +2,7 @@
 services:
 
   portainer:
-    image: portainer/portainer-ce:2.34.0
+    image: portainer/portainer-ce:2.35.0
     command: -H unix:///var/run/docker.sock
     volumes:
       - portainer-data:/data
@@ -31,7 +31,7 @@ services:
 
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n:1.115.0
+    image: docker.n8n.io/n8nio/n8n:1.119.0
     environment:
       - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
       - N8N_PORT=5678
