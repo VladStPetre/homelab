@@ -2,7 +2,7 @@
 services:
 
   pihole:
-    image: pihole/pihole:2025.08.0
+    image: pihole/pihole:2025.10.3
     environment:
       - TZ=${TIMEZONE}
       - FTLCONF_webserver_api_password=${PIHOLE_PASS}
@@ -94,7 +94,7 @@ services:
 #      start_period: 15s
 
   traefik:
-    image: traefik:v3.5.3
+    image: traefik:v3.5.4
     ports:
       - "80:80"
       - "443:443"
