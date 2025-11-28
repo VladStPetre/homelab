@@ -2,7 +2,7 @@
 services:
 
   pihole:
-    image: pihole/pihole:2025.11.0
+    image: pihole/pihole:2025.11.1
     environment:
       - TZ=${TIMEZONE}
       - FTLCONF_webserver_api_password=${PIHOLE_PASS}
