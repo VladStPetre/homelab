@@ -1,7 +1,7 @@
 ---
 services:
   jellyfin:
-    image: jellyfin/jellyfin:2025110305
+    image: jellyfin/jellyfin:2025112405
     user: root
     ports:
       - "8096:8096" # need for direct connection on TV
