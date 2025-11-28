@@ -80,7 +80,7 @@ services:
 # sudo chown -R ${CUID} /var/lib/docker/volumes/monitoring_loki-data
 
   loki:
-    image: grafana/loki:3.5.7
+    image: grafana/loki:3.6.2
     command: "-config.file=/etc/loki/config.yaml"
     user: ${CUID}
     configs:
