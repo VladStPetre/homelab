@@ -46,7 +46,7 @@ services:
 #      retries: 5
 
   syncthing-src:
-    image: lscr.io/linuxserver/syncthing:2.0.10
+    image: lscr.io/linuxserver/syncthing:2.0.11
     ports:
       - "22000:22000/tcp"   # Sync TCP
       - "22000:22000/udp"   # Sync QUIC/UDP
