@@ -30,6 +30,7 @@ Setup env by running the following scripts:
 - setup-docker.sh -> install docker, docker compose and creates main docker network
 - setup-python.sh -> install python 3, pip and paho-mtt deps
 - install ser2net for zigbee device (See below)
+- setup zigbee2mqtt
 - configure fstab for nfs mounting
 - install ext-hdd mount from jellyfin/
 
@@ -54,13 +55,13 @@ Check the zigbee device id and paste if in the below config -
 sudo apt-get install ser2net
 
 sudo tee -a /etc/ser2net.yaml >/dev/null <<'YAML'
-connection: &zha
+connection: &zigbee
     accepter: tcp,3333
     enable: on
     options:
       banner: *banner
       kickolduser: true
-    connector: serialdev,/dev/serial/by-id/usb-ITEAD_SONOFF_Zigbee_3.0_USB_Dongle_Plus_V2_20230807084107-if00,115200n81 ,nobreak,local
+    connector: serialdev,/dev/serial/by-id/usb-ITEAD_SONOFF_Zigbee_3.0_USB_Dongle_Plus_V2_20230807084107-if00,115200n81,nobreak,local
 YAML
 
 sudo systemctl enable --now ser2net
@@ -80,4 +81,18 @@ command="docker system dial-stdio" ssh-ed25519 <auth_key>
 script should be locate din /home/<deploy_user>/,ci/verify-swarm
 ```commandline
 sudo -u <deploy_user> install -m 0700 <patb_to_repo>/configs/host/verify-swarm-deploy.sh /home/deploy/.ci/swarm-verify
+```
+
+### setup zigbee2mqtt
+Easier to be done in the UI on first use - try to reproduce the following settings
+```yaml
+serial:
+  port: tcp://<acho_ip>:3333
+  adapter: ember  # for Sonoff Dongle-E (EFR32 chip)
+mqtt:
+  base_topic: zigbee2mqtt
+  server: mqtt://<echo_ip>:1883
+frontend:
+  port: 8080
+homeassistant: true
 ```

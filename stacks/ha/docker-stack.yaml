@@ -92,6 +92,33 @@ services:
 #      retries: 3
 #      start_period: 20s
 
+  zigbee2mqtt:
+    image: ghcr.io/koenkk/zigbee2mqtt:2.7.0
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - z2m-data:/app/data
+#    configs:
+#      - source: z2m_config
+#        target: /app/data/configuration.yaml
+    deploy:
+      replicas: 1
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.z2m.rule=Host(`z2m.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.z2m.entrypoints=websecure"
+        - "traefik.http.routers.z2m.tls=true"
+        - "traefik.http.routers.z2m.tls.certresolver=cloudflare"
+        - "traefik.http.services.z2m.loadbalancer.server.port=8080"
+      update_config:
+        order: start-first
+      restart_policy:
+        condition: any
+    networks:
+      - hlel
 #  esphome:
 #    image: esphome/esphome:2025.7.5
 #    ports:
@@ -122,6 +149,8 @@ services:
 configs:
   mosquitto_config:
     external: true
+  z2m_config:
+    external: true
 
 secrets:
   influxdb2-admin-username:
@@ -138,6 +167,7 @@ volumes:
   mosquitto-config: {}
   mosquitto-data: {}
   mosquitto-logs: {}
+  z2m-data: {}
 
 networks:
   hlel:
