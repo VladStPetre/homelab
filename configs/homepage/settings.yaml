@@ -19,7 +19,7 @@ layout:
       columns: 5
   - Other:
       style: row
-      columns: 4
+      columns: 5
 
 
 providers:

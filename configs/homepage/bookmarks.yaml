@@ -1,9 +1,13 @@
 - Links:
-    - GH - Homelab:
+    - Homelab | Github:
       - icon: github
         href: https://github.com/VladStPetre/homelab
         description: Homelab repo
-    - GH Pages - Homelab:
+    - Homelab | Github Pages:
         - icon: github
           href: https://vladstpetre.github.io/homelab/
           description: Pages for Homelab
+    - Syncthing | laptop:
+        - icon: syncthing
+          href: http://127.0.0.1:8384/
+          description: Syncthing on laptop

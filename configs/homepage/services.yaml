@@ -19,11 +19,15 @@
         href: "https://backrest.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
         description: Backup orchestrator
 
-    - n8n:
-        icon: si-n8n
-        href: "https://n8n.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: Automations
+    - Syncthing Echo:
+        icon: si-syncthing
+        href: "https://syncthing.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Folder syncronization
 
+    - z2m:
+        icon: si-syncthing
+        href: "https://z2m.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: zigbee2mqtt
 
 - Infra:
     - Traefik:
@@ -71,5 +75,10 @@
         icon: si-qnap
         href: "https://{{HOMEPAGE_VAR_NAS_ADDR}}"
         description: NAS - Qnap
+
+    - n8n:
+        icon: si-n8n
+        href: "https://n8n.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Automations
 
 
