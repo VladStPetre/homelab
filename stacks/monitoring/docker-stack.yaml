@@ -26,14 +26,11 @@ services:
         - "traefik.http.services.grafana.loadbalancer.server.port=3000"
       update_config:
         order: start-first
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:3000/api/health | grep -q '\"database\":\"ok\"'" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 25s
 
   alloy:
     image: grafana/alloy:v1.11.3
@@ -67,14 +64,11 @@ services:
         - "traefik.http.services.alloy.loadbalancer.server.port=12345"
       update_config:
         order: start-first
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:12345/-/ready >/dev/null || curl -fsS http://127.0.0.1:12345/-/healthy >/dev/null" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 20s
 
 # needs the volume to be owned by the user it's using
 # sudo chown -R ${CUID} /var/lib/docker/volumes/monitoring_loki-data
@@ -101,14 +95,11 @@ services:
         - "traefik.http.services.loki.loadbalancer.server.port=3100"
       update_config:
         order: start-first
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
        - hlel
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:3100/ready >/dev/null" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 20s
 
   prometheus:
     image: prom/prometheus:v3.7.3
@@ -139,14 +130,11 @@ services:
         - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
       update_config:
         order: start-first
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:9090/-/ready >/dev/null" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 20s
 
 configs:
   alloy_config:

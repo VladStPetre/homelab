@@ -22,14 +22,11 @@ services:
         - "traefik.http.services.hass.loadbalancer.server.port=8123"
       update_config:
         order: start-first
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
-#    healthcheck:
-#      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:8123/ >/dev/null 2>&1 || exit 1" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 120s
 
   influxdb:
     image: influxdb:2.7.12
@@ -61,14 +58,12 @@ services:
         - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
       update_config:
         order: start-first
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8086/health >/dev/null || curl -fsSI http://127.0.0.1:8086/ping >/dev/null" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 30s
+
 
   mosquitto:
     image: eclipse-mosquitto:2.0.22
@@ -87,14 +82,11 @@ services:
         - "io.portainer.accesscontrol.users=admin"
       update_config:
         order: start-first
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
-#    healthcheck:
-#      test: [ "CMD-SHELL", "mosquitto_pub -h 127.0.0.1 -p 1883 -t healthcheck -m ok -q 1 -r && mosquitto_sub -h 127.0.0.1 -p 1883 -t healthcheck -C 1 -W 5 >/dev/null" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
-#      start_period: 20s
 
   zigbee2mqtt:
     image: ghcr.io/koenkk/zigbee2mqtt:2.7.0
@@ -102,9 +94,6 @@ services:
       - TZ=${TIMEZONE}
     volumes:
       - z2m-data:/app/data
-#    configs:
-#      - source: z2m_config
-#        target: /app/data/configuration.yaml
     deploy:
       replicas: 1
       labels:
@@ -121,39 +110,15 @@ services:
         order: start-first
       restart_policy:
         condition: any
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
-#  esphome:
-#    image: esphome/esphome:2025.7.5
-#    ports:
-#      - 6052:6052
-#    environment:
-#      - TZ=${TIMEZONE}
-#    volumes:
-#      - $BASE_DIR/configs/esphome:/config
-#    privileged: true
-#    devices:
-#      - /dev/ttyUSB0:/dev/ttyUSB0
-#    labels:
-#      - "portainer.io/managed=true"
-#      - "io.portainer.accesscontrol.users=admin"
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.esphome.rule=Host(`esphome.${DOMAIN_NAME}`)"
-#      - "traefik.http.routers.esphome.entrypoints=web"
-#      - "traefik.http.routers.esphome.tls=false"
-#      - "traefik.http.services.esphome-utils.loadbalancer.server.port=1883"
-#    network_mode: host
-#healthcheck:
-#  test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:6052/ >/dev/null"]
-#  interval: 30s
-#  timeout: 5s
-#  retries: 5
-#  start_period: 60s
+
 
 configs:
   mosquitto_config:
-    external: true
-  z2m_config:
     external: true
   nas_ssh_key:
     external: true

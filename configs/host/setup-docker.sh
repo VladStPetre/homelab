@@ -45,12 +45,5 @@ docker compose version
 echo "=== Git version installed ==="
 git --version
 
-echo "Create docker network..."
-# compose
-# docker network create --subnet=172.21.0.0/16 hlcl
-# swarm
-docker network create --subnet=172.21.0.0/16 -d overlay hlel
-echo "Docker network created..."
-
 echo "=== All done! ==="
 echo "You may need to log out and back in for docker group permissions to take effect."

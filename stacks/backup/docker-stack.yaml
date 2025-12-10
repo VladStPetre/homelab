@@ -37,6 +37,9 @@ services:
         - "traefik.http.services.backrest.loadbalancer.server.port=9898"
         # helpful for service discovery / ops
         - "com.backups.role=backrest"
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
 #    healthcheck:
@@ -75,6 +78,9 @@ services:
         - "traefik.http.routers.syncthing.tls=true"
         - "traefik.http.routers.syncthing.tls.certresolver=cloudflare"
         - "traefik.http.services.syncthing.loadbalancer.server.port=8384"
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
 

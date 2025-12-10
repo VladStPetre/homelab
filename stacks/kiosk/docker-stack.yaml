@@ -1,26 +1,27 @@
-
+---
 services:
-  portainer-agent:
-    image: portainer/agent:2.33.5   # or 'latest' if you prefer
+  uptime-kuma:
+    image: louislam/uptime-kuma:2.0.2
     ports:
-      - "9001:9001"
-    environment:
-      # Change this to something unique if you want to identify this cluster
-      AGENT_CLUSTER_ADDR: tasks.portainer-agent
+      - "3001:3001"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker/volumes:/var/lib/docker/volumes
-      # Optional: if you use swarm configs/secrets, keep them accessible
-      - /:/host
+      - uptime-data:/app/data
+    environment:
+      - TZ=${TIMEZONE}
+      - UMASK=0022
     networks:
       - sln
     deploy:
       restart_policy:
         condition: any
+      placement:
+        constraints:
+          - node.labels.role == secondary
 
-
+volumes:
+  uptime-data: {}
 
 networks:
   sln:
-    name: sln
+    name: hlel
     external: true

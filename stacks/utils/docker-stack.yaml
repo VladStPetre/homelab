@@ -20,14 +20,11 @@ services:
         - "traefik.http.services.portainer-utils.loadbalancer.server.port=9000"
       update_config:
         order: start-first
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:9000/api/status >/dev/null || curl -kfsS https://127.0.0.1:9443/api/status >/dev/null" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 15s
 
 
   n8n:
@@ -56,14 +53,11 @@ services:
         - "traefik.http.services.n8n.loadbalancer.server.port=5678"
       update_config:
         order: start-first
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:5678/healthz >/dev/null || curl -fsS http://127.0.0.1:5678/ >/dev/null" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 30s
 
   homepage:
     image: ghcr.io/gethomepage/homepage:v1.7.0
@@ -76,8 +70,6 @@ services:
     configs:
       - source: homepage_settings_yaml
         target: /app/config/settings.yaml
-#      - source: homepage_docker_yaml
-#        target: /app/config/docker.yaml
       - source: homepage_services_yaml
         target: /app/config/services.yaml
       - source: homepage_bookmarks_yaml
@@ -99,14 +91,15 @@ services:
         - "traefik.http.routers.homepage.tls=true"
         - "traefik.http.routers.homepage.tls.certresolver=cloudflare"
         - "traefik.http.services.homepage.loadbalancer.server.port=3000"
+      placement:
+        constraints:
+          - node.labels.role == primary
     networks:
       - hlel
 
 configs:
   homepage_settings_yaml:
     external: true
-#  homepage_docker_yaml:
-#    external: true
   homepage_services_yaml:
     external: true
   homepage_bookmarks_yaml:

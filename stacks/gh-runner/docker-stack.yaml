@@ -19,6 +19,9 @@ services:
     deploy:
       update_config:
         order: start-first
+      placement:
+        constraints:
+          - node.labels.role == primary
 
 volumes:
   runner-data: {}
