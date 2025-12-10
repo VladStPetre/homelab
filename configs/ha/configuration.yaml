@@ -46,6 +46,10 @@ influxdb:
     entities:
       - weather.home
 
+shell_command:
+  qnap_shutdown: >
+    ssh -o StrictHostKeyChecking=no -i /config/ssh_keys/nas_ssh_key admin@<nas-ip> /sbin/poweroff
+
 template:
   - sensor:
       - name: "Monitored Devices Unavailable"

@@ -5,6 +5,10 @@ services:
     volumes:
       - ha-data:/config
       - /etc/localtime:/etc/localtime:ro
+    configs:
+      - source: nas_ssh_key
+        target: /config/ssh_keys/nas_ssh_key
+        mode: 0600
     deploy:
       labels:
         - "portainer.io/managed=true"
@@ -150,6 +154,8 @@ configs:
   mosquitto_config:
     external: true
   z2m_config:
+    external: true
+  nas_ssh_key:
     external: true
 
 secrets:

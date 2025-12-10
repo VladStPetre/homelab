@@ -123,8 +123,8 @@ services:
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.tls=true"
         - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
-        - "traefik.http.routers.traefik.tls.domains[0].main=${DOMAIN_NAME_SEC}"
-        - "traefik.http.routers.traefik.tls.domains[0].sans=*.${DOMAIN_NAME_SEC}"
+        - "traefik.http.routers.traefik.tls.domains[0].main=${DOMAIN_NAME}"
+        - "traefik.http.routers.traefik.tls.domains[0].sans=*.${DOMAIN_NAME}"
         - "traefik.http.routers.traefik.service=api@internal"
          # Satisfy Swarm provider: declare an explicit (unused) backend service/port.
          # It's OK because no router points to it.
