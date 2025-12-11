@@ -1,0 +1,611 @@
+button_card_templates:
+  datetime_header:
+    show_state: true
+    show_label: true
+    show_icon: false
+    tap_action:
+      action: none
+    hold_action:
+      action: none
+    double_tap_action:
+      action: none
+    styles:
+      card:
+        - padding: 16px
+        - border-radius: 18px
+        - box-shadow: 0px 3px 8px rgba(0,0,0,0.16)
+      name:
+        - font-size: 25px
+        - font-weight: 600
+        - opacity: 0.8
+        - color: var(--primary-text-color)
+      state:
+        - font-size: 50px
+        - color: var(--primary-text-color)
+      label:
+        - font-size: 50px
+        - opacity: 0.9
+        - color: var(--primary-text-color)
+    name: |
+      [[[ 
+        // Day name: Monday, Tuesday...
+        const d = new Date(states['sensor.date'].state);
+        return d.toLocaleDateString(undefined, { weekday: 'long' });
+      ]]]
+    label: |
+      [[[ 
+        // Time: 14:05
+        const d = new Date(states['sensor.date_time'].state);
+        return d.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }); // 24h
+      ]]]
+
+
+views:
+  - title: Kiosk
+    type: sections
+    sections:
+      - type: grid
+        column_span: 1
+        cards:
+          - type: custom:button-card
+            template: datetime_header
+            state_display: |
+              [[[ 
+                // Date: 28 Nov 2025
+                const d = new Date(states['sensor.date'].state);
+                return d.toLocaleDateString('ro-RO', { day: '2-digit', month: 'short', year: 'numeric' });
+              ]]]
+          - entities:
+              - entity: calendar.vladstefan_petre_gmail_com
+                color: ''
+                show_time: true
+                show_location: false
+                split_multiday_events: true
+            days_to_show: 7
+            accent_color: var(--primary-color)
+            today_indicator: glow
+            weather:
+              position: none
+              date:
+                show_conditions: true
+                show_high_temp: true
+                show_low_temp: false
+                icon_size: 14px
+                font_size: 12px
+                color: var(--primary-text-color)
+              event:
+                show_conditions: true
+                show_temp: true
+                icon_size: 14px
+                font_size: 12px
+                color: var(--primary-text-color)
+              entity: weather.home
+            type: custom:calendar-card-pro
+      - type: grid
+        cards:
+          - type: custom:bubble-card
+            card_type: separator
+            name: Stats
+            sub_button: []
+          - type: vertical-stack
+            cards:
+              - type: horizontal-stack
+                cards:
+                  - type: custom:mini-graph-card
+                    entities:
+                      - sensor.lumi_de_lumi_158d000391d212_v1_temperature_p_2_1
+                    decimals: 1
+                    name: T Bedroom
+                    line_width: 8
+                    font_size: 75
+                  - type: custom:mini-graph-card
+                    entities:
+                      - sensor.lumi_de_lumi_158d0003cb2d31_v1_temperature_p_2_1
+                    decimals: 1
+                    name: T Living
+                    line_width: 8
+                    font_size: 75
+                  - type: custom:mini-graph-card
+                    entities:
+                      - sensor.lumi_de_lumi_158d0003cb89ed_v1_temperature_p_2_1
+                    decimals: 1
+                    name: T Balcony
+                    line_width: 8
+                    font_size: 75
+              - type: horizontal-stack
+                cards:
+                  - type: custom:mini-graph-card
+                    entities:
+                      - >-
+                        sensor.lumi_de_lumi_158d000391d212_v1_relative_humidity_p_2_2
+                    decimals: 1
+                    name: H Bedroom
+                    line_width: 8
+                    font_size: 75
+                  - type: custom:mini-graph-card
+                    entities:
+                      - >-
+                        sensor.lumi_de_lumi_158d0003cb2d31_v1_relative_humidity_p_2_2
+                    decimals: 1
+                    name: H Living
+                    line_width: 8
+                    font_size: 75
+                  - type: custom:mini-graph-card
+                    entities:
+                      - >-
+                        sensor.lumi_de_lumi_158d0003cb89ed_v1_relative_humidity_p_2_2
+                    decimals: 1
+                    name: H Balcony
+                    line_width: 8
+                    font_size: 75
+          - type: custom:weather-chart-card
+            entity: weather.forecast_home
+            show_main: true
+            show_temperature: true
+            show_current_condition: true
+            show_attributes: true
+            show_time: false
+            show_time_seconds: false
+            show_day: false
+            show_date: false
+            show_humidity: true
+            show_pressure: true
+            show_wind_direction: true
+            show_wind_speed: true
+            show_sun: true
+            show_feels_like: false
+            show_dew_point: false
+            show_wind_gust_speed: false
+            show_visibility: false
+            show_last_changed: true
+            use_12hour_format: false
+            icons_size: '25'
+            animated_icons: false
+            icon_style: style1
+            autoscroll: false
+            forecast:
+              precipitation_type: rainfall
+              show_probability: false
+              labels_font_size: '11'
+              precip_bar_size: '100'
+              style: style2
+              show_wind_forecast: true
+              condition_icons: true
+              round_temp: false
+              type: daily
+              number_of_forecasts: '0'
+              disable_animation: false
+              temperature1_color: rgba(125, 140, 255, 1.0)
+              temperature2_color: rgba(125, 140, 255, 1.0)
+            units:
+              speed: ''
+            current_temp_size: '25'
+      - type: grid
+        cards:
+          - type: custom:bubble-card
+            card_type: separator
+            name: Home
+            sub_button: []
+          - type: horizontal-stack
+            cards:
+              - type: custom:bubble-card
+                card_type: button
+                button_type: state
+                entity: switch.chuangmi_de_235932589_hmi206_on_p_2_1
+                name: TV
+                icon: mdi:television
+                show_last_changed: false
+                show_last_updated: false
+                show_state: false
+                tap_action:
+                  action: none
+                button_action:
+                  tap_action:
+                    action: toggle
+                styles: |
+                  :host {
+                      --bubble-icon-color: var(--primary-color);
+                      --bubble-accent-color: var(--primary-color);
+                  }
+                  .bubble-button-card-container {
+                    background: rgba(var(--ha-card-background), 0.3) !important;
+                    box-shadow: var(--ha-card-box-shadow) !important;
+                    border-width: var(--ha-card-border-width) !important;
+                    border-color: var(--ha-card-border-color) !important;
+                    border-style: solid !important;;
+                    backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                  }
+
+                  .bubble-icon-container {
+                     background: rgba(var(--ha-card-background), 0.8) !important;
+                  }
+              - type: custom:bubble-card
+                card_type: button
+                button_type: state
+                entity: switch.lumi_zigbee_plug_mmeu01
+                name: PC
+                icon: mdi:laptop
+                show_last_changed: false
+                show_last_updated: false
+                show_state: false
+                tap_action:
+                  action: none
+                button_action:
+                  tap_action:
+                    action: toggle
+                card_layout: large
+                styles: |-
+                  :host {
+                      --bubble-icon-color: var(--primary-color);
+                      --bubble-accent-color: var(--primary-color);
+                  }
+                  .bubble-button-card-container {
+                      background: rgba(var(--ha-card-background), 0.3) !important;
+                      box-shadow: var(--ha-card-box-shadow) !important;
+                      border-width: var(--ha-card-border-width) !important;
+                      border-color: var(--ha-card-border-color) !important;
+                      border-style: solid !important;;
+                      backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                    }
+
+                  .bubble-icon-container {
+                     background: rgba(var(--ha-card-background), 0.8) !important;
+                  }
+          - type: custom:bubble-card
+            card_type: button
+            button_type: slider
+            entity: light.yeelink_de_360418659_strip6_s_2_light
+            name: Hol
+            icon: mdi:led-strip-variant
+            button_action: {}
+            styles: |
+              .bubble-button-card-container {
+                  background: rgba(var(--ha-card-background), 0.3) !important;
+                  box-shadow: var(--ha-card-box-shadow) !important;
+                  border-width: var(--ha-card-border-width) !important;
+                  border-color: var(--ha-card-border-color) !important;
+                  border-style: solid !important;;
+                  backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                }
+
+              .bubble-icon-container {
+                 background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-off {
+                  background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-on {
+                  background: var(--primary-color) !important;
+              }
+          - type: custom:bubble-card
+            card_type: media-player
+            entity: media_player.lg_webos_smart_tv
+            visibility:
+              - condition: state
+                entity: device_tracker.lgwebostv
+                state: home
+            name: LG TV
+            icon: mdi:remote-tv
+            hide:
+              volume_button: false
+              play_pause_button: false
+            button_action: {}
+            sub_button:
+              - entity: media_player.lg_webos_smart_tv
+                select_attribute: source_list
+                show_name: false
+                show_state: false
+                show_arrow: true
+            show_state: false
+            show_icon: true
+            show_name: true
+            show_attribute: true
+            attribute: source
+            styles: |
+              .bubble-button-card-container {
+                  background: rgba(var(--ha-card-background), 0.3) !important;
+                  box-shadow: var(--ha-card-box-shadow) !important;
+                  border-width: var(--ha-card-border-width) !important;
+                  border-color: var(--ha-card-border-color) !important;
+                  border-style: solid !important;;
+                  backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                }
+
+              .bubble-icon-container {
+                 background: rgba(var(--ha-card-background), 0.8) !important;
+              }
+          - type: custom:bubble-card
+            card_type: separator
+            name: Homelab
+            sub_button: []
+          - type: custom:bubble-card
+            card_type: button
+            entity: device_tracker.sierra_2
+            name: Sierra
+            icon: mdi:raspberry-pi
+            button_type: state
+            show_state: true
+            show_name: true
+            show_icon: true
+            button_action:
+              tap_action:
+                action: none
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            double_tap_action:
+              action: none
+            styles: |
+              :host {
+                  --bubble-icon-color: var(--primary-color);
+                  --bubble-accent-color: var(--primary-color);
+              }
+              .bubble-button-card-container {
+                  background: rgba(var(--ha-card-background), 0.3) !important;
+                  box-shadow: var(--ha-card-box-shadow) !important;
+                  border-width: var(--ha-card-border-width) !important;
+                  border-color: var(--ha-card-border-color) !important;
+                  border-style: solid !important;;
+                  backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                }
+
+              .bubble-icon-container {
+                 background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-off {
+                  background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-on {
+                  background: var(--primary-color) !important;
+              }
+            sub_button:
+              - entity: light.touchkio_sierra_display
+                name: Display
+                icon: mdi:monitor
+                tap_action:
+                  action: toggle
+                hide_when_parent_unavailable: false
+              - entity: button.touchkio_sierra_reboot
+                name: Reboot
+                icon: mdi:restart
+                tap_action:
+                  action: more-info
+              - entity: button.touchkio_sierra_shutdown
+                name: Shutdown
+                icon: mdi:stop-circle-outline
+                tap_action:
+                  action: more-info
+              - entity: switch.ikea_inspelning_plug_01
+                name: Plug
+                icon: mdi:power
+                tap_action:
+                  action: more-info
+          - type: custom:bubble-card
+            card_type: button
+            name: Adu-NAS
+            icon: mdi:nas
+            button_type: state
+            show_state: true
+            show_name: true
+            show_icon: true
+            button_action:
+              tap_action:
+                action: none
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            double_tap_action:
+              action: none
+            styles: |
+              :host {
+                  --bubble-icon-color: var(--primary-color);
+                  --bubble-accent-color: var(--primary-color);
+              }
+              .bubble-button-card-container {
+                  background: rgba(var(--ha-card-background), 0.3) !important;
+                  box-shadow: var(--ha-card-box-shadow) !important;
+                  border-width: var(--ha-card-border-width) !important;
+                  border-color: var(--ha-card-border-color) !important;
+                  border-style: solid !important;;
+                  backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                }
+
+              .bubble-icon-container {
+                 background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-off {
+                  background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-on {
+                  background: var(--primary-color) !important;
+              }
+            sub_button:
+              - name: WOL
+                icon: mdi:network-outline
+                button_type: action
+                tap_action:
+                  action: call-service
+                  service: mqtt.publish
+                  data:
+                    topic: echo/command/naswol
+                    payload: 'on'
+                entity: input_button.dummy_button
+              - entity: switch.echo_host_echo_nfsnas
+                name: NfsNAS
+                icon: mdi:usb
+                tap_action:
+                  action: toggle
+              - name: Shutdown
+                icon: mdi:power
+                tap_action:
+                  action: call-service
+                  service: script.shutdown_nas
+                  data: {}
+                entity: input_button.dummy_button
+            entity: device_tracker.adu_nas
+          - type: custom:bubble-card
+            card_type: button
+            entity: switch.echo_host_echo_vexthdd
+            name: ExtHDD
+            icon: mdi:harddisk
+            button_type: state
+            show_state: true
+            show_name: true
+            show_icon: true
+            button_action:
+              tap_action:
+                action: none
+            tap_action:
+              action: none
+            styles: |
+              :host {
+                  --bubble-icon-color: var(--primary-color);
+                  --bubble-accent-color: var(--primary-color);
+              }
+              .bubble-button-card-container {
+                  background: rgba(var(--ha-card-background), 0.3) !important;
+                  box-shadow: var(--ha-card-box-shadow) !important;
+                  border-width: var(--ha-card-border-width) !important;
+                  border-color: var(--ha-card-border-color) !important;
+                  border-style: solid !important;;
+                  backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                }
+
+              .bubble-icon-container {
+                 background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-off {
+                  background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-on {
+                  background: var(--primary-color) !important;
+              }
+            sub_button:
+              - entity: switch.echo_host_echo_vexthdd
+                name: Echo
+                icon: mdi:usb
+              - entity: switch.ikea_tretakt_plug_01
+                name: Plug
+                icon: mdi:power
+      - type: grid
+        cards:
+          - type: custom:bubble-card
+            card_type: separator
+            name: Stats
+            sub_button: []
+          - type: vertical-stack
+            cards:
+              - type: horizontal-stack
+                cards:
+                  - type: custom:mushroom-template-card
+                    primary: >-
+                      Immich - 
+                      {{states('sensor.backrest_immich_local_nfsnas_backrest_immich_local_nfsnas_status')
+                      }}
+                    icon: mdi:nas
+                    features_position: bottom
+                    color: >-
+                      {% if
+                      states('sensor.backrest_immich_local_nfsnas_backrest_immich_local_nfsnas_status')
+                      != 'success' %}red{% endif %}
+                    secondary: >-
+                      {{
+                      as_datetime(states('sensor.backrest_immich_local_nfsnas_backrest_immich_local_nfsnas_ended')).strftime('%Y-%m-%d
+                      %H:%M') }}
+
+                      |
+
+                      {{states('sensor.backrest_immich_local_nfsnas_backrest_immich_local_nfsnas_duration')
+                      }}s
+                  - type: custom:mushroom-template-card
+                    primary: >-
+                      Immich -  
+                      {{states('sensor.backrest_immich_local_vexthdd_backrest_immich_local_vexthdd_status')
+                      }}
+                    icon: mdi:harddisk
+                    features_position: bottom
+                    color: >-
+                      {% if
+                      states('sensor.backrest_immich_local_vexthdd_backrest_immich_local_vexthdd_status')
+                      != 'success' %}red{% endif %}
+                    secondary: >-
+                      {{
+                      as_datetime(states('sensor.backrest_immich_local_vexthdd_backrest_immich_local_vexthdd_ended')).strftime('%Y-%m-%d
+                      %H:%M') }}
+
+                      |
+
+                      {{states('sensor.backrest_immich_local_vexthdd_backrest_immich_local_vexthdd_duration')
+                      }}s
+              - type: horizontal-stack
+                cards:
+                  - type: custom:mushroom-template-card
+                    icon: mdi:harddisk
+                    features_position: bottom
+                    color: >-
+                      {% if states('sensor.adu_nas_volume_used_nas_disk_1') |
+                      float > 80 %}red{% endif %}
+                    primary: >-
+                      {{ states('sensor.adu_nas_volume_used_nas_disk_1') | float
+                      | round(2) }} %
+                  - type: custom:mushroom-template-card
+                    primary: 'Nas - 25% '
+                    icon: mdi:harddisk
+                    features_position: bottom
+                    color: >-
+                      {% if
+                      states('sensor.backrest_immich_local_vexthdd_backrest_immich_local_vexthdd_status')
+                      != 'success' %}red{% endif %}
+                  - type: custom:mushroom-template-card
+                    primary: 'Nas - 25% '
+                    icon: mdi:harddisk
+                    features_position: bottom
+                    color: >-
+                      {% if
+                      states('sensor.backrest_immich_local_vexthdd_backrest_immich_local_vexthdd_status')
+                      != 'success' %}red{% endif %}
+              - type: horizontal-stack
+                cards:
+                  - type: custom:mushroom-template-card
+                    primary: >-
+                      Sierra - {{
+                      states('sensor.touchkio_sierra_processor_usage') | float |
+                      round(2) }} % | {{
+                      states('sensor.touchkio_sierra_memory_usage') | float |
+                      round(2) }} % | {{
+                      states('sensor.touchkio_sierra_processor_temperature') |
+                      float | round(2) }} ℃ | {{
+                      states('sensor.ikea_inspelning_plug_01_power') | float |
+                      round(2) }} W
+                    icon: mdi:raspberry-pi
+                    features_position: bottom
+                    multiline_secondary: false
+          - type: custom:mini-graph-card
+            name: Internet Speed
+            entities:
+              - entity: sensor.speedtest_ping
+                name: Ping
+                show_state: true
+                color: var(--secondary-color)
+              - entity: sensor.speedtest_download
+                name: Download
+                show_state: true
+                color: var(--primary-color)
+              - entity: sensor.speedtest_upload
+                name: Upload
+                show_state: true
+                color: var(--bubble-default-color)
+            show:
+              graph: line
+              fill: fade
+              legend: true
+              labels: true
+              name: true
+            hours_to_show: 24
+            points_per_hour: 1
+            line_width: 2
+    max_columns: 4
+    icon: mdi:home
+    cards: []
