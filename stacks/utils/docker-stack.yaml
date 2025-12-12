@@ -2,7 +2,7 @@
 services:
 
   portainer:
-    image: portainer/portainer-ce:2.36.0
+    image: portainer/portainer-ce:2.37.0
     command: -H unix:///var/run/docker.sock
     volumes:
       - portainer-data:/data
@@ -28,7 +28,7 @@ services:
 
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n:1.122.3
+    image: docker.n8n.io/n8nio/n8n:2.0.1
     environment:
       - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
       - N8N_PORT=5678
@@ -60,7 +60,7 @@ services:
       - hlel
 
   homepage:
-    image: ghcr.io/gethomepage/homepage:v1.7.0
+    image: ghcr.io/gethomepage/homepage:v1.8.0
     environment:
       - TZ=Europe/Bucharest
       - HOMEPAGE_ALLOWED_HOSTS=home.${DOMAIN_NAME}
