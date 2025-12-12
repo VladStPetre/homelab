@@ -10,18 +10,28 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=0022
     networks:
-      - sln
+      - hlel
     deploy:
       restart_policy:
         condition: any
       placement:
         constraints:
           - node.labels.role == secondary
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.uptime.rule=Host(`uptime.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.uptime.entrypoints=websecure"
+        - "traefik.http.routers.uptime.tls=true"
+        - "traefik.http.routers.uptime.tls.certresolver=cloudflare"
+        - "traefik.http.services.uptime.loadbalancer.server.port=3001"
 
 volumes:
   uptime-data: {}
 
 networks:
-  sln:
+  hlel:
     name: hlel
     external: true
