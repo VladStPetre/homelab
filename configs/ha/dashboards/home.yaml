@@ -1,0 +1,669 @@
+views:
+  - type: sections
+    max_columns: 2
+    icon: mdi:home-circle
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: H/T
+            heading_style: subtitle
+            icon: mdi:home-thermometer-outline
+          - type: horizontal-stack
+            cards:
+              - type: custom:modern-circular-gauge
+                entity: sensor.lumi_de_lumi_158d000391d212_v1_temperature_p_2_1
+                secondary:
+                  entity: >-
+                    sensor.lumi_de_lumi_158d000391d212_v1_relative_humidity_p_2_2
+                  adaptive_state_color: false
+                  show_gauge: inner
+                  needle: false
+                  state_size: big
+                  show_state: true
+                  show_unit: true
+                  min: 0
+                  max: 100
+                tertiary: {}
+                header_position: bottom
+                needle: false
+                smooth_segments: false
+                show_header: true
+                show_state: true
+                show_unit: true
+                show_icon: true
+                adaptive_icon_color: true
+                adaptive_state_color: false
+                min: -15
+                max: 50
+                segments: []
+                name: Bedroom
+              - type: custom:modern-circular-gauge
+                entity: sensor.lumi_de_lumi_158d0003cb2d31_v1_temperature_p_2_1
+                secondary:
+                  entity: >-
+                    sensor.lumi_de_lumi_158d0003cb2d31_v1_relative_humidity_p_2_2
+                  adaptive_state_color: false
+                  show_gauge: inner
+                  needle: false
+                  min: 0
+                  max: 100
+                  state_size: big
+                tertiary: {}
+                header_position: bottom
+                needle: false
+                smooth_segments: false
+                show_header: true
+                show_state: true
+                show_unit: true
+                show_icon: true
+                adaptive_icon_color: false
+                adaptive_state_color: false
+                min: -15
+                max: 50
+                name: Living
+              - type: custom:modern-circular-gauge
+                entity: sensor.lumi_de_lumi_158d0003cb89ed_v1_temperature_p_2_1
+                secondary:
+                  entity: >-
+                    sensor.lumi_de_lumi_158d0003cb89ed_v1_relative_humidity_p_2_2
+                  adaptive_state_color: false
+                  show_gauge: inner
+                  needle: false
+                  min: 0
+                  max: 100
+                  state_size: big
+                tertiary: {}
+                header_position: bottom
+                needle: false
+                smooth_segments: false
+                show_header: true
+                show_state: true
+                show_unit: true
+                show_icon: true
+                adaptive_icon_color: false
+                adaptive_state_color: false
+                name: Balcony
+                min: -15
+                max: 50
+          - type: custom:bubble-card
+            card_type: separator
+            name: Home
+            sub_button: []
+          - type: horizontal-stack
+            cards:
+              - type: custom:bubble-card
+                card_type: button
+                button_type: state
+                entity: switch.chuangmi_de_235932589_hmi206_on_p_2_1
+                name: TV
+                icon: mdi:television
+                show_last_changed: false
+                show_last_updated: false
+                show_state: false
+                tap_action:
+                  action: none
+                button_action:
+                  tap_action:
+                    action: toggle
+                styles: |
+                  :host {
+                      --bubble-icon-color: var(--primary-color);
+                      --bubble-accent-color: var(--primary-color);
+                  }
+                  .bubble-button-card-container {
+                    background: rgba(var(--ha-card-background), 0.3) !important;
+                    box-shadow: var(--ha-card-box-shadow) !important;
+                    border-width: var(--ha-card-border-width) !important;
+                    border-color: var(--ha-card-border-color) !important;
+                    border-style: solid !important;;
+                    backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                  }
+
+                  .bubble-icon-container {
+                     background: rgba(var(--ha-card-background), 0.8) !important;
+                  }
+              - type: custom:bubble-card
+                card_type: button
+                button_type: state
+                entity: switch.lumi_zigbee_plug_mmeu01
+                name: PC
+                icon: mdi:laptop
+                show_last_changed: false
+                show_last_updated: false
+                show_state: false
+                tap_action:
+                  action: none
+                button_action:
+                  tap_action:
+                    action: toggle
+                card_layout: large
+                styles: |-
+                  :host {
+                      --bubble-icon-color: var(--primary-color);
+                      --bubble-accent-color: var(--primary-color);
+                  }
+                  .bubble-button-card-container {
+                      background: rgba(var(--ha-card-background), 0.3) !important;
+                      box-shadow: var(--ha-card-box-shadow) !important;
+                      border-width: var(--ha-card-border-width) !important;
+                      border-color: var(--ha-card-border-color) !important;
+                      border-style: solid !important;;
+                      backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                    }
+
+                  .bubble-icon-container {
+                     background: rgba(var(--ha-card-background), 0.8) !important;
+                  }
+          - type: custom:bubble-card
+            card_type: button
+            button_type: slider
+            entity: light.yeelink_de_360418659_strip6_s_2_light
+            name: Hol
+            icon: mdi:led-strip-variant
+            button_action: {}
+            styles: |
+              .bubble-button-card-container {
+                  background: rgba(var(--ha-card-background), 0.3) !important;
+                  box-shadow: var(--ha-card-box-shadow) !important;
+                  border-width: var(--ha-card-border-width) !important;
+                  border-color: var(--ha-card-border-color) !important;
+                  border-style: solid !important;;
+                  backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                }
+
+              .bubble-icon-container {
+                 background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-off {
+                  background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-on {
+                  background: var(--primary-color) !important;
+              }
+          - type: custom:bubble-card
+            card_type: media-player
+            entity: media_player.lg_webos_smart_tv
+            visibility:
+              - condition: state
+                entity: device_tracker.lgwebostv
+                state: home
+            name: LG TV
+            icon: mdi:remote-tv
+            hide:
+              volume_button: false
+              play_pause_button: false
+            button_action: {}
+            sub_button:
+              - entity: media_player.lg_webos_smart_tv
+                select_attribute: source_list
+                show_name: false
+                show_state: false
+                show_arrow: true
+            show_state: false
+            show_icon: true
+            show_name: true
+            show_attribute: true
+            attribute: source
+            styles: |
+              .bubble-button-card-container {
+                  background: rgba(var(--ha-card-background), 0.3) !important;
+                  box-shadow: var(--ha-card-box-shadow) !important;
+                  border-width: var(--ha-card-border-width) !important;
+                  border-color: var(--ha-card-border-color) !important;
+                  border-style: solid !important;;
+                  backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                }
+
+              .bubble-icon-container {
+                 background: rgba(var(--ha-card-background), 0.8) !important;
+              }
+          - type: custom:bubble-card
+            card_type: separator
+            name: Homelab
+            sub_button: []
+          - type: custom:bubble-card
+            card_type: button
+            entity: device_tracker.sierra_2
+            name: Sierra
+            icon: mdi:raspberry-pi
+            button_type: state
+            show_state: false
+            show_name: true
+            show_icon: true
+            button_action:
+              tap_action:
+                action: none
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            double_tap_action:
+              action: none
+            styles: |
+              :host {
+                  --bubble-icon-color: var(--primary-color);
+                  --bubble-accent-color: var(--primary-color);
+              }
+              .bubble-button-card-container {
+                  background: rgba(var(--ha-card-background), 0.3) !important;
+                  box-shadow: var(--ha-card-box-shadow) !important;
+                  border-width: var(--ha-card-border-width) !important;
+                  border-color: var(--ha-card-border-color) !important;
+                  border-style: solid !important;;
+                  backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                }
+
+              .bubble-icon-container {
+                 background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-off {
+                  background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-on {
+                  background: var(--primary-color) !important;
+              }
+            sub_button:
+              - entity: light.touchkio_sierra_display
+                name: Display
+                icon: mdi:monitor
+                tap_action:
+                  action: toggle
+                hide_when_parent_unavailable: false
+              - entity: button.touchkio_sierra_reboot
+                name: Reboot
+                icon: mdi:restart
+                tap_action:
+                  action: more-info
+              - entity: button.touchkio_sierra_shutdown
+                name: Shutdown
+                icon: mdi:stop-circle-outline
+                tap_action:
+                  action: more-info
+              - entity: switch.ikea_inspelning_plug_01
+                name: Plug
+                icon: mdi:power
+                tap_action:
+                  action: more-info
+          - type: custom:bubble-card
+            card_type: button
+            name: Adu-NAS
+            icon: mdi:nas
+            button_type: state
+            show_state: false
+            show_name: true
+            show_icon: true
+            button_action:
+              tap_action:
+                action: none
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            double_tap_action:
+              action: none
+            styles: |
+              :host {
+                  --bubble-icon-color: var(--primary-color);
+                  --bubble-accent-color: var(--primary-color);
+              }
+              .bubble-button-card-container {
+                  background: rgba(var(--ha-card-background), 0.3) !important;
+                  box-shadow: var(--ha-card-box-shadow) !important;
+                  border-width: var(--ha-card-border-width) !important;
+                  border-color: var(--ha-card-border-color) !important;
+                  border-style: solid !important;;
+                  backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                }
+
+              .bubble-icon-container {
+                 background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-off {
+                  background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-on {
+                  background: var(--primary-color) !important;
+              }
+            sub_button:
+              - name: WOL
+                icon: mdi:network-outline
+                button_type: action
+                tap_action:
+                  action: call-service
+                  service: mqtt.publish
+                  data:
+                    topic: echo/command/naswol
+                    payload: 'on'
+                entity: input_button.dummy_button
+              - entity: switch.echo_host_echo_nfsnas
+                name: NfsNAS
+                icon: mdi:usb
+                tap_action:
+                  action: toggle
+              - name: Shutdown
+                icon: mdi:power
+                tap_action:
+                  action: call-service
+                  service: script.shutdown_nas
+                  data: {}
+                entity: input_button.dummy_button
+            entity: device_tracker.adu_nas
+            show_last_changed: false
+          - type: custom:bubble-card
+            card_type: button
+            entity: switch.echo_host_echo_vexthdd
+            name: ExtHDD
+            icon: mdi:harddisk
+            button_type: state
+            show_state: false
+            show_name: true
+            show_icon: true
+            button_action:
+              tap_action:
+                action: none
+            tap_action:
+              action: none
+            styles: |
+              :host {
+                  --bubble-icon-color: var(--primary-color);
+                  --bubble-accent-color: var(--primary-color);
+              }
+              .bubble-button-card-container {
+                  background: rgba(var(--ha-card-background), 0.3) !important;
+                  box-shadow: var(--ha-card-box-shadow) !important;
+                  border-width: var(--ha-card-border-width) !important;
+                  border-color: var(--ha-card-border-color) !important;
+                  border-style: solid !important;;
+                  backdrop-filter: var(--ha-card-backdrop-filter) !important;
+                }
+
+              .bubble-icon-container {
+                 background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-off {
+                  background: rgba(var(--ha-card-background), 0.7) !important;
+              }
+              .bubble-sub-button.background-on {
+                  background: var(--primary-color) !important;
+              }
+            sub_button:
+              - entity: switch.echo_host_echo_vexthdd
+                name: Echo
+                icon: mdi:usb
+              - entity: switch.ikea_tretakt_plug_01
+                name: Plug
+                icon: mdi:power
+          - type: custom:weather-chart-card
+            entity: weather.forecast_home
+            show_main: true
+            show_temperature: true
+            show_current_condition: true
+            show_attributes: true
+            show_time: false
+            show_time_seconds: false
+            show_day: false
+            show_date: false
+            show_humidity: true
+            show_pressure: true
+            show_wind_direction: true
+            show_wind_speed: true
+            show_sun: true
+            show_feels_like: false
+            show_dew_point: false
+            show_wind_gust_speed: false
+            show_visibility: false
+            show_last_changed: true
+            use_12hour_format: false
+            icons_size: '25'
+            animated_icons: false
+            icon_style: style1
+            autoscroll: false
+            forecast:
+              precipitation_type: rainfall
+              show_probability: false
+              labels_font_size: '11'
+              precip_bar_size: '100'
+              style: style2
+              show_wind_forecast: true
+              condition_icons: true
+              round_temp: false
+              type: daily
+              number_of_forecasts: '0'
+              disable_animation: false
+            units:
+              speed: ''
+            current_temp_size: '25'
+    path: home-main
+    cards: []
+  - type: sections
+    max_columns: 4
+    title: archive
+    path: archive
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: New section
+          - square: false
+            type: grid
+            cards:
+              - type: custom:button-card
+                show_name: true
+                show_icon: true
+                icon: mdi:network-outline
+                tap_action:
+                  action: call-service
+                  service: mqtt.publish
+                  service_data:
+                    topic: echo/command/naswol
+                    payload: 'on'
+                  confirmation: true
+                entity: device_tracker.adu_nas
+                show_state: false
+                state:
+                  - value: home
+                    color: green
+                  - value: not_home
+                    color: red
+              - type: custom:button-card
+                entity: switch.echo_host_echo_nfsnas
+                tap_action:
+                  action: toggle
+                  confirmation: true
+                state:
+                  - value: 'on'
+                    color: green
+                  - value: 'off'
+                    color: red
+                show_name: true
+                show_icon: true
+                name: NfsNAS
+                icon: mdi:usb
+              - type: custom:button-card
+                entity: switch.ikea_tretakt_plug_01
+                tap_action:
+                  action: toggle
+                  confirmation: true
+                state:
+                  - value: 'on'
+                    color: green
+                  - value: 'off'
+                    color: red
+                show_name: true
+                show_icon: true
+                name: ExtHDD
+                icon: mdi:power
+              - type: custom:button-card
+                entity: switch.echo_host_echo_vexthdd
+                tap_action:
+                  action: toggle
+                  confirmation: true
+                state:
+                  - value: 'on'
+                    color: green
+                  - value: 'off'
+                    color: red
+                show_name: true
+                show_icon: true
+                name: ExtHDD
+                icon: mdi:usb
+              - type: custom:button-card
+                entity: input_boolean.ext_hdd_switch
+                tap_action:
+                  action: toggle
+                  confirmation: true
+                state:
+                  - value: 'on'
+                    color: green
+                  - value: 'off'
+                    color: red
+                show_name: true
+                show_icon: true
+                name: ExtHDD
+                icon: mdi:flash-auto
+              - type: custom:button-card
+                show_name: true
+                show_icon: true
+                tap_action:
+                  action: perform-action
+                  perform_action: homeassistant.update_entity
+                  target: {}
+                  data:
+                    entity_id:
+                      - sensor.speedtest_download
+                      - sensor.speedtest_ping
+                      - sensor.speedtest_upload
+                name: Speed test
+                icon: mdi:gauge
+              - type: custom:button-card
+                name: Backrest
+                show_name: true
+                show_icon: true
+                icon: mdi:download-box-outline
+                tap_action:
+                  action: call-service
+                  service: mqtt.publish
+                  service_data:
+                    topic: echo/command/backrestscale
+                    payload: down
+                  confirmation: true
+              - type: custom:button-card
+                name: Backrest
+                show_name: true
+                show_icon: true
+                icon: mdi:upload-box-outline
+                tap_action:
+                  action: call-service
+                  service: mqtt.publish
+                  service_data:
+                    topic: echo/command/backrestscale
+                    payload: up
+                  confirmation: true
+              - type: custom:button-card
+                entity: light.touchkio_sierra_display
+                tap_action:
+                  action: toggle
+                  confirmation: true
+                show_name: true
+                show_icon: true
+                name: Sierra
+                icon: mdi:monitor
+              - type: custom:button-card
+                entity: button.touchkio_sierra_reboot
+                tap_action:
+                  action: toggle
+                  confirmation: true
+                show_name: true
+                show_icon: true
+                name: Sierra
+                icon: mdi:restart
+              - type: custom:button-card
+                entity: button.touchkio_sierra_shutdown
+                tap_action:
+                  action: toggle
+                  confirmation: true
+                show_name: true
+                show_icon: true
+                name: Sierra
+                icon: mdi:stop-circle-outline
+              - type: custom:button-card
+                entity: switch.ikea_inspelning_plug_01
+                tap_action:
+                  action: toggle
+                  confirmation: true
+                state:
+                  - value: 'on'
+                    color: green
+                  - value: 'off'
+                    color: red
+                show_name: true
+                show_icon: true
+                name: Sierra
+                icon: mdi:power
+              - type: custom:button-card
+                tap_action:
+                  action: call-service
+                  service: script.shutdown_nas
+                  service_data: {}
+                  confirmation: true
+                show_name: true
+                show_icon: true
+                name: Adu-NAS
+                icon: mdi:power
+            columns: 4
+      - type: grid
+        cards:
+          - type: heading
+            heading: New section
+          - square: false
+            type: grid
+            cards:
+              - type: custom:mushroom-light-card
+                entity: light.yeelight_strip6_0x157b8d63
+                name: Leds Hol
+                icon: mdi:led-strip-variant
+                icon_color: deep-purple
+                fill_container: true
+                primary_info: name
+                secondary_info: none
+                use_light_color: true
+                show_brightness_control: true
+                show_color_control: true
+                tap_action:
+                  action: toggle
+                hold_action:
+                  action: none
+                double_tap_action:
+                  action: none
+                collapsible_controls: true
+                layout: vertical
+              - type: custom:button-card
+                show_name: true
+                show_icon: true
+                icon: mdi:television-ambient-light
+                tap_action:
+                  action: toggle
+                entity: switch.chuangmi_de_235932589_hmi206_on_p_2_1
+                show_state: false
+                name: TV
+                state:
+                  - value: 'off'
+                    icon: mdi:television
+                  - value: 'on'
+                    icon: mdi:television-ambient-light
+              - type: custom:button-card
+                show_name: true
+                show_icon: true
+                icon: mdi:remote-desktop
+                tap_action:
+                  action: toggle
+                entity: switch.lumi_zigbee_plug_mmeu01
+                show_state: false
+                name: PC
+                state:
+                  - value: 'off'
+                    icon: mdi:television
+                  - value: 'on'
+                    icon: mdi:remote-desktop
+            columns: 3

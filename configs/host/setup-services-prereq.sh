@@ -8,10 +8,10 @@ docker network create --subnet=172.21.0.0/16 -d overlay hlel
 echo "===  Docker network created  ==="
 
 echo "===  Create docker secrets  ==="
-printf 'admin' | docker secret create influxdb2-admin-username -
-printf 'vladminmax.2251' | docker secret create influxdb2-admin-password -
-printf 'fmfi2NeHqnW5MzeTt2NA3x2r!DWFD2wc' | docker secret create influxdb2-admin-token -
-printf 'fuUcdStQCAymj5BS7e7FNyxdhR9XM77u' | docker secret create immich_pg_password -
+printf '<placeholder>' | docker secret create influxdb2-admin-username -
+printf '<placeholder>' | docker secret create influxdb2-admin-password -
+printf '<placeholder>' | docker secret create influxdb2-admin-token -
+printf '<placeholder>' | docker secret create immich_pg_password -
 echo "===  Docker secrets created  ==="
 
 
