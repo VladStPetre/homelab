@@ -15,6 +15,7 @@ on:
           - utils
           - immich
           - kiosk
+          - backup
 
 concurrency:
   group: server-deploy-${{ github.repository_id }}-main
