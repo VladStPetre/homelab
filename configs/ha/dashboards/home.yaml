@@ -438,6 +438,19 @@ views:
     cards: []
   - type: sections
     max_columns: 4
+    title: 'TODO:'
+    path: todo
+    icon: mdi:checkbox-marked-circle-auto-outline
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: 'TODO:'
+            heading_style: title
+          - type: todo-list
+            entity: todo.tasks
+  - type: sections
+    max_columns: 4
     title: archive
     path: archive
     sections:

@@ -324,7 +324,7 @@ views:
             name: Sierra
             icon: mdi:raspberry-pi
             button_type: state
-            show_state: true
+            show_state: false
             show_name: true
             show_icon: true
             button_action:
@@ -386,7 +386,7 @@ views:
             name: Adu-NAS
             icon: mdi:nas
             button_type: state
-            show_state: true
+            show_state: false
             show_name: true
             show_icon: true
             button_action:
@@ -445,13 +445,14 @@ views:
                   data: {}
                 entity: input_button.dummy_button
             entity: device_tracker.adu_nas
+            show_last_changed: false
           - type: custom:bubble-card
             card_type: button
             entity: switch.echo_host_echo_vexthdd
             name: ExtHDD
             icon: mdi:harddisk
             button_type: state
-            show_state: true
+            show_state: false
             show_name: true
             show_icon: true
             button_action:
@@ -495,6 +496,22 @@ views:
             card_type: separator
             name: Stats
             sub_button: []
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-template-card
+                primary: Homelab stats
+                icon: mdi:open-in-new
+                features_position: bottom
+                tap_action:
+                  action: navigate
+                  navigation_path: /dashboard-ksk/homelab-stats
+              - type: custom:mushroom-template-card
+                primary: T/H stats
+                icon: mdi:open-in-new
+                features_position: bottom
+                tap_action:
+                  action: navigate
+                  navigation_path: /dashboard-ksk/t-h-stats
           - type: vertical-stack
             cards:
               - type: horizontal-stack
@@ -609,3 +626,23 @@ views:
     max_columns: 4
     icon: mdi:home
     cards: []
+  - type: panel
+    path: homelab-stats
+    subview: true
+    title: Homelab stats
+    icon: mdi:server-outline
+    cards:
+      - type: iframe
+        url: >-
+          https://grafana.dalvv.org/public-dashboards/da9c8dd736a140bb9fc859fba91e52ea
+        aspect_ratio: 100%
+  - type: panel
+    path: t-h-stats
+    title: T/H stats
+    subview: true
+    cards:
+      - type: iframe
+        url: >-
+          https://grafana.dalvv.org/public-dashboards/bdb77119cb2f4f9f88b5b8369ad95576
+        aspect_ratio: 100%
+    icon: mdi:equalizer-outline
