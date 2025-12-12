@@ -33,7 +33,7 @@ services:
       - hlel
 
   alloy:
-    image: grafana/alloy:v1.11.3
+    image: grafana/alloy:v1.12.0
     hostname: echo
     command:
       - run
@@ -74,7 +74,7 @@ services:
 # sudo chown -R ${CUID} /var/lib/docker/volumes/monitoring_loki-data
 
   loki:
-    image: grafana/loki:3.6.2
+    image: grafana/loki:3.6.3
     command: "-config.file=/etc/loki/config.yaml"
     user: ${CUID}
     configs:
@@ -102,7 +102,7 @@ services:
        - hlel
 
   prometheus:
-    image: prom/prometheus:v3.7.3
+    image: prom/prometheus:v3.8.0
     user: root
     configs:
       - source: prom_config
