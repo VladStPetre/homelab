@@ -209,6 +209,11 @@ discovery.relabel "dockerlogs" {
     action = "labeldrop"
     regex  = "__tmp_.*"
   }
+
+  rule {
+    action = "labeldrop"
+    regex  = "container_id|image"
+  }
 }
 
 
@@ -265,7 +270,7 @@ discovery.relabel "metrics_targets" {
 }
 
 prometheus.scrape "metrics" {
-  scrape_interval = "15s"
+  scrape_interval = "30s"
   targets         = discovery.relabel.metrics_targets.output
   forward_to      = [prometheus.remote_write.echo.receiver]
 }
@@ -276,12 +281,28 @@ prometheus.scrape "metrics" {
 prometheus.exporter.cadvisor "dockermetrics" {
   docker_host      = "unix:///var/run/docker.sock"
   docker_only      = true
-  disabled_metrics = ["disk", "diskIO"]  // drop FS/IO families
+  disabled_metrics = [
+        // defaults from docs
+        "memory_numa",
+        "tcp",
+        "udp",
+        "advtcp",
+        "process",
+        "hugetlb",
+        "referenced_memory",
+        "cpu_topology",
+        "resctrl",
+        "cpuset",
+
+        // your extra choices
+        "disk",
+        "diskIO",
+      ]
   storage_duration = "5m"
 }
 
 prometheus.relabel "cadvisor_labels" {
-  forward_to = []
+  forward_to = [prometheus.remote_write.echo.receiver]
 
   rule {
     target_label = "instance"
@@ -291,17 +312,10 @@ prometheus.relabel "cadvisor_labels" {
     target_label = "node"
     replacement  = constants.hostname
   }
-  rule {
-    target_label = "job"
-    replacement  = "cadvisor"
-  }
 }
 
 prometheus.scrape "dockermetrics" {
-  scrape_interval = "15s"
+  scrape_interval = "30s"
   targets         = prometheus.exporter.cadvisor.dockermetrics.targets
-  forward_to      = [
-    prometheus.relabel.cadvisor_labels.receiver,
-    prometheus.remote_write.echo.receiver,
-  ]
+  forward_to      = [prometheus.relabel.cadvisor_labels.receiver]
 }

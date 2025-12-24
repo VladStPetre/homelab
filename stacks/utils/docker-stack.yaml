@@ -55,7 +55,7 @@ services:
         order: start-first
       placement:
         constraints:
-          - node.labels.role == primary
+          - node.labels.role == secondary
     networks:
       - hlel
 

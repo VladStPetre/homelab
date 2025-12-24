@@ -33,7 +33,7 @@ services:
       - hlel
 
   alloy:
-    image: grafana/alloy:v1.12.0
+    image: grafana/alloy:v1.11.3
     hostname: echo
     command:
       - run
