@@ -45,7 +45,7 @@ services:
       - PGID=${CGID}                # your local group ID
       - TZ=${TIMEZONE}
       - WEBUI_PORT=8081
-      - UMASK_SET=000            # sensible file perms
+      - UMASK=000            # sensible file perms
     volumes:
       - qbittorrent-data:/config
       - /mnt/media/Movies:/movies
