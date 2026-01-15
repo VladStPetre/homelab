@@ -22,6 +22,20 @@ entryPoints:
   websecure:
     address: :443
 
+  web-external:
+    address: :81
+    #   Redirect to HTTPS
+    #   ---
+    http:
+      redirections:
+        entryPoint:
+          to: websecure-external
+          scheme: https
+
+  websecure-external:
+    address: :444
+
+
 # Configure your CertificateResolver here...
 # ---
 certificatesResolvers:

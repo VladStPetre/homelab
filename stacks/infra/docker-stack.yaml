@@ -13,7 +13,7 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "81:80"
+      - "88:80"
     volumes:
       - pihole-data:/etc/pihole
       - pihole-dnsmasq-data:/etc/dnsmasq.d
@@ -93,6 +93,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "81:81"
+      - "444:444"
     environment:
 #      - CF_API_EMAIL=user@example.com
 #      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_api_token

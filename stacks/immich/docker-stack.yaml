@@ -84,7 +84,7 @@ services:
         - "traefik.enable=true"
         - "traefik.swarm.network=hlel"
         - "traefik.http.routers.immich.rule=Host(`${EXT_DOMAIN_NAME}`)"
-        - "traefik.http.routers.immich.entrypoints=websecure"
+        - "traefik.http.routers.immich.entrypoints=websecure-external"
         - "traefik.http.routers.immich.tls=true"
         - "traefik.http.routers.immich.tls.certresolver=aduh-ext"
         - "traefik.http.services.immich.loadbalancer.server.port=2283"
