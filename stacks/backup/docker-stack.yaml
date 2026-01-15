@@ -17,12 +17,13 @@ services:
       - backrest_tmp:/tmp
       # Mount the SAME service volumes read-only so Backrest can back them up
       - immich_library:/data/immich_library:ro
-      - /mnt/nas:/data/nfsnas
+      - nas_nfs_share:/data/nfsnas
       - /mnt/media:/data/vexthdd
-#      - db_data:/userdata/db:ro
     deploy:
       restart_policy:
         condition: on-failure
+        delay: 300s          # wait 60s between restarts
+        max_attempts: 5    # stop restarting after 10 tries
       update_config:
         order: start-first
       labels:
@@ -42,11 +43,6 @@ services:
           - node.labels.role == primary
     networks:
       - hlel
-#    healthcheck:
-#      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9898/healthz"]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
 
   syncthing-src:
     image: lscr.io/linuxserver/syncthing:2.0.12
@@ -97,6 +93,12 @@ volumes:
     external: true
   syncthing_src_config:
     external: true
+  nas_nfs_share:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: "addr=${NAS_ADDR},nfsvers=4,hard,timeo=25,retrans=2"
+      device: ":/nfs-share"
 
 networks:
   hlel:
