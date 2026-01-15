@@ -38,7 +38,7 @@ services:
       restart_policy:
         condition: any         # restart even on exit 0
         delay: 5s
-        max_attempts: 0        # unlimited
+        max_attempts: 1        # unlimited
         window: 30s
       placement:
         constraints:

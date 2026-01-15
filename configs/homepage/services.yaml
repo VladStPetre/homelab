@@ -73,7 +73,7 @@
 
     - NAS:
         icon: si-qnap
-        href: "https://{{HOMEPAGE_VAR_NAS_ADDR}}"
+        href: "https://nas.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
         description: NAS - Qnap
 
     - n8n:

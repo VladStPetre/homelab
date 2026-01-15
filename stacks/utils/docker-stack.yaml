@@ -97,6 +97,24 @@ services:
     networks:
       - hlel
 
+  nas-router:
+    image: traefik/whoami:v1.10.3
+    networks:
+      - hlel
+    deploy:
+      replicas: 1
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.nas-router.rule=Host(`nas.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.nas-router.entrypoints=websecure"
+        - "traefik.http.routers.nas-router.tls=true"
+        - "traefik.http.routers.nas-router.tls.certresolver=cloudflare"
+        - "traefik.http.services.nas-router.loadbalancer.server.url=http://${NAS_ADDR}:8080"
+
+
 configs:
   homepage_settings_yaml:
     external: true
