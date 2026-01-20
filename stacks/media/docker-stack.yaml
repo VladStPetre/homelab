@@ -9,7 +9,9 @@ services:
       - PUID=${CUID}
       - PGID=${CGID}
       - TZ=${TIMEZONE}
+      - LIBVA_DRIVER_NAME=iHD
     volumes:
+      - /dev/dri:/dev/dri
       - jellyfin-data:/config
       - /mnt/media:/media
     deploy:
