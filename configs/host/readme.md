@@ -96,3 +96,10 @@ frontend:
   port: 8080
 homeassistant: true
 ```
+
+
+### install cockpit
+```commandLine
+sudo apt install cockpit
+sudo systemctl enable --now cockpit.socket
+```

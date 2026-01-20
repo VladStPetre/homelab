@@ -97,7 +97,7 @@ services:
     networks:
       - hlel
 
-  nas-router:
+  svc-router:
     image: traefik/whoami:v1.10.3
     networks:
       - hlel
