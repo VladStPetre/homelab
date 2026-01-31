@@ -13,6 +13,7 @@ services:
     volumes:
       - /dev/dri:/dev/dri
       - jellyfin-data:/config
+      - jellyfin-cache:/cache
       - /mnt/media:/media
     deploy:
       labels:
@@ -29,12 +30,6 @@ services:
         order: start-first
     networks:
       - hlel
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8096/web/index.html >/dev/null || curl -kfsS https://127.0.0.1:8920/web/index.html >/dev/null" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 45s
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:5.1.4
@@ -68,15 +63,10 @@ services:
         order: start-first
     networks:
       - hlel
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -fsS http://127.0.0.1:8080/api/v2/app/version >/dev/null" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 20s
 
 volumes:
   jellyfin-data: {}
+  jellyfin-cache: {}
   qbittorrent-data: {}
 
 networks:
