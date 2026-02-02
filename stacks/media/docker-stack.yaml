@@ -32,7 +32,7 @@ services:
       - hlel
 
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:5.1.4
+    image: lscr.io/linuxserver/qbittorrent:20.04.1
     ports:
       - "8081:8081"              # web UI
       - "6881:6881"              # torrent traffic TCP
