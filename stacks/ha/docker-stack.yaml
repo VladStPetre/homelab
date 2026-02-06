@@ -1,7 +1,7 @@
 ---
 services:
   homeassistant:
-    image: ghcr.io/home-assistant/home-assistant:2025.11.3
+    image: ghcr.io/home-assistant/home-assistant:2026.2.0
     volumes:
       - ha-data:/config
       - /etc/localtime:/etc/localtime:ro
@@ -29,7 +29,7 @@ services:
       - hlel
 
   influxdb:
-    image: influxdb:2.7.12
+    image: influxdb:2.8.0
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME_FILE=/run/secrets/influxdb2-admin-username
@@ -89,7 +89,7 @@ services:
       - hlel
 
   zigbee2mqtt:
-    image: ghcr.io/koenkk/zigbee2mqtt:2.7.0
+    image: ghcr.io/koenkk/zigbee2mqtt:2.8.0
     environment:
       - TZ=${TIMEZONE}
     volumes:
