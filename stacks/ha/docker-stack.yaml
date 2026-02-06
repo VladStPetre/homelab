@@ -116,6 +116,32 @@ services:
     networks:
       - hlel
 
+  esphome:
+    image: esphome/esphome:2026.1
+    volumes:
+      - esphome-data:/config
+      - esphome-cache:/cache
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=${TIMEZONE}
+    deploy:
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.esphome.rule=Host(`esphome.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.esphome.entrypoints=websecure"
+        - "traefik.http.routers.esphome.tls=true"
+        - "traefik.http.routers.esphome.tls.certresolver=cloudflare"
+        - "traefik.http.services.esphome.loadbalancer.server.port=6052"
+      update_config:
+        order: start-first
+      placement:
+        constraints:
+          - node.labels.role == primary
+    networks:
+      - hlel
 
 configs:
   mosquitto_config:
@@ -133,6 +159,8 @@ secrets:
 
 volumes:
   ha-data: {}
+  esphome-data: {}
+  esphome-cache: {}
   influxdb2-data: {}
   influxdb2-config: {}
   mosquitto-config: {}
