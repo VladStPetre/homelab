@@ -10,6 +10,16 @@ services:
         target: /config/ssh_keys/nas_ssh_key
         mode: 0600
     deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 60s          # wait 60s between restarts
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -20,8 +30,6 @@ services:
         - "traefik.http.routers.hass.tls=true"
         - "traefik.http.routers.hass.tls.certresolver=cloudflare"
         - "traefik.http.services.hass.loadbalancer.server.port=8123"
-      update_config:
-        order: start-first
       placement:
         constraints:
           - node.labels.role == primary
@@ -46,6 +54,15 @@ services:
       - influxdb2-config:/etc/influxdb2
       - influxdb2-data:/var/lib/influxdb2
     deploy:
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -56,8 +73,6 @@ services:
         - "traefik.http.routers.influxdb.tls=true"
         - "traefik.http.routers.influxdb.tls.certresolver=cloudflare"
         - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
-      update_config:
-        order: start-first
       placement:
         constraints:
           - node.labels.role == primary
@@ -77,11 +92,18 @@ services:
       - mosquitto-data:/mosquitto/data
       - mosquitto-logs:/mosquitto/log
     deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
-      update_config:
-        order: start-first
       placement:
         constraints:
           - node.labels.role == primary
@@ -95,6 +117,15 @@ services:
     volumes:
       - z2m-data:/app/data
     deploy:
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       replicas: 1
       labels:
         - "portainer.io/managed=true"
@@ -106,10 +137,6 @@ services:
         - "traefik.http.routers.z2m.tls=true"
         - "traefik.http.routers.z2m.tls.certresolver=cloudflare"
         - "traefik.http.services.z2m.loadbalancer.server.port=8080"
-      update_config:
-        order: start-first
-      restart_policy:
-        condition: any
       placement:
         constraints:
           - node.labels.role == primary
@@ -125,6 +152,15 @@ services:
     environment:
       - TZ=${TIMEZONE}
     deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -135,8 +171,6 @@ services:
         - "traefik.http.routers.esphome.tls=true"
         - "traefik.http.routers.esphome.tls.certresolver=cloudflare"
         - "traefik.http.services.esphome.loadbalancer.server.port=6052"
-      update_config:
-        order: start-first
       placement:
         constraints:
           - node.labels.role == primary

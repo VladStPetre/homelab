@@ -14,6 +14,15 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
     deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -24,8 +33,6 @@ services:
         - "traefik.http.routers.grafana.tls=true"
         - "traefik.http.routers.grafana.tls.certresolver=cloudflare"
         - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-      update_config:
-        order: start-first
       placement:
         constraints:
           - node.labels.role == primary
@@ -52,6 +59,15 @@ services:
       - /var/lib/docker/:/var/lib/docker/:ro
       - /run/udev/data:/run/udev/data:ro
     deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -62,8 +78,6 @@ services:
         - "traefik.http.routers.alloy.tls=true"
         - "traefik.http.routers.alloy.tls.certresolver=cloudflare"
         - "traefik.http.services.alloy.loadbalancer.server.port=12345"
-      update_config:
-        order: start-first
       placement:
         constraints:
           - node.labels.role == primary
@@ -83,6 +97,15 @@ services:
     volumes:
       - loki-data:/loki:rw
     deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -93,8 +116,6 @@ services:
         - "traefik.http.routers.loki.tls=true"
         - "traefik.http.routers.loki.tls.certresolver=cloudflare"
         - "traefik.http.services.loki.loadbalancer.server.port=3100"
-      update_config:
-        order: start-first
       placement:
         constraints:
           - node.labels.role == primary
@@ -118,6 +139,15 @@ services:
       - '--web.enable-lifecycle'
       - '--web.enable-remote-write-receiver'
     deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -128,8 +158,6 @@ services:
         - "traefik.http.routers.prometheus.tls=true"
         - "traefik.http.routers.prometheus.tls.certresolver=cloudflare"
         - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
-      update_config:
-        order: start-first
       placement:
         constraints:
           - node.labels.role == primary

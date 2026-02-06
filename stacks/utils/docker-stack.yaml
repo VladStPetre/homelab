@@ -8,6 +8,15 @@ services:
       - portainer-data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -18,8 +27,6 @@ services:
         - "traefik.http.routers.portainer.tls=true"
         - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
         - "traefik.http.services.portainer-utils.loadbalancer.server.port=9000"
-      update_config:
-        order: start-first
       placement:
         constraints:
           - node.labels.role == primary
@@ -41,6 +48,15 @@ services:
       - n8n-data:/home/node/.n8n
       - n8n-local-files:/files
     deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -51,8 +67,6 @@ services:
         - "traefik.http.routers.n8n.tls=true"
         - "traefik.http.routers.n8n.tls.certresolver=cloudflare"
         - "traefik.http.services.n8n.loadbalancer.server.port=5678"
-      update_config:
-        order: start-first
       placement:
         constraints:
           - node.labels.role == secondary
@@ -81,6 +95,15 @@ services:
       # Optional: persistent user assets (custom icons/backgrounds):
       - homepage-data:/app/config/user
     deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"

@@ -15,6 +15,13 @@ services:
     deploy:
       restart_policy:
         condition: any
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       placement:
         constraints:
           - node.labels.role == primary
@@ -29,6 +36,13 @@ services:
     deploy:
       restart_policy:
         condition: any
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       placement:
         constraints:
           - node.labels.role == primary
@@ -44,7 +58,14 @@ services:
       - immich_model_cache:/cache
     deploy:
       restart_policy:
-        condition: any
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       placement:
         constraints:
           - node.labels.role == primary
@@ -74,10 +95,15 @@ services:
 #        protocol: tcp
 #        mode: ingress
     deploy:
-      update_config:
-        order: start-first
       restart_policy:
         condition: any
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"

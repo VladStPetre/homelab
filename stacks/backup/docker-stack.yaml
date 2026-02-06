@@ -30,7 +30,12 @@ services:
         delay: 300s          # wait 60s between restarts
         max_attempts: 5    # stop restarting after 10 tries
       update_config:
-        order: start-first
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -68,7 +73,12 @@ services:
       restart_policy:
         condition: on-failure
       update_config:
-        order: start-first
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"

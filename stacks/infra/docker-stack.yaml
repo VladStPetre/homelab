@@ -23,6 +23,18 @@ services:
       - SYS_NICE
       - NET_BIND_SERVICE
     deploy:
+      restart_policy:
+        condition: any         # restart even on exit 0
+        delay: 5s
+        max_attempts: 1        # unlimited
+        window: 30s
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -33,13 +45,6 @@ services:
         - "traefik.http.routers.pihole.tls=true"
         - "traefik.http.routers.pihole.tls.certresolver=cloudflare"
         - "traefik.http.services.pihole.loadbalancer.server.port=80"
-      update_config:
-        order: stop-first
-      restart_policy:
-        condition: any         # restart even on exit 0
-        delay: 5s
-        max_attempts: 1        # unlimited
-        window: 30s
       placement:
         constraints:
           - node.labels.role == primary
@@ -76,11 +81,18 @@ services:
     dns:
       - 192.168.7.124
     deploy:
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
-      update_config:
-        order: start-first
       placement:
         constraints:
           - node.labels.role == primary
@@ -109,6 +121,15 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     deploy:
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -124,8 +145,6 @@ services:
          # Satisfy Swarm provider: declare an explicit (unused) backend service/port.
          # It's OK because no router points to it.
         - "traefik.http.services.noop.loadbalancer.server.port=65535"
-      update_config:
-        order: stop-first
       placement:
         constraints:
           - node.labels.role == primary

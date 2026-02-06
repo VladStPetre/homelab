@@ -17,8 +17,15 @@ services:
       - /_work:/_work
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
+      restart_policy:
+        condition: on-failure
       update_config:
-        order: start-first
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       placement:
         constraints:
           - node.labels.role == primary
