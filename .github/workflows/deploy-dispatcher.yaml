@@ -1,0 +1,46 @@
+name: Deploy stacks (dispatcher)
+
+on:
+  workflow_dispatch:
+    inputs:
+      stack_name:
+        description: "Select stack (or all)"
+        type: choice
+        required: true
+        options:
+          - all
+          - ha
+          - infra
+          - media
+          - monitoring
+          - utils
+          - immich
+          - backup
+
+jobs:
+  dispatch:
+    name: "Deploy stack dispatch"
+    runs-on: [self-hosted, linux, docker, stacks]
+    permissions:
+      actions: write
+      contents: read
+
+    steps:
+      - name: Dispatch deploy workflow
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const stacks = ["ha","infra","media","monitoring","utils","immich","backup"];
+            const selected = "${{ inputs.stack_name }}";
+            const list = (selected === "all") ? stacks : [selected];
+
+            for (const stack of list) {
+              core.info(`Dispatching deploy-stack.yml for: ${stack}`);
+              await github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: "deploy-stack.yml",
+                ref: context.ref.replace("refs/heads/", ""),
+                inputs: { stack_name: stack }
+              });
+            }

@@ -73,6 +73,7 @@ jobs:
           env_file:  envfile
           resolve_image: changed
           prune: true
+          mode: swarm
 
       - name: Wait for stack to settle
         if: success()
