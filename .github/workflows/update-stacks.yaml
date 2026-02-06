@@ -67,7 +67,7 @@ jobs:
         with:
           name: ${{ inputs.stack_name }}
           file: stacks/${{ inputs.stack_name }}/docker-stack.yaml
-          host: ${{ secrets.DOMAIN_NAME }}
+          host: ${{ secrets.DOMAIN_IP }}
           user: deploy
           ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
           env_file:  envfile
@@ -82,7 +82,7 @@ jobs:
         if: success()
         env:
            STACK_NAME: ${{ inputs.stack_name }}
-           SSH_HOST: ${{ secrets.DOMAIN_NAME }}
+           SSH_HOST: ${{ secrets.DOMAIN_IP }}
            SSH_USER: deploy
         run: |
             set -euo pipefail
