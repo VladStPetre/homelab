@@ -120,7 +120,7 @@ volumes:
     driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=${NAS_ADDR},nfsvers=4,soft,timeo=600,retrans=2"
+      o: "addr=${NAS_ADDR},nfsvers=4,nolock,soft,timeo=600,retrans=2"
       device: ":/nfs-share"
 
 networks:
