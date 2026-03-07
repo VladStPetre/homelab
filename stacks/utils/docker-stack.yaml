@@ -1,6 +1,37 @@
 ---
 services:
 
+  dockhand:
+    image: fnsys/dockhand:v1.0.20
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dockhand_data:/app/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.dockhand.rule=Host(`dockhand.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.dockhand.entrypoints=websecure"
+        - "traefik.http.routers.dockhand.tls=true"
+        - "traefik.http.routers.dockhand.tls.certresolver=cloudflare"
+        - "traefik.http.services.dockhand.loadbalancer.server.port=3000"
+      placement:
+        constraints:
+          - node.labels.role == primary
+    networks:
+      - hlel
+
   portainer:
     image: portainer/portainer-ce:2.38.0
     command: -H unix:///var/run/docker.sock
@@ -152,6 +183,7 @@ volumes:
     homepage-data:
       external: true
     portainer-data: {}
+    dockhand_data: {}
     n8n-data: {}
     n8n-local-files: {}
 

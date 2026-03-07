@@ -1,32 +1,31 @@
 ---
 services:
 
-  pihole:
-    image: pihole/pihole:2025.11.1
+  adguardhome:
+    image: adguard/adguardhome:v0.107.72
     environment:
       - TZ=${TIMEZONE}
-      - FTLCONF_webserver_api_password=${PIHOLE_PASS}
-      - FTLCONF_dns_listeningMode=ALL
-      - FTLCONF_dns_upstreams=1.1.1.1;1.0.0.1
-      - VIRTUAL_HOST=pihole.${DOMAIN_NAME}
-      - DNSMASQ_USER=root
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "88:80"
+      - target: 53
+        published: 53
+        protocol: udp
+        mode: host
+      - target: 53
+        published: 53
+        protocol: tcp
+        mode: host
     volumes:
-      - pihole-data:/etc/pihole
-      - pihole-dnsmasq-data:/etc/dnsmasq.d
+      - adguard-work:/opt/adguardhome/work
+      - adguard-conf:/opt/adguardhome/conf
     cap_add:
       - NET_ADMIN
-      - SYS_TIME
-      - SYS_NICE
       - NET_BIND_SERVICE
+      - SYS_TIME
     deploy:
       restart_policy:
-        condition: any         # restart even on exit 0
+        condition: any
         delay: 5s
-        max_attempts: 1        # unlimited
+        max_attempts: 1
         window: 30s
       update_config:
         parallelism: 1
@@ -35,22 +34,22 @@ services:
       rollback_config:
         parallelism: 1
         order: stop-first
+      placement:
+        constraints:
+          - node.labels.role == primary
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
         - "traefik.enable=true"
         - "traefik.swarm.network=hlel"
-        - "traefik.http.routers.pihole.rule=Host(`pihole.${DOMAIN_NAME}`)"
-        - "traefik.http.routers.pihole.entrypoints=websecure"
-        - "traefik.http.routers.pihole.tls=true"
-        - "traefik.http.routers.pihole.tls.certresolver=cloudflare"
-        - "traefik.http.services.pihole.loadbalancer.server.port=80"
-      placement:
-        constraints:
-          - node.labels.role == primary
+        - "traefik.http.routers.adguard.rule=Host(`adguard.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.adguard.entrypoints=websecure"
+        - "traefik.http.routers.adguard.tls=true"
+        - "traefik.http.routers.adguard.tls.certresolver=cloudflare"
+        - "traefik.http.services.adguard.loadbalancer.server.port=80"
     networks:
       hlel:
-        ipv4_address: 172.21.0.109
+        ipv4_address: 172.21.0.109   # same IP your Pi-hole had
 
 
   wireguard:
@@ -164,6 +163,8 @@ volumes:
   pihole-dnsmasq-data: {}
   wireguard-data: {}
   traefik-data: {}
+  adguard-work: {}
+  adguard-conf: {}
 
 networks:
   hlel:
