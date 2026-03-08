@@ -28,8 +28,50 @@ services:
         - "traefik.http.routers.uptime.tls.certresolver=cloudflare"
         - "traefik.http.services.uptime.loadbalancer.server.port=3001"
 
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:2.7.2
+    environment:
+      - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE}
+      - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
+      - GENERIC_TIMEZONE=${TIMEZONE}
+    volumes:
+      - n8n-data:/home/node/.n8n
+      - n8n-local-files:/files
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.n8n.rule=Host(`n8n.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.n8n.entrypoints=websecure"
+        - "traefik.http.routers.n8n.tls=true"
+        - "traefik.http.routers.n8n.tls.certresolver=cloudflare"
+        - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+      placement:
+        constraints:
+          - node.labels.role == secondary
+    networks:
+      - hlel
+
+
 volumes:
   uptime-data: {}
+  n8n-data: {}
+  n8n-local-files: {}
 
 networks:
   hlel:
