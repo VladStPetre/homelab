@@ -1,7 +1,7 @@
 ---
 services:
   backrest:
-    image: garethgeorge/backrest:v1.11.2
+    image: garethgeorge/backrest:v1.12.0
     hostname: echo
     environment:
       - BACKREST_DATA=/data
@@ -55,7 +55,7 @@ services:
       - hlel
 
   syncthing-src:
-    image: lscr.io/linuxserver/syncthing:2.0.14
+    image: lscr.io/linuxserver/syncthing:2.0.15
     ports:
       - "22000:22000/tcp"   # Sync TCP
       - "22000:22000/udp"   # Sync QUIC/UDP
