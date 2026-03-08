@@ -27,6 +27,7 @@ docker config create loki_config ./configs/loki/config.yaml
 docker config create prom_config ./configs/prometheus/prometheus.yaml
 
 docker config create homepage_settings_yaml ./configs/homepage/settings.yaml
+docker config create homepage_docker_yaml ./configs/homepage/docker.yaml
 docker config create homepage_services_yaml ./configs/homepage/services.yaml
 docker config create homepage_bookmarks_yaml ./configs/homepage/bookmarks.yaml
 docker config create homepage_widgets_yaml ./configs/homepage/widgets.yaml

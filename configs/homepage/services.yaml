@@ -25,7 +25,7 @@
         description: Folder syncronization
 
     - z2m:
-        icon: si-syncthing
+        icon: si-zigbee2mqtt
         href: "https://z2m.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
         description: zigbee2mqtt
 
