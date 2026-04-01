@@ -2,7 +2,7 @@
 services:
 
   adguardhome:
-    image: adguard/adguardhome:v0.107.72
+    image: adguard/adguardhome:v0.107.73
     environment:
       - TZ=${TIMEZONE}
     ports:
@@ -100,7 +100,7 @@ services:
 
 
   traefik:
-    image: traefik:v3.6.10
+    image: traefik:v3.6.12
     ports:
       - "80:80"
       - "443:443"
