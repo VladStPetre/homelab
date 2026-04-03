@@ -2,7 +2,7 @@
 services:
 
   dockhand:
-    image: fnsys/dockhand:v1.0.20
+    image: fnsys/dockhand:v1.0.24
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - dockhand_data:/app/data
@@ -33,7 +33,7 @@ services:
       - hlel
 
   portainer:
-    image: portainer/portainer-ce:2.39.0
+    image: portainer/portainer-ce:2.40.0
     command: -H unix:///var/run/docker.sock
     volumes:
       - portainer-data:/data
@@ -66,7 +66,7 @@ services:
 
 
   homepage:
-    image: ghcr.io/gethomepage/homepage:v1.10.1
+    image: ghcr.io/gethomepage/homepage:v1.12.3
     environment:
       - TZ=Europe/Bucharest
       - HOMEPAGE_ALLOWED_HOSTS=home.${DOMAIN_NAME}
