@@ -1,7 +1,7 @@
 ---
 services:
   homeassistant:
-    image: ghcr.io/home-assistant/home-assistant:2026.3.1
+    image: ghcr.io/home-assistant/home-assistant:2026.4.1
     volumes:
       - ha-data:/config
       - /etc/localtime:/etc/localtime:ro
@@ -111,7 +111,7 @@ services:
       - hlel
 
   zigbee2mqtt:
-    image: ghcr.io/koenkk/zigbee2mqtt:2.9.1
+    image: ghcr.io/koenkk/zigbee2mqtt:2.9.2
     environment:
       - TZ=${TIMEZONE}
     volumes:
@@ -144,7 +144,7 @@ services:
       - hlel
 
   esphome:
-    image: esphome/esphome:2026.2
+    image: esphome/esphome:2026.3
     volumes:
       - esphome-data:/config
       - esphome-cache:/cache
