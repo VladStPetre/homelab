@@ -43,14 +43,14 @@ captive_portal:
 # IO Extender
 #-------------------------------------------
 external_components:
-  - source: github://esphome/esphome@latest
-    components: [ lvgl ]
   - source: github://pr#10071
     components: [waveshare_io_ch32v003]
     refresh: 1h
 
 waveshare_io_ch32v003:
-  - id: waveshare_io_hub
+  id: waveshare_io_hub
+  i2c_id: bus_a
+  address: 0x24
 
 #-------------------------------------------
 # Touchscreen gt911
@@ -79,7 +79,7 @@ touchscreen:
       # for (auto touch: touches)  {
       # if (touch.state <= 2) {
       # ESP_LOGI("Touch points:", "id=%d x=%d, y=%d x.raw=%d, y.raw=%d", touch.id, touch.x, touch.y, touch.x_raw, touch.y_raw);
-      # }
+    # }
     # }
 
 #-------------------------------------------
@@ -135,116 +135,514 @@ display:
         - 47        #g6
         - 21        #g7
 
-time:
-  - platform: homeassistant
-    id: ha_time
+  # ── Backlight (PWM) ────────────────────────────────────────
+  #output:
+  #  - platform: ledc
+  #    id: backlight_pwm
+  #    pin: GPIO45
+  #    frequency: 1000Hz
 
-interval:
-  - interval: 1s
-    then:
-      - if:
-          condition:
-            lambda: 'return id(ha_time).now().is_valid();'
-          then:
-            - lvgl.label.update:
-                id: clock_label
-                text: !lambda |-
-                  auto t = id(ha_time).now();
-                  char buf[6];
-                  snprintf(buf, sizeof(buf), "%02d:%02d", t.hour, t.minute);
-                  return std::string(buf);
-# -------------------
-# LVGL UI
-# -------------------
+  #light:
+  #  - platform: monochromatic
+  #    id: backlight
+  #    name: "Display Backlight"
+  #    output: backlight_pwm
+  #    restore_mode: ALWAYS_ON
+  #    initial_value: 0.9
+
+  # ══════════════════════════════════════════════════════════
+  #  Home Assistant sensor proxies
+  # ══════════════════════════════════════════════════════════
+
+sensor:
+  - platform: homeassistant
+    id: temp_living
+    entity_id: sensor.living_room_temperature
+    unit_of_measurement: "°C"
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_living_temp
+            text: !lambda 'return str_sprintf("%.1f°C", x);'
+
+  - platform: homeassistant
+    id: temp_bedroom
+    entity_id: sensor.bedroom_temperature
+    unit_of_measurement: "°C"
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_bedroom_temp
+            text: !lambda 'return str_sprintf("%.1f°C", x);'
+
+  - platform: homeassistant
+    id: temp_kitchen
+    entity_id: sensor.kitchen_temperature
+    unit_of_measurement: "°C"
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_kitchen_temp
+            text: !lambda 'return str_sprintf("%.1f°C", x);'
+
+  - platform: homeassistant
+    id: hum_living
+    entity_id: sensor.living_room_humidity
+    unit_of_measurement: "%"
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_living_hum
+            text: !lambda 'return str_sprintf("%.0f%%", x);'
+
+  - platform: homeassistant
+    id: hum_bedroom
+    entity_id: sensor.bedroom_humidity
+    unit_of_measurement: "%"
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_bedroom_hum
+            text: !lambda 'return str_sprintf("%.0f%%", x);'
+
+  - platform: homeassistant
+    id: hum_kitchen
+    entity_id: sensor.kitchen_humidity
+    unit_of_measurement: "%"
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_kitchen_hum
+            text: !lambda 'return str_sprintf("%.0f%%", x);'
+
+binary_sensor:
+  - platform: homeassistant
+    id: light_living_state
+    entity_id: light.living_room_light
+    on_press:
+      then:
+        - lvgl.widget.update:
+            id: btn_light_living
+            state:
+              checked: true
+    on_release:
+      then:
+        - lvgl.widget.update:
+            id: btn_light_living
+            state:
+              checked: false
+
+  - platform: homeassistant
+    id: light_bedroom_state
+    entity_id: light.bedroom_light
+    on_press:
+      then:
+        - lvgl.widget.update:
+            id: btn_light_bedroom
+            state:
+              checked: true
+    on_release:
+      then:
+        - lvgl.widget.update:
+            id: btn_light_bedroom
+            state:
+              checked: false
+
+  - platform: homeassistant
+    id: light_kitchen_state
+    entity_id: light.kitchen_light
+    on_press:
+      then:
+        - lvgl.widget.update:
+            id: btn_light_kitchen
+            state:
+              checked: true
+    on_release:
+      then:
+        - lvgl.widget.update:
+            id: btn_light_kitchen
+            state:
+              checked: false
+
+# ══════════════════════════════════════════════════════════
+#  LVGL UI  —  1024 × 768
+#
+#  Layout (px):
+#  ┌─────────────────────────────────────────────────────┐
+#  │  HEADER  y:0  h:64                       w:1024     │
+#  ├─────────────────────────────────────────────────────┤
+#  │  "CLIMATE"  y:76                                    │
+#  │  [Living 316×220] [Bedroom 316×220] [Kitchen 316×220]│ y:100
+#  ├─────────────────────────────────────────────────────┤
+#  │  "LIGHTS"  y:342                                    │
+#  │  [Living 316×382] [Bedroom 316×382] [Kitchen 316×382]│ y:366
+#  └─────────────────────────────────────────────────────┘
+#  Columns:  x1=16  x2=344  x3=672   (12px gaps)
+#
+#  FIX NOTES vs previous version:
+#  1. theme key: [btn] → [button]  (ESPHome LVGL uses full widget names)
+#  2. align: RIGHT → align: RIGHT_MID  (RIGHT alone is not a valid LVGL align)
+#  3. align: BOTTOM_LEFT → align: BOTTOM_LEFT  (this one is valid, kept)
+#  4. Removed shadow_* from obj cards — only supported on btn/panel in ESPHome LVGL
+#  5. clip_corner moved inside styles block where required by ESPHome LVGL schema
+# ══════════════════════════════════════════════════════════
 lvgl:
-  buffer_size: 25%
   displays:
     - my_display
   touchscreens:
     - my_touchscreen
 
-  style_definitions:
-    # Root background
-    - id: style_root
-      bg_color: 0x0B0F14
-      bg_opa: 100%
-
-    # Base tile (dark, rounded, slightly raised)
-    - id: style_tile
-      radius: 18
-      bg_color: 0x101923
-      bg_opa: 100%
+  # ── Global theme ────────────────────────────────────────
+  # FIX 1: key is [button], not [btn]
+  theme:
+    button:
+      bg_color: 0x1E3A5F
+      bg_grad_color: 0x0D1F3C
+      bg_grad_dir: VER
+      border_color: 0x4A90D9
       border_width: 1
-      border_color: 0x1C2A38
-      pad_all: 12
-      shadow_width: 18
-      shadow_opa: 25%
-      shadow_spread: 1
-      shadow_ofs_y: 6
-
-    # “Glow” tile variant (neon border feel)
-    - id: style_tile_glow
-      radius: 18
-      bg_color: 0x0F1822
-      bg_opa: 100%
-      border_width: 2
-      border_color: 0x24D6C6   # teal glow
-      pad_all: 14
-      shadow_width: 22
-      shadow_opa: 35%
-      shadow_spread: 2
-      shadow_ofs_y: 6
-
-    # Small label text
-    - id: style_text_dim
-      text_color: 0xA9B4C0
-
-    # Big center clock text
-    - id: style_clock
-      text_color: 0xE8F1FF
-
-    # Subtitle in tiles
-    - id: style_tile_title
-      text_color: 0xBFD2E6
+      text_color: 0xFFFFFF
+      radius: 16
+      checked:
+        bg_color: 0xF5A623
+        bg_grad_color: 0xD4891E
+        border_color: 0xFFCC66
+        text_color: 0x1A1A1A
 
   pages:
     - id: main_page
-      styles: style_root
+      bg_color: 0x0B1628
+      bg_opa: COVER
+
       widgets:
 
-        # GRID ROOT
+        # ══════════════════════════════════════════════════
+        #  HEADER BAR  1024 × 64
+        # ══════════════════════════════════════════════════
         - obj:
-            id: root_grid
-            width: 100%
-            height: 100%
-            styles: style_root
-            layout:
-              type: grid
-              grid_columns: [22%, 56%, 22%]
-              grid_rows:    [20%, 60%, 20%]
-              pad_row: 10
-              pad_column: 10
+            x: 0
+            y: 0
+            width: 1024
+            height: 64
+            bg_color: 0x0D1F3C
+            border_width: 0
+            pad_all: 0
+            radius: 0
 
             widgets:
+              - label:
+                  x: 28
+                  y: 16
+                  text: "Home Dashboard"
+                  text_font: montserrat_32
+                  text_color: 0xF0F4FF
 
-              # CENTER TILE
-              - obj:
-                  styles: style_tile
-                  grid_cell_column_pos: 1
-                  grid_cell_row_pos: 1
-                  grid_cell_column_span: 1
-                  grid_cell_row_span: 1
-                  grid_cell_x_align: stretch
-                  grid_cell_y_align: stretch
+              # FIX 2: align RIGHT → RIGHT_MID; use positive x offset from right edge
+              - label:
+                  id: lbl_clock
+                  align: RIGHT_MID
+                  x: -28
+                  y: 0
+                  text: "--:--"
+                  text_font: montserrat_24
+                  text_color: 0x8BA8CC
 
-                  widgets:
-                    - label:
-                        text: "HOME SYSTEM"
-                        text_color: red
-                        y: 8
+        # ══════════════════════════════════════════════════
+        #  SECTION LABEL: CLIMATE
+        # ══════════════════════════════════════════════════
+        - label:
+            x: 28
+            y: 76
+            text: "CLIMATE"
+            text_font: montserrat_16
+            text_color: 0x4A90D9
 
-                    - label:
-                        id: clock_label
-                        text: "--:--"
-                        align: center
-                        styles: style_clock
+        # ── Climate Card: Living Room ──────────────────────
+        - obj:
+            id: card_living
+            x: 16
+            y: 100
+            width: 316
+            height: 220
+            bg_color: 0x132040
+            border_color: 0x1E3A5F
+            border_width: 1
+            radius: 20
+            pad_all: 0
+
+            widgets:
+              - label:
+                  x: 20
+                  y: 14
+                  text: "Living Room"
+                  text_font: montserrat_22
+                  text_color: 0xF0F4FF
+              - label:
+                  x: 20
+                  y: 60
+                  text: "Temp"
+                  text_font: montserrat_14
+                  text_color: 0x8BA8CC
+              - label:
+                  id: lbl_living_temp
+                  x: 20
+                  y: 80
+                  text: "--.-°C"
+                  text_font: montserrat_36
+                  text_color: 0xF5A623
+              - label:
+                  x: 20
+                  y: 138
+                  text: "Humidity"
+                  text_font: montserrat_14
+                  text_color: 0x8BA8CC
+              - label:
+                  id: lbl_living_hum
+                  x: 20
+                  y: 158
+                  text: "--%"
+                  text_font: montserrat_28
+                  text_color: 0x4A90D9
+
+        # ── Climate Card: Bedroom ──────────────────────────
+        - obj:
+            id: card_bedroom
+            x: 344
+            y: 100
+            width: 316
+            height: 220
+            bg_color: 0x132040
+            border_color: 0x1E3A5F
+            border_width: 1
+            radius: 20
+            pad_all: 0
+
+            widgets:
+              - label:
+                  x: 20
+                  y: 14
+                  text: "Bedroom"
+                  text_font: montserrat_22
+                  text_color: 0xF0F4FF
+              - label:
+                  x: 20
+                  y: 60
+                  text: "Temp"
+                  text_font: montserrat_14
+                  text_color: 0x8BA8CC
+              - label:
+                  id: lbl_bedroom_temp
+                  x: 20
+                  y: 80
+                  text: "--.-°C"
+                  text_font: montserrat_36
+                  text_color: 0xF5A623
+              - label:
+                  x: 20
+                  y: 138
+                  text: "Humidity"
+                  text_font: montserrat_14
+                  text_color: 0x8BA8CC
+              - label:
+                  id: lbl_bedroom_hum
+                  x: 20
+                  y: 158
+                  text: "--%"
+                  text_font: montserrat_28
+                  text_color: 0x4A90D9
+
+        # ── Climate Card: Kitchen ──────────────────────────
+        - obj:
+            id: card_kitchen
+            x: 672
+            y: 100
+            width: 316
+            height: 220
+            bg_color: 0x132040
+            border_color: 0x1E3A5F
+            border_width: 1
+            radius: 20
+            pad_all: 0
+
+            widgets:
+              - label:
+                  x: 20
+                  y: 14
+                  text: "Kitchen"
+                  text_font: montserrat_22
+                  text_color: 0xF0F4FF
+              - label:
+                  x: 20
+                  y: 60
+                  text: "Temp"
+                  text_font: montserrat_14
+                  text_color: 0x8BA8CC
+              - label:
+                  id: lbl_kitchen_temp
+                  x: 20
+                  y: 80
+                  text: "--.-°C"
+                  text_font: montserrat_36
+                  text_color: 0xF5A623
+              - label:
+                  x: 20
+                  y: 138
+                  text: "Humidity"
+                  text_font: montserrat_14
+                  text_color: 0x8BA8CC
+              - label:
+                  id: lbl_kitchen_hum
+                  x: 20
+                  y: 158
+                  text: "--%"
+                  text_font: montserrat_28
+                  text_color: 0x4A90D9
+
+        # ══════════════════════════════════════════════════
+        #  SECTION LABEL: LIGHTS
+        # ══════════════════════════════════════════════════
+        - label:
+            x: 28
+            y: 342
+            text: "LIGHTS"
+            text_font: montserrat_16
+            text_color: 0x4A90D9
+
+        # ── Light Button: Living Room ──────────────────────
+        - button:
+            id: btn_light_living
+            x: 16
+            y: 366
+            width: 316
+            height: 382
+            checkable: true
+
+            widgets:
+              - label:
+                  align: CENTER
+                  y: -50
+                  text: "[  ]"
+                  text_font: montserrat_48
+                  text_color: 0xFFFFFF
+                  id: lbl_living_icon
+              - label:
+                  align: CENTER
+                  y: 28
+                  text: "Living Room"
+                  text_font: montserrat_24
+                  text_color: 0xFFFFFF
+              - label:
+                  id: lbl_living_light_status
+                  align: CENTER
+                  y: 72
+                  text: "OFF"
+                  text_font: montserrat_18
+                  text_color: 0x8BA8CC
+
+            on_click:
+              then:
+                - homeassistant.service:
+                    service: light.toggle
+                    data:
+                      entity_id: light.living_room_light
+
+        # ── Light Button: Bedroom ──────────────────────────
+        - button:
+            id: btn_light_bedroom
+            x: 344
+            y: 366
+            width: 316
+            height: 382
+            checkable: true
+
+            widgets:
+              - label:
+                  align: CENTER
+                  y: -50
+                  text: "[  ]"
+                  text_font: montserrat_48
+                  text_color: 0xFFFFFF
+                  id: lbl_bedroom_icon
+              - label:
+                  align: CENTER
+                  y: 28
+                  text: "Bedroom"
+                  text_font: montserrat_24
+                  text_color: 0xFFFFFF
+              - label:
+                  id: lbl_bedroom_light_status
+                  align: CENTER
+                  y: 72
+                  text: "OFF"
+                  text_font: montserrat_18
+                  text_color: 0x8BA8CC
+
+            on_click:
+              then:
+                - homeassistant.service:
+                    service: light.toggle
+                    data:
+                      entity_id: light.bedroom_light
+
+        # ── Light Button: Kitchen ──────────────────────────
+        - button:
+            id: btn_light_kitchen
+            x: 672
+            y: 366
+            width: 316
+            height: 382
+            checkable: true
+
+            widgets:
+              - label:
+                  align: CENTER
+                  y: -50
+                  text: "[  ]"
+                  text_font: montserrat_48
+                  text_color: 0xFFFFFF
+                  id: lbl_kitchen_icon
+              - label:
+                  align: CENTER
+                  y: 28
+                  text: "Kitchen"
+                  text_font: montserrat_24
+                  text_color: 0xFFFFFF
+              - label:
+                  id: lbl_kitchen_light_status
+                  align: CENTER
+                  y: 72
+                  text: "OFF"
+                  text_font: montserrat_18
+                  text_color: 0x8BA8CC
+
+            on_click:
+              then:
+                - homeassistant.service:
+                    service: light.toggle
+                    data:
+                      entity_id: light.kitchen_light
+
+# ══════════════════════════════════════════════════════════
+#  Clock (synced from Home Assistant)
+# ══════════════════════════════════════════════════════════
+time:
+  - platform: homeassistant
+    id: ha_time
+    on_time_sync:
+      then:
+        - script.execute: update_clock
+    on_time:
+      - seconds: 0
+        minutes: /1
+        then:
+          - script.execute: update_clock
+
+script:
+  - id: update_clock
+    then:
+      - lvgl.label.update:
+          id: lbl_clock
+          text: !lambda |
+            auto now = id(ha_time).now();
+            return str_sprintf("%02d:%02d", now.hour, now.minute);
+
