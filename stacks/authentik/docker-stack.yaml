@@ -1,0 +1,93 @@
+---
+services:
+  postgresql:
+    image: docker.io/library/postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${PG_DB}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASS}
+    volumes:
+      - database:/var/lib/postgresql/data
+    networks:
+      - authentik_internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      placement:
+        constraints:
+          - node.labels.role == primary
+
+  server:
+    image: ghcr.io/goauthentik/server:2026.2.1
+    command: server
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB}
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+      AUTHENTIK_HOST: authentik.${DOMAIN_NAME}
+    volumes:
+      - server-data:/data
+      - custom-templates:/templates
+    networks:
+      - authentik_internal
+      - hlel
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      labels:
+        - traefik.enable=true
+        - traefik.swarm.network=hlel
+        - traefik.http.routers.authentik.rule=Host(`authentik.${DOMAIN_NAME}`)
+        - traefik.http.routers.authentik.entrypoints=websecure
+        - traefik.http.routers.authentik.tls=true
+        - traefik.http.routers.authentik.tls.certresolver=cloudflare
+        - traefik.http.services.authentik.loadbalancer.server.port=9000
+
+  worker:
+    image: ghcr.io/goauthentik/server:2026.2.1
+    command: worker
+    user: root
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB}
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - server-data:/data
+      - certs:/certs
+      - custom-templates:/templates
+    networks:
+      - authentik_internal
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      placement:
+        constraints:
+          - node.labels.role == primary
+
+volumes:
+  database: {}
+  server-data: {}
+  certs: {}
+  custom-templates: {}
+
+networks:
+  authentik_internal:
+    driver: overlay
+    attachable: true
+  hlel:
+    external: true
+    name: hlel
