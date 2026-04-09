@@ -45,7 +45,7 @@ captive_portal:
 external_components:
   - source: github://pr#10071
     components: [waveshare_io_ch32v003]
-    refresh: 1h
+    refresh: 0s
 
 waveshare_io_ch32v003:
   id: waveshare_io_hub
@@ -78,7 +78,7 @@ touchscreen:
       # - lambda: |-
       # for (auto touch: touches)  {
       # if (touch.state <= 2) {
-      # ESP_LOGI("Touch points:", "id=%d x=%d, y=%d x.raw=%d, y.raw=%d", touch.id, touch.x, touch.y, touch.x_raw, touch.y_raw);
+    # ESP_LOGI("Touch points:", "id=%d x=%d, y=%d x.raw=%d, y.raw=%d", touch.id, touch.x, touch.y, touch.x_raw, touch.y_raw);
     # }
     # }
 
@@ -157,7 +157,7 @@ display:
 sensor:
   - platform: homeassistant
     id: temp_living
-    entity_id: sensor.living_room_temperature
+    entity_id: sensor.lumi_de_lumi_158d0003cb2d31_v1_temperature_p_2_1
     unit_of_measurement: "°C"
     on_value:
       then:
@@ -167,7 +167,7 @@ sensor:
 
   - platform: homeassistant
     id: temp_bedroom
-    entity_id: sensor.bedroom_temperature
+    entity_id: sensor.lumi_de_lumi_158d000391d212_v1_temperature_p_2_1
     unit_of_measurement: "°C"
     on_value:
       then:
@@ -187,7 +187,7 @@ sensor:
 
   - platform: homeassistant
     id: hum_living
-    entity_id: sensor.living_room_humidity
+    entity_id: sensor.lumi_de_lumi_158d0003cb2d31_v1_relative_humidity_p_2_2
     unit_of_measurement: "%"
     on_value:
       then:
@@ -197,7 +197,7 @@ sensor:
 
   - platform: homeassistant
     id: hum_bedroom
-    entity_id: sensor.bedroom_humidity
+    entity_id: sensor.lumi_de_lumi_158d000391d212_v1_relative_humidity_p_2_2
     unit_of_measurement: "%"
     on_value:
       then:
@@ -215,17 +215,17 @@ sensor:
             id: lbl_kitchen_hum
             text: !lambda 'return str_sprintf("%.0f%%", x);'
 
-binary_sensor:
+switch:
   - platform: homeassistant
     id: light_living_state
-    entity_id: light.living_room_light
-    on_press:
+    entity_id: switch.chuangmi_de_235932589_hmi206_on_p_2_1
+    on_turn_on:
       then:
         - lvgl.widget.update:
             id: btn_light_living
             state:
               checked: true
-    on_release:
+    on_turn_off:
       then:
         - lvgl.widget.update:
             id: btn_light_living
@@ -234,35 +234,35 @@ binary_sensor:
 
   - platform: homeassistant
     id: light_bedroom_state
-    entity_id: light.bedroom_light
-    on_press:
+    entity_id: switch.lumi_zigbee_plug_mmeu01
+    on_turn_on:
       then:
         - lvgl.widget.update:
             id: btn_light_bedroom
             state:
               checked: true
-    on_release:
+    on_turn_off:
       then:
         - lvgl.widget.update:
             id: btn_light_bedroom
             state:
               checked: false
 
-  - platform: homeassistant
-    id: light_kitchen_state
-    entity_id: light.kitchen_light
-    on_press:
-      then:
-        - lvgl.widget.update:
-            id: btn_light_kitchen
-            state:
-              checked: true
-    on_release:
-      then:
-        - lvgl.widget.update:
-            id: btn_light_kitchen
-            state:
-              checked: false
+  # - platform: homeassistant
+  #   id: light_kitchen_state
+  #   entity_id: light.kitchen_light
+  #   on_press:
+  #     then:
+  #       - lvgl.widget.update:
+  #           id: btn_light_kitchen
+  #           state:
+  #             checked: true
+  #   on_release:
+  #     then:
+  #       - lvgl.widget.update:
+  #           id: btn_light_kitchen
+  #           state:
+  #             checked: false
 
 # ══════════════════════════════════════════════════════════
 #  LVGL UI  —  1024 × 768
@@ -291,6 +291,9 @@ lvgl:
     - my_display
   touchscreens:
     - my_touchscreen
+
+  buffer_size: 78%
+  full_refresh: false
 
   # ── Global theme ────────────────────────────────────────
   # FIX 1: key is [button], not [btn]
