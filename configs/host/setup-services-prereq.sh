@@ -3,8 +3,9 @@
 set -e
 
 
-echo "===  Create docker network  ==="
+echo "===  Create docker networks  ==="
 docker network create --subnet=172.21.0.0/16 -d overlay hlel
+docker network create --subnet=172.23.0.0/16 -d overlay hlarr
 echo "===  Docker network created  ==="
 
 echo "===  Create docker secrets  ==="

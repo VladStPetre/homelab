@@ -150,6 +150,7 @@ services:
     networks:
       hlel:
         ipv4_address: 172.21.0.102
+      hlarr:
 
 
 configs:
@@ -169,4 +170,7 @@ volumes:
 networks:
   hlel:
     name: hlel
+    external: true
+  hlarr:
+    name: hlarr
     external: true

@@ -1,0 +1,266 @@
+---
+services:
+
+  ###############################################
+  # RADARR - Movies
+  ###############################################
+  radarr:
+    image: ghcr.io/hotio/radarr:release-6.1.1.10360
+    ports:
+      - 7878:7878
+    environment:
+      - PUID=${CUID}
+      - PGID=${CGID}
+      - TZ=${TIMEZONE}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - radarr-config:/config
+      - /mnt/nas/media/arr/data:/data
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlarr"
+        - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.radarr.entrypoints=websecure"
+        - "traefik.http.routers.radarr.tls=true"
+        - "traefik.http.routers.radarr.tls.certresolver=cloudflare"
+        - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+    networks:
+      - hlarr
+
+  ###############################################
+  # SONARR - TV Shows
+  ###############################################
+  sonarr:
+    image: ghcr.io/hotio/sonarr:release-4.0.17.2952
+    ports:
+      - 8989:8989
+    environment:
+      - PUID=${CUID}
+      - PGID=${CGID}
+      - TZ=${TIMEZONE}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - sonarr-config:/config
+      - /mnt/nas/media/arr/data:/data
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlarr"
+        - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.sonarr.entrypoints=websecure"
+        - "traefik.http.routers.sonarr.tls=true"
+        - "traefik.http.routers.sonarr.tls.certresolver=cloudflare"
+        - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+    networks:
+      - hlarr
+
+
+  ###############################################
+  # BAZARR - Subtitles
+  ###############################################
+  bazarr:
+    image: ghcr.io/hotio/bazarr:release-1.5.6
+    ports:
+      - 6767:6767
+    environment:
+      - PUID=${CUID}
+      - PGID=${CGID}
+      - TZ=${TIMEZONE}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - bazarr-config:/config
+      - /mnt/nas/media/arr/data/media:/data/media
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlarr"
+        - "traefik.http.routers.bazarr.rule=Host(`bazarr.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.bazarr.entrypoints=websecure"
+        - "traefik.http.routers.bazarr.tls=true"
+        - "traefik.http.routers.bazarr.tls.certresolver=cloudflare"
+        - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
+    networks:
+      - hlarr
+
+  ###############################################
+  # PROWLARR - Indexer Manager
+  ###############################################
+  prowlarr:
+    image: ghcr.io/hotio/prowlarr:release-2.3.5.5327
+    ports:
+      - 9696:9696
+    environment:
+      - PUID=${CUID}
+      - PGID=${CGID}
+      - TZ=${TIMEZONE}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - prowlarr-config:/config
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlarr"
+        - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.prowlarr.entrypoints=websecure"
+        - "traefik.http.routers.prowlarr.tls=true"
+        - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
+        - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+    networks:
+      - hlarr
+
+  ###############################################
+  # QBITTORRENT - Downloader
+  ###############################################
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:5.1.4
+    ports:
+      - "8081:8081"              # web UI
+      - "6881:6881"              # torrent traffic TCP
+      - "6881:6881/udp"          # torrent traffic UDP
+    environment:
+      - PUID=${CUID}                # your local user ID
+      - PGID=${CGID}                # your local group ID
+      - TZ=${TIMEZONE}
+      - WEBUI_PORT=8081
+      - TORRENTING_PORT=6881
+      - UMASK=000            # sensible file perms
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - qbittorrent-config:/config
+      - /mnt/nas/media/arr/data:/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlarr"
+        - "traefik.http.routers.qbittorrent.rule=Host(`qb.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.qbittorrent.entrypoints=websecure"
+        - "traefik.http.routers.qbittorrent.tls=true"
+        - "traefik.http.routers.qbittorrent.tls.certresolver=cloudflare"
+        - "traefik.http.services.qbittorrent.loadbalancer.server.port=8081"
+    networks:
+      - hlarr
+
+  ###############################################
+  # JELLYFIN - Media Server
+  ###############################################
+
+  jellyfin:
+    image: jellyfin/jellyfin:2025112405
+    user: root
+    ports:
+      - "8096:8096" # need for direct connection on TV
+    environment:
+      - PUID=${CUID}
+      - PGID=${CGID}
+      - TZ=${TIMEZONE}
+      - LIBVA_DRIVER_NAME=iHD
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /dev/dri:/dev/dri
+      - jellyfin-config:/config
+      - jellyfin-cache:/cache
+      - /mnt/nas/media/arr/data:/data/media:ro
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlarr"
+        - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.jellyfin.entrypoints=websecure"
+        - "traefik.http.routers.jellyfin.tls=true"
+        - "traefik.http.routers.jellyfin.tls.certresolver=cloudflare"
+        - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+    networks:
+      - hlarr
+
+volumes:
+  sonarr-config: {}
+  radarr-config: {}
+  bazarr-config: {}
+  prowlarr-config: {}
+  jellyfin-config: {}
+  jellyfin-cache: {}
+  qbittorrent-config: {}
+
+networks:
+  hlarr:
+    name: hlarr
+    external: true
