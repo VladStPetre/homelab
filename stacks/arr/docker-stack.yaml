@@ -222,6 +222,7 @@ services:
       - PGID=${CGID}
       - TZ=${TIMEZONE}
       - LIBVA_DRIVER_NAME=iHD
+      - MALLOC_TRIM_THRESHOLD_=100000
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /dev/dri:/dev/dri

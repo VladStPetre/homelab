@@ -1,14 +1,10 @@
 #!/bin/bash
 set -e
 
-# 1. Install ntfs-3g if missing
-echo "Installing ntfs-3g (if not present)..."
-sudo apt-get update
-sudo apt-get install -y ntfs-3g
 
 # 2. List NTFS partitions and get UUID
-echo "Detecting NTFS drives..."
-lsblk -f | grep ntfs
+echo "Detecting drives..."
+lsblk -f
 echo
 read -p "Enter the device (e.g. /dev/sda1) of your NTFS USB drive: " DRIVE
 
@@ -20,7 +16,7 @@ fi
 echo "Found UUID: $UUID"
 
 # 3. Ask for mount point
-DEFAULT_MOUNT="/mnt/media"
+DEFAULT_MOUNT="/mnt/vext2tb"
 read -p "Enter desired mount point (default: $DEFAULT_MOUNT): " MOUNTPOINT
 MOUNTPOINT="${MOUNTPOINT:-$DEFAULT_MOUNT}"
 
@@ -43,7 +39,7 @@ if [ ! -d "$MOUNTPOINT" ]; then
 fi
 
 # 7. Add to /etc/fstab
-FSTAB_LINE="UUID=${UUID}   ${MOUNTPOINT}   ntfs-3g   defaults,nofail,noauto,uid=${USR_ID},gid=${GRP_ID},umask=${UMASK},x-systemd.automount,x-systemd.idle-timeout=600,x-systemd.device-timeout=30   0   0"
+FSTAB_LINE="UUID=${UUID}   ${MOUNTPOINT}   exfat   defaults,nofail,noauto,uid=${USR_ID},gid=${GRP_ID},umask=${UMASK},x-systemd.automount,x-systemd.idle-timeout=600,x-systemd.device-timeout=30   0   0"
 
 echo "Adding the following line to /etc/fstab:"
 echo "$FSTAB_LINE"

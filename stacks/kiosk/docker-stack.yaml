@@ -13,7 +13,14 @@ services:
       - hlel
     deploy:
       restart_policy:
-        condition: any
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
       placement:
         constraints:
           - node.labels.role == secondary
@@ -27,6 +34,48 @@ services:
         - "traefik.http.routers.uptime.tls=true"
         - "traefik.http.routers.uptime.tls.certresolver=cloudflare"
         - "traefik.http.services.uptime.loadbalancer.server.port=3001"
+
+  semaphore:
+    image: semaphoreui/semaphore:v2.17.37
+    environment:
+      - SEMAPHORE_DB_DIALECT=sqlite
+      - SEMAPHORE_DB=/etc/semaphore/semaphore.db
+      - SEMAPHORE_PLAYBOOK_PATH=/tmp/semaphore/
+      - SEMAPHORE_ADMIN_PASSWORD=${SEMAPHORE_ADMIN_PASSWORD:?error}
+      - SEMAPHORE_ADMIN_NAME=${SEMAPHORE_ADMIN_NAME:-admin}
+      - SEMAPHORE_ADMIN_EMAIL=${SEMAPHORE_ADMIN_EMAIL:-admin@localhost}
+      - SEMAPHORE_ADMIN=${SEMAPHORE_ADMIN:-admin}
+      - SEMAPHORE_ACCESS_KEY_ENCRYPTION=${SEMAPHORE_ACCESS_KEY_ENCRYPTION:?error}
+      - ANSIBLE_HOST_KEY_CHECKING=false
+    volumes:
+      - semaphore_config:/etc/semaphore
+      - semaphore_data:/var/lib/semaphore
+      - semaphore_tmp:/tmp/semaphore
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      placement:
+        constraints:
+          - node.labels.role == secondary
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.semaphore.entrypoints=websecure"
+        - "traefik.http.routers.semaphore.rule=Host(`semaphore.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.semaphore.tls=true"
+        - "traefik.http.routers.semaphore.tls.certresolver=cloudflare"
+        - "traefik.http.services.semaphore.loadbalancer.server.port=3000"
+    networks:
+      - hlel
 
   n8n:
     image: docker.n8n.io/n8nio/n8n:2.15.0
@@ -72,6 +121,9 @@ volumes:
   uptime-data: {}
   n8n-data: {}
   n8n-local-files: {}
+  semaphore_config: {}
+  semaphore_data: {}
+  semaphore_tmp: {}
 
 networks:
   hlel:

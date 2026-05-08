@@ -44,6 +44,8 @@ Add line to /etc/fstab
 ```commandline
 # NAS NFS share
 192.168.7.205:/srv /mnt/nas nfs4 minorversion=1,defaults,soft,nofail,noauto,x-systemd.automount,_netdev,timeo=25,x-systemd.idle-timeout=600,retrans=2  0  0
+192.168.7.205:/_Vlad /mnt/nas_Vlad nfs4 minorversion=1,defaults,soft,nofail,noauto,x-systemd.automount,_netdev,timeo=25,x-systemd.idle-timeout=600,retrans=2  0  0
+192.168.7.205:/_Rux /mnt/nas_Rux nfs4 minorversion=1,defaults,soft,nofail,noauto,x-systemd.automount,_netdev,timeo=25,x-systemd.idle-timeout=600,retrans=2  0  0
 ```
 
 ### Install and configure ser2net
