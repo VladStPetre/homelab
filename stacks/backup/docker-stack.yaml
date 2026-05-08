@@ -1,58 +1,58 @@
 ---
 services:
-  backrest:
-    image: garethgeorge/backrest:v1.12.1
-    hostname: echo
-    environment:
-      - BACKREST_DATA=/data
-      - BACKREST_CONFIG=/config/config.json
-      - XDG_CACHE_HOME=/cache
-      - TMPDIR=/tmp
-      - TZ=${TIMEZONE}
-    volumes:
-      # Backrest internal state
-      - backrest_data:/data
-      - backrest_config:/config
-      - backrest_cache:/cache
-      - backrest_tmp:/tmp
-      # Mount the SAME service volumes read-only so Backrest can back them up
-      - immich_library:/data/immich_library:ro
-      - ha_ha-data:/data/ha-data:ro
-      - ha_influxdb2-data:/data/influxdb2-data:ro
-      - ha_z2m-data:/data/z2m-data:ro
-      - monitoring_grafana-data:/data/grafana-data:ro
-      - monitoring_prometheus-data:/data/prometheus-data:ro
-      - nas_nfs_share:/data/nfsnas
-      - /mnt/media:/data/vexthdd
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 300s          # wait 60s between restarts
-        max_attempts: 5    # stop restarting after 10 tries
-      update_config:
-        parallelism: 1
-        order: stop-first
-        failure_action: rollback
-      rollback_config:
-        parallelism: 1
-        order: stop-first
-      labels:
-        - "portainer.io/managed=true"
-        - "io.portainer.accesscontrol.users=admin"
-        - "traefik.enable=true"
-        - "traefik.swarm.network=hlel"
-        - "traefik.http.routers.backrest.rule=Host(`backrest.${DOMAIN_NAME}`)"
-        - "traefik.http.routers.backrest.entrypoints=websecure"
-        - "traefik.http.routers.backrest.tls=true"
-        - "traefik.http.routers.backrest.tls.certresolver=cloudflare"
-        - "traefik.http.services.backrest.loadbalancer.server.port=9898"
-        # helpful for service discovery / ops
-        - "com.backups.role=backrest"
-      placement:
-        constraints:
-          - node.labels.role == primary
-    networks:
-      - hlel
+#  backrest:
+#    image: garethgeorge/backrest:v1.12.1
+#    hostname: echo
+#    environment:
+#      - BACKREST_DATA=/data
+#      - BACKREST_CONFIG=/config/config.json
+#      - XDG_CACHE_HOME=/cache
+#      - TMPDIR=/tmp
+#      - TZ=${TIMEZONE}
+#    volumes:
+#      # Backrest internal state
+#      - backrest_data:/data
+#      - backrest_config:/config
+#      - backrest_cache:/cache
+#      - backrest_tmp:/tmp
+#      # Mount the SAME service volumes read-only so Backrest can back them up
+#      - immich_library:/data/immich_library:ro
+#      - ha_ha-data:/data/ha-data:ro
+#      - ha_influxdb2-data:/data/influxdb2-data:ro
+#      - ha_z2m-data:/data/z2m-data:ro
+#      - monitoring_grafana-data:/data/grafana-data:ro
+#      - monitoring_prometheus-data:/data/prometheus-data:ro
+#      - nas_nfs_share:/data/nfsnas
+#      - /mnt/media:/data/vexthdd
+#    deploy:
+#      restart_policy:
+#        condition: on-failure
+#        delay: 300s          # wait 60s between restarts
+#        max_attempts: 5    # stop restarting after 10 tries
+#      update_config:
+#        parallelism: 1
+#        order: stop-first
+#        failure_action: rollback
+#      rollback_config:
+#        parallelism: 1
+#        order: stop-first
+#      labels:
+#        - "portainer.io/managed=true"
+#        - "io.portainer.accesscontrol.users=admin"
+#        - "traefik.enable=true"
+#        - "traefik.swarm.network=hlel"
+#        - "traefik.http.routers.backrest.rule=Host(`backrest.${DOMAIN_NAME}`)"
+#        - "traefik.http.routers.backrest.entrypoints=websecure"
+#        - "traefik.http.routers.backrest.tls=true"
+#        - "traefik.http.routers.backrest.tls.certresolver=cloudflare"
+#        - "traefik.http.services.backrest.loadbalancer.server.port=9898"
+#        # helpful for service discovery / ops
+#        - "com.backups.role=backrest"
+#      placement:
+#        constraints:
+#          - node.labels.role == primary
+#    networks:
+#      - hlel
 
   syncthing-src:
     image: lscr.io/linuxserver/syncthing:2.0.15
@@ -68,7 +68,9 @@ services:
       - GUI_ADDRESS=0.0.0.0:8384
     volumes:
       - syncthing_src_config:/config
-      - immich_library:/data/immich_library
+      - immich_library:/data/immich_library:ro
+      - /mnt/nas_Vlad:/data/_Vlad:ro
+      - /mnt/nas_Rux:/data/_Rux:ro
     deploy:
       restart_policy:
         condition: on-failure
@@ -84,11 +86,95 @@ services:
         - "io.portainer.accesscontrol.users=admin"
         - "traefik.enable=true"
         - "traefik.swarm.network=hlel"
-        - "traefik.http.routers.syncthing.rule=Host(`syncthing.${DOMAIN_NAME}`)"
-        - "traefik.http.routers.syncthing.entrypoints=websecure"
-        - "traefik.http.routers.syncthing.tls=true"
-        - "traefik.http.routers.syncthing.tls.certresolver=cloudflare"
-        - "traefik.http.services.syncthing.loadbalancer.server.port=8384"
+        - "traefik.http.routers.syncthing-src.rule=Host(`syncthing-src.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.syncthing-src.entrypoints=websecure"
+        - "traefik.http.routers.syncthing-src.tls=true"
+        - "traefik.http.routers.syncthing-src.tls.certresolver=cloudflare"
+        - "traefik.http.services.syncthing-src.loadbalancer.server.port=8384"
+      placement:
+        constraints:
+          - node.labels.role == primary
+    networks:
+      - hlel
+
+  syncthing-storage:
+    image: lscr.io/linuxserver/syncthing:2.0.15
+    ports:
+      - "22001:22000/tcp"   # Sync TCP
+      - "22001:22000/udp"   # Sync QUIC/UDP
+      - "21028:21027/udp"   # Local discovery
+    environment:
+      - PUID=${CUID}
+      - PGID=${CGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+      - GUI_ADDRESS=0.0.0.0:8384
+    volumes:
+      - syncthing_storage_config:/config
+      - /mnt/vext2tb/_Vlad:/data/vext2tb/_Vlad
+      - /mnt/vext2tb/_Rux:/data/vext2tb/_Rux
+      - /mnt/vext2tb/srv/immich:/data/vext2tb/srv/immich
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.syncthing-storage.rule=Host(`syncthing-storage.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.syncthing-storage.entrypoints=websecure"
+        - "traefik.http.routers.syncthing-storage.tls=true"
+        - "traefik.http.routers.syncthing-storage.tls.certresolver=cloudflare"
+        - "traefik.http.services.syncthing-storage.loadbalancer.server.port=8384"
+      placement:
+        constraints:
+          - node.labels.role == primary
+    networks:
+      - hlel
+
+  syncthing-nas:
+    image: lscr.io/linuxserver/syncthing:2.0.15
+    ports:
+      - "22002:22000/tcp"   # Sync TCP
+      - "22002:22000/udp"   # Sync QUIC/UDP
+      - "21029:21027/udp"   # Local discovery
+    environment:
+      - PUID=${CUID}
+      - PGID=${CGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+      - GUI_ADDRESS=0.0.0.0:8384
+    volumes:
+      - syncthing_nas_config:/config
+      - /mnt/nas/immich:/data/qnas/immich
+    deploy:
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.syncthing-nas.rule=Host(`syncthing-nas.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.syncthing-nas.entrypoints=websecure"
+        - "traefik.http.routers.syncthing-nas.tls=true"
+        - "traefik.http.routers.syncthing-nas.tls.certresolver=cloudflare"
+        - "traefik.http.services.syncthing-nas.loadbalancer.server.port=8384"
       placement:
         constraints:
           - node.labels.role == primary
@@ -101,6 +187,8 @@ volumes:
   backrest_config:
   backrest_cache:
   backrest_tmp:
+  syncthing_storage_config:
+  syncthing_nas_config:
   # Reuse the SAME volume names your services use.
   immich_library:
     external: true
@@ -116,12 +204,6 @@ volumes:
     external: true
   monitoring_prometheus-data:
     external: true
-  nas_nfs_share:
-    driver: local
-    driver_opts:
-      type: "nfs"
-      o: "addr=${NAS_ADDR},nfsvers=4,nolock,soft,timeo=600,retrans=2"
-      device: ":/nfs-share"
 
 networks:
   hlel:
