@@ -1,58 +1,71 @@
 ---
 services:
-#  backrest:
-#    image: garethgeorge/backrest:v1.12.1
-#    hostname: echo
-#    environment:
-#      - BACKREST_DATA=/data
-#      - BACKREST_CONFIG=/config/config.json
-#      - XDG_CACHE_HOME=/cache
-#      - TMPDIR=/tmp
-#      - TZ=${TIMEZONE}
-#    volumes:
-#      # Backrest internal state
-#      - backrest_data:/data
-#      - backrest_config:/config
-#      - backrest_cache:/cache
-#      - backrest_tmp:/tmp
-#      # Mount the SAME service volumes read-only so Backrest can back them up
-#      - immich_library:/data/immich_library:ro
-#      - ha_ha-data:/data/ha-data:ro
-#      - ha_influxdb2-data:/data/influxdb2-data:ro
-#      - ha_z2m-data:/data/z2m-data:ro
-#      - monitoring_grafana-data:/data/grafana-data:ro
-#      - monitoring_prometheus-data:/data/prometheus-data:ro
-#      - nas_nfs_share:/data/nfsnas
-#      - /mnt/media:/data/vexthdd
-#    deploy:
-#      restart_policy:
-#        condition: on-failure
-#        delay: 300s          # wait 60s between restarts
-#        max_attempts: 5    # stop restarting after 10 tries
-#      update_config:
-#        parallelism: 1
-#        order: stop-first
-#        failure_action: rollback
-#      rollback_config:
-#        parallelism: 1
-#        order: stop-first
-#      labels:
-#        - "portainer.io/managed=true"
-#        - "io.portainer.accesscontrol.users=admin"
-#        - "traefik.enable=true"
-#        - "traefik.swarm.network=hlel"
-#        - "traefik.http.routers.backrest.rule=Host(`backrest.${DOMAIN_NAME}`)"
-#        - "traefik.http.routers.backrest.entrypoints=websecure"
-#        - "traefik.http.routers.backrest.tls=true"
-#        - "traefik.http.routers.backrest.tls.certresolver=cloudflare"
-#        - "traefik.http.services.backrest.loadbalancer.server.port=9898"
-#        # helpful for service discovery / ops
-#        - "com.backups.role=backrest"
-#      placement:
-#        constraints:
-#          - node.labels.role == primary
-#    networks:
-#      - hlel
+  backrest:
+    image: garethgeorge/backrest:v1.12.1
+    hostname: echo
+    environment:
+      - BACKREST_DATA=/data
+      - BACKREST_CONFIG=/config/config.json
+      - XDG_CACHE_HOME=/cache
+      - TMPDIR=/tmp
+      - TZ=${TIMEZONE}
+    volumes:
+      # Backrest internal state
+      - backrest_data:/data
+      - backrest_config:/config
+      - backrest_cache:/cache
+      - backrest_tmp:/tmp
+      # nas - destination
+      - /mnt/nas/bkp:/data/qnas/bkp
+      # Mount the SAME service volumes read-only so Backrest can back them up
+      - immich_library:/data/immich_library:ro
+      - ha_ha-data:/data/ha-data:ro
+      - ha_influxdb2-data:/data/influxdb2-data:ro
+      - ha_z2m-data:/data/z2m-data:ro
+      - monitoring_grafana-data:/data/grafana-data:ro
+      - monitoring_prometheus-data:/data/prometheus-data:ro
+      - syncthing_src_config:/data/syncthing_src:ro
+      - syncthing_storage_config:/data/syncthing_storage:ro
+      - syncthing_nas_config:/data/syncthing_nas:ro
+      - semaphore_config:/data/semaphore_config:ro
+      - semaphore_data:/data/semaphore_data:ro
+      - uptime-data:/data/uptime-data:ro
+      - arr_sonarr-config:/data/sonarr-config:ro
+      - arr_radarr-config:/data/radarr-config:ro
+      - arr_bazarr-config:/data/bazarr-config:ro
+      - arr_prowlarr-config:/data/prowlarr-config:ro
+      - arr_jellyfin-config:/data/jellyfin-config:ro
+      - arr_qbittorrent-config:/data/qbittorrent-config:ro
+
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 300s          # wait 60s between restarts
+        max_attempts: 5    # stop restarting after 10 tries
+      update_config:
+        parallelism: 1
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        order: stop-first
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.backrest.rule=Host(`backrest.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.backrest.entrypoints=websecure"
+        - "traefik.http.routers.backrest.tls=true"
+        - "traefik.http.routers.backrest.tls.certresolver=cloudflare"
+        - "traefik.http.services.backrest.loadbalancer.server.port=9898"
+        # helpful for service discovery / ops
+        - "com.backups.role=backrest"
+      placement:
+        constraints:
+          - node.labels.role == primary
+    networks:
+      - hlel
 
   syncthing-src:
     image: lscr.io/linuxserver/syncthing:2.0.15
@@ -203,6 +216,26 @@ volumes:
   monitoring_grafana-data:
     external: true
   monitoring_prometheus-data:
+    external: true
+  semaphore_config:
+    external: true
+  semaphore_data:
+    external: true
+  uptime-data:
+    external: true
+  arr_sonarr-config:
+    external: true
+  arr_radarr-config:
+    external: true
+  arr_bazarr-config:
+    external: true
+  arr_prowlarr-config:
+    external: true
+  arr_jellyfin-config:
+    external: true
+  arr_jellyfin-cache:
+    external: true
+  arr_qbittorrent-config:
     external: true
 
 networks:
