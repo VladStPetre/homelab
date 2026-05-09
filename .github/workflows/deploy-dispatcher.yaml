@@ -36,7 +36,7 @@ jobs:
 
           {
             echo "stack_names<<EOF"
-            echo "$changed_stacks"
+            echo "$changed_stack"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
