@@ -8,6 +8,7 @@ on:
         type: choice
         required: true
         options:
+          - arr
           - ha
           - infra
           - media
@@ -16,6 +17,7 @@ on:
           - immich
           - kiosk
           - backup
+          - authentik
 
 concurrency:
   group: server-deploy-${{ github.repository_id }}-main

@@ -1,46 +1,65 @@
-name: Deploy stacks (dispatcher)
+name: Dispatch stack deploy
 
 on:
-  workflow_dispatch:
-    inputs:
-      stack_name:
-        description: "Select stack (or all)"
-        type: choice
-        required: true
-        options:
-          - all
-          - ha
-          - infra
-          - media
-          - monitoring
-          - utils
-          - immich
-          - backup
+  push:
+    branches:
+      - main
+    paths:
+      - "stacks/**"
+
+permissions:
+  contents: read
+  actions: write
 
 jobs:
-  dispatch:
-    name: "Deploy stack dispatch"
-    runs-on: [self-hosted, linux, docker, stacks]
-    permissions:
-      actions: write
-      contents: read
+  detect-and-dispatch:
+    runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed stack folder
+        id: stacks
+        shell: bash
+        run: |
+          changed_stack=$(
+            git diff --name-only HEAD~1 HEAD \
+              | awk -F/ '/^stacks\/[^/]+\/.*\.ya?ml$/ {print $2}' \
+              | sort -u
+          )
+
+          echo "Changed stacks:"
+          echo "$changed_stack"
+
+          {
+            echo "stack_names<<EOF"
+            echo "$changed_stacks"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Dispatch deploy workflow
+        if: steps.stacks.outputs.stack_names != ''
         uses: actions/github-script@v7
         with:
           script: |
-            const stacks = ["ha","infra","media","monitoring","utils","immich","backup"];
-            const selected = "${{ inputs.stack_name }}";
-            const list = (selected === "all") ? stacks : [selected];
+            const stacks = `${{ steps.stacks.outputs.stack_names }}`
+              .split('\n')
+              .map(s => s.trim())
+              .filter(Boolean);
 
-            for (const stack of list) {
-              core.info(`Dispatching deploy-stack.yml for: ${stack}`);
+            for (const stack of stacks) {
               await github.rest.actions.createWorkflowDispatch({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                workflow_id: "deploy-stack.yaml",
-                ref: context.ref.replace("refs/heads/", ""),
-                inputs: { stack_name: stack }
+                workflow_id: 'deploy-stack.yml',
+                ref: 'main',
+                inputs: {
+                  stack_name: stack
+                }
               });
+
+              core.info(`Dispatched deploy-stack.yml for stack: ${stack}`);
             }
