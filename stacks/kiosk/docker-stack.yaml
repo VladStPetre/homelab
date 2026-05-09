@@ -1,7 +1,7 @@
 ---
 services:
   uptime-kuma:
-    image: louislam/uptime-kuma:2.2.1
+    image: louislam/uptime-kuma:2.3.2
     ports:
       - "3001:3001"
     volumes:
@@ -36,7 +36,7 @@ services:
         - "traefik.http.services.uptime.loadbalancer.server.port=3001"
 
   semaphore:
-    image: semaphoreui/semaphore:v2.17.37
+    image: semaphoreui/semaphore:v2.18.2
     environment:
       - SEMAPHORE_DB_DIALECT=sqlite
       - SEMAPHORE_DB=/etc/semaphore/semaphore.db
@@ -78,7 +78,7 @@ services:
       - hlel
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n:2.15.0
+    image: docker.n8n.io/n8nio/n8n:2.20.6
     environment:
       - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
       - N8N_PORT=5678
