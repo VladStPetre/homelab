@@ -54,7 +54,7 @@ jobs:
               await github.rest.actions.createWorkflowDispatch({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                workflow_id: 'deploy-stack.yml',
+                workflow_id: 'deploy-stack.yaml',
                 ref: 'main',
                 inputs: {
                   stack_name: stack
