@@ -1,7 +1,7 @@
 ---
 services:
   backrest:
-    image: garethgeorge/backrest:v1.12.1
+    image: garethgeorge/backrest:v1.13.0
     hostname: echo
     environment:
       - BACKREST_DATA=/data
@@ -68,7 +68,7 @@ services:
       - hlel
 
   syncthing-src:
-    image: lscr.io/linuxserver/syncthing:2.0.15
+    image: lscr.io/linuxserver/syncthing:2.0.16
     ports:
       - "22000:22000/tcp"   # Sync TCP
       - "22000:22000/udp"   # Sync QUIC/UDP
@@ -111,7 +111,7 @@ services:
       - hlel
 
   syncthing-storage:
-    image: lscr.io/linuxserver/syncthing:2.0.15
+    image: lscr.io/linuxserver/syncthing:2.0.16
     ports:
       - "22001:22000/tcp"   # Sync TCP
       - "22001:22000/udp"   # Sync QUIC/UDP
@@ -154,7 +154,7 @@ services:
       - hlel
 
   syncthing-nas:
-    image: lscr.io/linuxserver/syncthing:2.0.15
+    image: lscr.io/linuxserver/syncthing:2.0.16
     ports:
       - "22002:22000/tcp"   # Sync TCP
       - "22002:22000/udp"   # Sync QUIC/UDP
