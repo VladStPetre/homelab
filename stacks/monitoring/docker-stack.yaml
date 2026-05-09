@@ -2,7 +2,7 @@
 services:
 
   grafana:
-    image: grafana/grafana-oss:12.4.2
+    image: grafana/grafana-oss:13.0.1
     user: ${CUID}
     security_opt:
       - no-new-privileges:true
@@ -40,7 +40,7 @@ services:
       - hlel
 
   alloy:
-    image: grafana/alloy:v1.15.0
+    image: grafana/alloy:v1.16.1
     hostname: echo
     command:
       - run
@@ -123,7 +123,7 @@ services:
        - hlel
 
   prometheus:
-    image: prom/prometheus:v3.11.0
+    image: prom/prometheus:v3.11.3
     user: root
     configs:
       - source: prom_config
