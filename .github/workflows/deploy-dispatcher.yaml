@@ -11,9 +11,11 @@ permissions:
   contents: read
   actions: write
 
+run-name: Dispatch for -> ${{ github.event.pull_request.title }}
+
 jobs:
   detect-and-dispatch:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, docker, stacks]
 
     steps:
       - name: Checkout
@@ -63,3 +65,4 @@ jobs:
 
               core.info(`Dispatched deploy-stack.yml for stack: ${stack}`);
             }
+
