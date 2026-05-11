@@ -28,7 +28,7 @@ concurrency:
   group: server-deploy-${{ github.repository_id }}-${{ github.ref }}
   cancel-in-progress: false
 
-run-name: "Deploy ➜ ${{ github.event_name == 'workflow_dispatch' && inputs.stack_names || needs.detect.outputs.stack_names }}"
+run-name: "Deploy ➜ ${{ github.event_name == 'workflow_dispatch' && inputs.stack_names || 'auto-detected stack' }}"
 
 permissions:
   contents: read
