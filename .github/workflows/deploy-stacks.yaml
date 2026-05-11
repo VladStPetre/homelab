@@ -1,0 +1,147 @@
+name: Deploy Stack(s)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "stacks/**"
+  workflow_dispatch:
+    inputs:
+      stack_names:
+        description: "Select stack(s) to deploy (comma-separated for multiple)"
+        type: choice
+        required: true
+        options:
+          - arr
+          - ha
+          - infra
+          - media
+          - monitoring
+          - utils
+          - immich
+          - kiosk
+          - backup
+          - authentik
+
+concurrency:
+  group: server-deploy-${{ github.repository_id }}-${{ github.ref }}
+  cancel-in-progress: false
+
+run-name: "Deploy ➜ ${{ github.event_name == 'workflow_dispatch' && inputs.stack_names || 'auto-detected stacks' }}"
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  detect:
+    name: "Detect changed stacks"
+    runs-on: [self-hosted, linux, docker, stacks]
+
+    if: github.event_name == 'push'
+    outputs:
+      stack_names: ${{ steps.stacks.outputs.stack_names }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed stack folder
+        id: stacks
+        shell: bash
+        run: |
+          changed_stack=$(
+            git diff --name-only HEAD~1 HEAD \
+              | awk -F/ '/^stacks\/[^/]+\/.*\.ya?ml$/ {print $2}' \
+              | sort -u
+          )
+
+          echo "Changed stacks:"
+          echo "$changed_stack"
+
+          {
+            echo "stack_names<<EOF"
+            echo "$changed_stack"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: "Deploy ${{ github.event_name == 'workflow_dispatch' && inputs.stack_names || needs.detect.outputs.stack_names }}"
+    runs-on: [self-hosted, linux, docker, stacks]
+    needs: [detect]
+    if: |
+      always() && (
+        (github.event_name == 'push' && needs.detect.outputs.stack_names != '') ||
+        github.event_name == 'workflow_dispatch'
+      )
+    env:
+      STACK_NAME: ${{ github.event_name == 'workflow_dispatch' && inputs.stack_names || needs.detect.outputs.stack_names }}
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create env file
+        run: |
+          set -euo pipefail
+          cat > envfile <<'EOF'
+          DOMAIN_NAME=${{ secrets.DOMAIN_NAME }}
+          EXT_DOMAIN_NAME=${{ secrets.EXT_DOMAIN_NAME }}
+          CUID=${{ secrets.UID }}
+          CGID=${{ secrets.GID }}
+          TIMEZONE=Europe/Bucharest
+          NAS_ADDR=${{ secrets.NAS_ADDR }}
+          GH_ORG=VladStPetre
+          GH_REPO=homelab
+          DOCKER_INFLUXDB_INIT_ORG=${{ secrets.DOCKER_INFLUXDB_INIT_ORG }}
+          DOCKER_INFLUXDB_INIT_BUCKET=${{ secrets.DOCKER_INFLUXDB_INIT_BUCKET }}
+          DOCKER_INFLUXDB_INIT_RETENTION=55w
+          PIHOLE_PASS=${{ secrets.PIHOLE_PASS }}
+          WG_SERVER_URL=${{ secrets.WG_SERVER_URL }}
+          WG_SERVER_PORT=${{ secrets.WG_SERVER_PORT }}
+          SUBDOMAIN=n8n
+          N8N_HOST=${{ secrets.N8N_HOST }}
+          N8N_PROTOCOL=http
+          WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}
+          N8N_SECURE_COOKIE=true
+          NODE_ENV=production
+          CF_DNS_API_TOKEN=${{ secrets.CF_DNS_API_TOKEN }}
+          EOF
+          chmod 644 envfile
+
+      - name: Docker Stack Deploy
+        uses: cssnr/stack-deploy-action@v1
+        with:
+          name: ${{ env.STACK_NAME }}
+          file: stacks/${{ env.STACK_NAME }}/docker-stack.yaml
+          host: ${{ secrets.DOMAIN_IP }}
+          user: deploy
+          ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          env_file: envfile
+          resolve_image: changed
+          prune: true
+          mode: swarm
+
+      - name: Wait for stack to settle
+        if: success()
+        run: sleep 30
+
+      - name: Verify Swarm Rollout
+        if: success()
+        env:
+          SSH_HOST: ${{ secrets.DOMAIN_IP }}
+          SSH_USER: deploy
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+            "$SSH_USER@$SSH_HOST" "/home/$SSH_USER/.ci/swarm-verify '${STACK_NAME}'"
+
+
