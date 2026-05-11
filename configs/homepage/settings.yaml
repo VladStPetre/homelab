@@ -11,15 +11,21 @@ background:
   opacity: 50 # 0-100
 
 layout:
+  - HA:
+      style: column
+      rows: unlimited
+  - Media:
+      style: column
+      rows: unlimited
   - Utils:
-      style: row
-      columns: 5
+      style: column
+      rows: unlimited
+  - Backup:
+      style: column
+      rows: unlimited
   - Infra:
       style: row
-      columns: 5
-  - Other:
-      style: row
-      columns: 5
+      columns: 4
 
 
 providers:

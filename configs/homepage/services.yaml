@@ -1,84 +1,132 @@
-- Utils:
+- HA:
     - Home Assistant:
         icon: si-homeassistant
         href: "https://hass.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
         description: Automations & dashboards
+
+    - Zigbee2MQTT:
+        icon: si-zigbee2mqtt
+        href: "https://z2m.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Zigbee gateway
+
+    - ESPHome:
+        icon: si-esphome
+        href: "https://esphome.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Device management
 
     - InfluxDB:
         icon: si-influxdb
         href: "https://influxdb.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
         description: Time-series DB
 
-    - Portainer:
-        icon: si-portainer
-        href: "https://portainer.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: Docker UI
+- Media:
+    - Immich:
+        icon: si-immich
+        href: "https://{{HOMEPAGE_VAR_EXT_DOMAIN_NAME}}"
+        description: Photo library
 
-    - Backrest:
-        icon: si-databricks
-        href: "https://backrest.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: Backup orchestrator
-
-    - Syncthing Echo:
-        icon: si-syncthing
-        href: "https://syncthing.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: Folder syncronization
-
-    - z2m:
-        icon: si-zigbee2mqtt
-        href: "https://z2m.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: zigbee2mqtt
-
-- Infra:
-    - Traefik:
-        icon: si-traefikproxy
-        href: "https://traefik.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: Edge router
-
-    - Pi-hole:
-        icon: si-pihole
-        href: "https://pihole.{{HOMEPAGE_VAR_BASE_DOMAIN}}/admin"
-        description: DNS sinkhole
-
-    - Grafana:
-        icon: si-grafana
-        href: "https://grafana.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: Dashboards
-
-    - Prometheus:
-        icon: si-prometheus
-        href: "https://prometheus.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: Metrics TSDB
-
-    - Alloy (Grafana Agent/Alloy):
-        icon: si-grafana
-        href: "https://alloy.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: Telemetry collector
-
-- Other:
     - Jellyfin:
         icon: si-jellyfin
         href: "https://jellyfin.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
         description: Media server
 
+    - Radarr:
+        icon: si-radarr
+        href: "https://radarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Movie management
+
+    - Sonarr:
+        icon: si-sonarr
+        href: "https://sonarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: TV management
+
     - qBittorrent:
         icon: si-qbittorrent
-        href: "https://qb.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        href: "https://qbittorrent.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
         description: Torrent client
 
-    - Immich:
-        icon: si-googlephotos
-        href: "https://{{HOMEPAGE_VAR_EXT_DOMAIN_NAME}}"
-        description: Photo library
+    - Prowlarr:
+        icon: si-pagseguro
+        href: "https://prowlarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Indexer manager
 
-    - NAS:
-        icon: si-qnap
-        href: "https://nas.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: NAS - Qnap
+    - Bazarr:
+        icon: si-sublimetext
+        href: "https://bazarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Subtitle management
+
+- Utils:
+    - Dockhand:
+        icon: si-docker
+        href: "https://dockhand.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Docker UI
+
+    - Portainer:
+        icon: si-portainer
+        href: "https://portainer.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Container management
+
+    - FileBrowser:
+        icon: si-files
+        href: "https://files.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: File manager
+
+    - Semaphore:
+        icon: si-ansible
+        href: "https://semaphore.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Task automation
+
+    - Uptime Kuma:
+        icon: si-uptimekuma
+        href: "https://uptime.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Status monitoring
 
     - n8n:
         icon: si-n8n
         href: "https://n8n.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: Automations
+        description: Workflow automation
+
+- Backup:
+    - Backrest:
+        icon: si-databricks
+        href: "https://backrest.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Backup orchestrator
+
+    - Syncthing Src:
+        icon: si-syncthing
+        href: "https://syncthing-src.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Source sync
+
+    - Syncthing NAS:
+        icon: si-syncthing
+        href: "https://syncthing-nas.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: NAS sync
+
+    - Syncthing Storage:
+        icon: si-syncthing
+        href: "https://syncthing-storage.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Storage sync
+
+- Infra:
+    - Grafana:
+        icon: si-grafana
+        href: "https://grafana.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Dashboards
+
+    - Adguard Home:
+        icon: si-adguard
+        href: "https://adguard.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: DNS sinkhole
+
+    - Traefik:
+        icon: si-traefikproxy
+        href: "https://traefik.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Edge router
+
+    - Authentik:
+        icon: si-authentik
+        href: "https://authentik.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Identity provider
+
 
 
