@@ -119,18 +119,15 @@ services:
     image: filebrowser/filebrowser:v2-s6
     user: "0:0"
 #    user: "${CUID}:${CGID}"
-    command:
-      - --root
-      - /srv
-      - --database
-      - /database/filebrowser.db
-      - --config
-      - /config/settings.json
+    environment:
+      FB_ROOT: /srv
+      FB_DATABASE: /database/filebrowser.db
+      FB_CONFIG: /config/settings.json
     volumes:
       - filebrowser-db:/database
       - filebrowser-config:/config
       - /var/lib/docker/volumes:/srv/docker-volumes
-      - /mnt:/srv/mnt
+#      - /mnt/nas:/srv/mnt/nas
     networks:
       - hlel
     deploy:
@@ -156,11 +153,6 @@ services:
         - "traefik.http.routers.files.tls=true"
         - "traefik.http.routers.files.tls.certresolver=cloudflare"
         - "traefik.http.services.files.loadbalancer.server.port=80"
-#        - "homepage.group=Utils"
-#        - "homepage.name=FileBrowser"
-#        - "homepage.icon=si-files"
-#        - "homepage.href=https://files.${DOMAIN_NAME}"
-#        - "homepage.description=File browser"
 
   svc-router:
     image: traefik/whoami:v1.11.0

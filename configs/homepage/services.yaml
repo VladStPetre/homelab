@@ -42,7 +42,7 @@
 
     - qBittorrent:
         icon: si-qbittorrent
-        href: "https://qbittorrent.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        href: "https://qb.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
         description: Torrent client
 
     - Prowlarr:
