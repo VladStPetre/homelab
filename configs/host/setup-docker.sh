@@ -1,13 +1,13 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 echo "=== Updating system ==="
-sudo apt-get update
-sudo apt-get upgrade -y
+sudo apt update
+sudo apt upgrade -y
 
 echo "=== Installing required packages ==="
-sudo apt-get install -y \
+sudo apt install -y \
     apt-transport-https \
     ca-certificates \
     curl \
