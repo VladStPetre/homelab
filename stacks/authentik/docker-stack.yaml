@@ -1,7 +1,7 @@
 ---
 services:
   postgresql:
-    image: docker.io/library/postgres:18-alpine
+    image: docker.io/library/postgres:16-alpine
     environment:
       POSTGRES_DB: ${PG_DB}
       POSTGRES_USER: ${PG_USER}
