@@ -110,6 +110,17 @@ jobs:
           N8N_SECURE_COOKIE=true
           NODE_ENV=production
           CF_DNS_API_TOKEN=${{ secrets.CF_DNS_API_TOKEN }}
+          RENDER_GID=${{ secrets.RENDER_GID }}
+          VIDEO_GID=${{ secrets.VIDEO_GID }}
+          SEMAPHORE_ADMIN_PASSWORD=${{ secrets.SEMAPHORE_ADMIN_PASSWORD }}
+          SEMAPHORE_ADMIN_NAME=${{ secrets.SEMAPHORE_ADMIN_NAME }}
+          SEMAPHORE_ADMIN_EMAIL=${{ secrets.SEMAPHORE_ADMIN_EMAIL }}
+          SEMAPHORE_ADMIN=${{ secrets.SEMAPHORE_ADMIN }}
+          SEMAPHORE_ACCESS_KEY_ENCRYPTION=${{ secrets.SEMAPHORE_ACCESS_KEY_ENCRYPTION }}
+          AUTHENTIK_SECRET_KEY=${{ secrets.AUTHENTIK_SECRET_KEY }}
+          PG_PASS=${{ secrets.PG_PASS }}
+          PG_DB=${{ secrets.PG_DB }}
+          PG_USER=${{ secrets.PG_USER }}
           EOF
           chmod 644 envfile
 
