@@ -6,7 +6,7 @@
 
   "timezone": "Europe/Bucharest",
   "schedule": ["on the 2nd day of the month"],
-  
+
   "enabledManagers": ["docker-compose"],
   "docker-compose": {
     "managerFilePatterns": ["/(^|/)docker-stack\\.ya?ml$/"]
@@ -34,13 +34,19 @@
       "prBodyNotes": [
         "This PR groups all Docker image updates found under `{{packageFileDir}}`."
       ]
-    }
-  ,
+    },
     {
       "matchManagers": ["docker-compose"],
       "matchDatasources": ["docker"],
       "matchDepNames": ["ghcr.io/immich-app/postgres"],
       "allowedVersions": "14.x"
+    },
+    {
+      "matchManagers": ["docker-compose"],
+      "matchFileNames": ["stacks/authentik/**"],
+      "matchDatasources": ["docker"],
+      "matchDepNames": ["postgres"],
+      "allowedVersions": "16.x"
     }
-  ]
-}
+   ]
+ }
