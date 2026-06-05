@@ -141,9 +141,17 @@ services:
         - "traefik.http.routers.traefik.tls.domains[0].main=${DOMAIN_NAME}"
         - "traefik.http.routers.traefik.tls.domains[0].sans=*.${DOMAIN_NAME}"
         - "traefik.http.routers.traefik.service=api@internal"
+        - "traefik.http.routers.traefik.priority=10"
          # Satisfy Swarm provider: declare an explicit (unused) backend service/port.
          # It's OK because no router points to it.
         - "traefik.http.services.noop.loadbalancer.server.port=65535"
+
+        # Authentik forward auth middleware
+        - "traefik.http.routers.traefik.middlewares=authentik@swarm"
+        - "traefik.http.middlewares.authentik.forwardauth.address=http://authentik_server:9000/outpost.goauthentik.io/auth/traefik"
+        - "traefik.http.middlewares.authentik.forwardauth.trustForwardHeader=true"
+        - "traefik.http.middlewares.authentik.forwardauth.authResponseHeadersRegex=^X-authentik-"
+
       placement:
         constraints:
           - node.labels.role == primary

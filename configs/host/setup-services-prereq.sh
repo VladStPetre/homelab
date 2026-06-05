@@ -44,4 +44,5 @@ docker stack deploy -c stacks/kiosk/docker-stack.yaml --prune --resolve-image=ch
 docker stack deploy -c stacks/media/docker-stack.yaml --prune --resolve-image=changed media
 docker stack deploy -c stacks/monitoring/docker-stack.yaml --prune --resolve-image=changed monitoring
 docker stack deploy -c stacks/utils/docker-stack.yaml --prune --resolve-image=changed utils
+docker stack deploy -c stacks/authentik/docker-stack.yaml --prune --resolve-image=changed authentik
 echo "===  Stacks deployed  ==="

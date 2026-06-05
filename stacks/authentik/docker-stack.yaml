@@ -44,6 +44,9 @@ services:
       replicas: 1
       restart_policy:
         condition: any
+      placement:
+        constraints:
+          - node.labels.role == primary
       labels:
         - traefik.enable=true
         - traefik.swarm.network=hlel
@@ -52,6 +55,11 @@ services:
         - traefik.http.routers.authentik.tls=true
         - traefik.http.routers.authentik.tls.certresolver=cloudflare
         - traefik.http.services.authentik.loadbalancer.server.port=9000
+
+        # Outpost callback for traefik
+        - traefik.http.routers.traefik-authentik-outpost.rule=Host(`traefik.${DOMAIN_NAME}`) && PathPrefix(`/outpost.goauthentik.io/`)
+        - traefik.http.routers.traefik-authentik-outpost.priority=100
+        - traefik.http.routers.traefik-authentik-outpost.service=authentik
 
   worker:
     image: ghcr.io/goauthentik/server:2026.5.2
