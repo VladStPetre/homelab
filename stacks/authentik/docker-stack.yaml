@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASS}
     volumes:
-      - database:/var/lib/postgresql/data
+      - /srv/dvls/database:/var/lib/postgresql/data
     networks:
       - authentik_internal
     healthcheck:
@@ -35,8 +35,8 @@ services:
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
       AUTHENTIK_HOST: authentik.${DOMAIN_NAME}
     volumes:
-      - server-data:/data
-      - custom-templates:/templates
+      - /srv/dvls/server-data:/data
+      - /srv/dvls/custom-templates:/templates
     networks:
       - authentik_internal
       - hlel
@@ -73,9 +73,9 @@ services:
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - server-data:/data
-      - certs:/certs
-      - custom-templates:/templates
+      - /srv/dvls/server-data:/data
+      - /srv/dvls/certs:/certs
+      - /srv/dvls/custom-templates:/templates
     networks:
       - authentik_internal
     deploy:
@@ -85,12 +85,6 @@ services:
       placement:
         constraints:
           - node.labels.role == primary
-
-volumes:
-  database: {}
-  server-data: {}
-  certs: {}
-  custom-templates: {}
 
 networks:
   authentik_internal:

@@ -14,7 +14,7 @@ services:
       - TZ=${TIMEZONE}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - radarr-config:/config
+      - /srv/dvls/radarr-config:/config
       - /mnt/nas/media/arr/data:/data
     dns:
       - 1.1.1.1
@@ -29,6 +29,9 @@ services:
       rollback_config:
         parallelism: 1
         order: stop-first
+      placement:
+        constraints:
+          - node.labels.role == primary
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -55,7 +58,7 @@ services:
       - TZ=${TIMEZONE}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - sonarr-config:/config
+      - /srv/dvls/sonarr-config:/config
       - /mnt/nas/media/arr/data:/data
     dns:
       - 1.1.1.1
@@ -70,6 +73,9 @@ services:
       rollback_config:
         parallelism: 1
         order: stop-first
+      placement:
+        constraints:
+          - node.labels.role == primary
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -97,7 +103,7 @@ services:
       - TZ=${TIMEZONE}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - bazarr-config:/config
+      - /srv/dvls/bazarr-config:/config
       - /mnt/nas/media/arr/data/media:/data/media
     dns:
       - 1.1.1.1
@@ -112,6 +118,9 @@ services:
       rollback_config:
         parallelism: 1
         order: stop-first
+      placement:
+        constraints:
+          - node.labels.role == primary
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -138,7 +147,7 @@ services:
       - TZ=${TIMEZONE}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - prowlarr-config:/config
+      - /srv/dvls/prowlarr-config:/config
     dns:
       - 1.1.1.1
       - 1.0.0.1
@@ -152,6 +161,9 @@ services:
       rollback_config:
         parallelism: 1
         order: stop-first
+      placement:
+        constraints:
+          - node.labels.role == primary
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -183,7 +195,7 @@ services:
       - UMASK=000            # sensible file perms
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - qbittorrent-config:/config
+      - /srv/dvls/qbittorrent-config:/config
       - /mnt/nas/media/arr/data:/data
     deploy:
       restart_policy:
@@ -195,6 +207,9 @@ services:
       rollback_config:
         parallelism: 1
         order: stop-first
+      placement:
+        constraints:
+          - node.labels.role == primary
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -226,8 +241,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /dev/dri:/dev/dri
-      - jellyfin-config:/config
-      - jellyfin-cache:/cache
+      - /srv/dvls/jellyfin-config:/config
+      - /srv/dvls/jellyfin-cache:/cache
       - /mnt/nas/media/arr/data:/data/media:ro
     deploy:
       restart_policy:
@@ -239,6 +254,9 @@ services:
       rollback_config:
         parallelism: 1
         order: stop-first
+      placement:
+        constraints:
+          - node.labels.role == primary
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
@@ -251,15 +269,6 @@ services:
         - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
     networks:
       - hlarr
-
-volumes:
-  sonarr-config: {}
-  radarr-config: {}
-  bazarr-config: {}
-  prowlarr-config: {}
-  jellyfin-config: {}
-  jellyfin-cache: {}
-  qbittorrent-config: {}
 
 networks:
   hlarr:

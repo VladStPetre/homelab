@@ -3,7 +3,7 @@ services:
   homeassistant:
     image: ghcr.io/home-assistant/home-assistant:2026.6.0
     volumes:
-      - ha-data:/config
+      - /srv/dvls/ha-data:/config
       - /etc/localtime:/etc/localtime:ro
     configs:
       - source: nas_ssh_key
@@ -51,8 +51,8 @@ services:
       - influxdb2-admin-password
       - influxdb2-admin-token
     volumes:
-      - influxdb2-config:/etc/influxdb2
-      - influxdb2-data:/var/lib/influxdb2
+      - /srv/dvls/influxdb2-config:/etc/influxdb2
+      - /srv/dvls/influxdb2-data:/var/lib/influxdb2
     deploy:
       restart_policy:
         condition: any
@@ -89,8 +89,8 @@ services:
       - source: mosquitto_config
         target: /mosquitto/config/mosquitto.conf
     volumes:
-      - mosquitto-data:/mosquitto/data
-      - mosquitto-logs:/mosquitto/log
+      - /srv/dvls/mosquitto-data:/mosquitto/data
+      - /srv/dvls/mosquitto-logs:/mosquitto/log
     deploy:
       restart_policy:
         condition: on-failure
@@ -115,7 +115,7 @@ services:
     environment:
       - TZ=${TIMEZONE}
     volumes:
-      - z2m-data:/app/data
+      - /srv/dvls/z2m-data:/app/data
     deploy:
       restart_policy:
         condition: any
@@ -146,8 +146,8 @@ services:
   esphome:
     image: esphome/esphome:2026.5
     volumes:
-      - esphome-data:/config
-      - esphome-cache:/cache
+      - /srv/dvls/esphome-data:/config
+      - /srv/dvls/esphome-cache:/cache
       - /etc/localtime:/etc/localtime:ro
     environment:
       - TZ=${TIMEZONE}
@@ -190,17 +190,6 @@ secrets:
     external: true
   influxdb2-admin-token:
     external: true
-
-volumes:
-  ha-data: {}
-  esphome-data: {}
-  esphome-cache: {}
-  influxdb2-data: {}
-  influxdb2-config: {}
-  mosquitto-config: {}
-  mosquitto-data: {}
-  mosquitto-logs: {}
-  z2m-data: {}
 
 networks:
   hlel:

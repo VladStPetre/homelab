@@ -12,7 +12,7 @@ services:
       - GF_ANALYTICS_CHECK_FOR_UPDATES=false          # optional: reduce other outbound checks
       - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false   # optional
     volumes:
-      - grafana-data:/var/lib/grafana
+      - /srv/dvls/grafana-data:/var/lib/grafana
     deploy:
       restart_policy:
         condition: on-failure
@@ -51,7 +51,7 @@ services:
       - source: alloy_config
         target: /etc/alloy/config.alloy
     volumes:
-      - alloy-data:/var/lib/alloy/data
+      - /srv/dvls/alloy-data:/var/lib/alloy/data
       - /:/rootfs:ro
       - /run:/run:ro
       - /var/log:/var/log:ro
@@ -95,7 +95,7 @@ services:
       - source: loki_config
         target: /etc/loki/config.yaml
     volumes:
-      - loki-data:/loki:rw
+      - /srv/dvls/loki-data:/loki:rw
     deploy:
       restart_policy:
         condition: on-failure
@@ -129,7 +129,7 @@ services:
       - source: prom_config
         target: /etc/prometheus/prometheus.yaml
     volumes:
-      - prometheus-data:/prometheus
+      - /srv/dvls/prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
       - '--storage.tsdb.path=/prometheus'
@@ -171,12 +171,6 @@ configs:
     external: true
   prom_config:
     external: true
-
-volumes:
-  grafana-data: {}
-  alloy-data: {}
-  prometheus-data: {}
-  loki-data: {}
 
 networks:
   hlel:

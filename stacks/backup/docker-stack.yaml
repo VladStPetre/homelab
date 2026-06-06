@@ -11,31 +11,32 @@ services:
       - TZ=${TIMEZONE}
     volumes:
       # Backrest internal state
-      - backrest_data:/data
-      - backrest_config:/config
-      - backrest_cache:/cache
-      - backrest_tmp:/tmp
+      - /srv/dvls/backrest_data:/data
+      - /srv/dvls/backrest_config:/config
+      - /srv/dvls/backrest_cache:/cache
+      - /srv/dvls/backrest_tmp:/tmp
       # nas - destination
       - /mnt/nas/bkp:/data/qnas/bkp
       # Mount the SAME service volumes read-only so Backrest can back them up
-      - immich_library:/data/immich_library:ro
-      - ha_ha-data:/data/ha-data:ro
-      - ha_influxdb2-data:/data/influxdb2-data:ro
-      - ha_z2m-data:/data/z2m-data:ro
-      - monitoring_grafana-data:/data/grafana-data:ro
-      - monitoring_prometheus-data:/data/prometheus-data:ro
-      - syncthing_src_config:/data/syncthing_src:ro
-      - syncthing_storage_config:/data/syncthing_storage:ro
-      - syncthing_nas_config:/data/syncthing_nas:ro
+      - /srv/dvls/ha-data:/data/ha-data:ro
+      - /srv/dvls/influxdb2-data:/data/influxdb2-data:ro
+      - /srv/dvls/z2m-data:/data/z2m-data:ro
+      - /srv/dvls/grafana-data:/data/grafana-data:ro
+      - /srv/dvls/prometheus-data:/data/prometheus-data:ro
+      - /srv/dvls/syncthing_src_config:/data/syncthing_src:ro
+      - /srv/dvls/syncthing_storage_config:/data/syncthing_storage:ro
+      - /srv/dvls/syncthing_nas_config:/data/syncthing_nas:ro
+      - /srv/dvls/sonarr-config:/data/sonarr-config:ro
+      - /srv/dvls/radarr-config:/data/radarr-config:ro
+      - /srv/dvls/bazarr-config:/data/bazarr-config:ro
+      - /srv/dvls/prowlarr-config:/data/prowlarr-config:ro
+      - /srv/dvls/jellyfin-config:/data/jellyfin-config:ro
+      - /srv/dvls/qbittorrent-config:/data/qbittorrent-config:ro
+
       - semaphore_config:/data/semaphore_config:ro
       - semaphore_data:/data/semaphore_data:ro
       - uptime-data:/data/uptime-data:ro
-      - arr_sonarr-config:/data/sonarr-config:ro
-      - arr_radarr-config:/data/radarr-config:ro
-      - arr_bazarr-config:/data/bazarr-config:ro
-      - arr_prowlarr-config:/data/prowlarr-config:ro
-      - arr_jellyfin-config:/data/jellyfin-config:ro
-      - arr_qbittorrent-config:/data/qbittorrent-config:ro
+      - immich_library:/data/immich_library:ro
 
     deploy:
       restart_policy:
@@ -80,7 +81,7 @@ services:
       - UMASK=002
       - GUI_ADDRESS=0.0.0.0:8384
     volumes:
-      - syncthing_src_config:/config
+      - /srv/dvls/syncthing_src_config:/config
       - immich_library:/data/immich_library:ro
       - /mnt/nas_Vlad:/data/_Vlad:ro
       - /mnt/nas_Rux:/data/_Rux:ro
@@ -123,7 +124,7 @@ services:
       - UMASK=002
       - GUI_ADDRESS=0.0.0.0:8384
     volumes:
-      - syncthing_storage_config:/config
+      - /srv/dvls/syncthing_storage_config:/config
       - /mnt/vext2tb/_Vlad:/data/vext2tb/_Vlad
       - /mnt/vext2tb/_Rux:/data/vext2tb/_Rux
       - /mnt/vext2tb/srv/immich:/data/vext2tb/srv/immich
@@ -166,7 +167,7 @@ services:
       - UMASK=002
       - GUI_ADDRESS=0.0.0.0:8384
     volumes:
-      - syncthing_nas_config:/config
+      - /srv/dvls/syncthing_nas_config:/config
       - /mnt/nas/immich:/data/qnas/immich
     deploy:
       restart_policy:
@@ -195,47 +196,14 @@ services:
       - hlel
 
 volumes:
-  # Backrest internal state/cache/config
-  backrest_data:
-  backrest_config:
-  backrest_cache:
-  backrest_tmp:
-  syncthing_storage_config:
-  syncthing_nas_config:
   # Reuse the SAME volume names your services use.
   immich_library:
-    external: true
-  ha_influxdb2-data:
-    external: true
-  syncthing_src_config:
-    external: true
-  ha_ha-data:
-    external: true
-  ha_z2m-data:
-    external: true
-  monitoring_grafana-data:
-    external: true
-  monitoring_prometheus-data:
     external: true
   semaphore_config:
     external: true
   semaphore_data:
     external: true
   uptime-data:
-    external: true
-  arr_sonarr-config:
-    external: true
-  arr_radarr-config:
-    external: true
-  arr_bazarr-config:
-    external: true
-  arr_prowlarr-config:
-    external: true
-  arr_jellyfin-config:
-    external: true
-  arr_jellyfin-cache:
-    external: true
-  arr_qbittorrent-config:
     external: true
 
 networks:

@@ -5,7 +5,7 @@ services:
     image: fnsys/dockhand:v1.0.31
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - dockhand_data:/app/data
+      - /srv/dvls/dockhand_data:/app/data
     deploy:
       restart_policy:
         condition: on-failure
@@ -36,7 +36,7 @@ services:
     image: portainer/portainer-ce:2.42.0
     command: -H unix:///var/run/docker.sock
     volumes:
-      - portainer-data:/data
+      - /srv/dvls/portainer-data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
       restart_policy:
@@ -87,7 +87,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       # Optional: persistent user assets (custom icons/backgrounds):
-      - homepage-data:/app/config/user
+      - /srv/dvls/homepage-data:/app/config/user
     deploy:
       restart_policy:
         condition: on-failure
@@ -124,8 +124,8 @@ services:
       FB_DATABASE: /database/filebrowser.db
       FB_CONFIG: /config/settings.json
     volumes:
-      - filebrowser-db:/database
-      - filebrowser-config:/config
+      - /srv/dvls/filebrowser-db:/database
+      - /srv/dvls/filebrowser-config:/config
       - /var/lib/docker/volumes:/srv/docker-volumes
 #      - /mnt/nas:/srv/mnt/nas
     networks:
@@ -183,14 +183,6 @@ configs:
     external: true
   homepage_docker_yaml:
     external: true
-
-volumes:
-    homepage-data:
-      external: true
-    portainer-data: {}
-    dockhand_data: {}
-    filebrowser-db: {}
-    filebrowser-config: {}
 
 networks:
   hlel:

@@ -36,12 +36,12 @@ echo "===  Docker configs created  ==="
 
 echo "===  Deploy stacks  ==="
 docker stack deploy -c stacks/backup/docker-stack.yaml --prune --resolve-image=changed backup
+docker stack deploy -c stacks/arr/docker-stack.yaml --prune --resolve-image=changed arr
 docker stack deploy -c stacks/gh-runner/docker-stack.yaml --prune --resolve-image=changed gh-runner
 docker stack deploy -c stacks/ha/docker-stack.yaml --prune --resolve-image=changed ha
 docker stack deploy -c stacks/immich/docker-stack.yaml --prune --resolve-image=changed immich
 docker stack deploy -c stacks/infra/docker-stack.yaml --prune --resolve-image=changed infra
 docker stack deploy -c stacks/kiosk/docker-stack.yaml --prune --resolve-image=changed kiosk
-docker stack deploy -c stacks/media/docker-stack.yaml --prune --resolve-image=changed media
 docker stack deploy -c stacks/monitoring/docker-stack.yaml --prune --resolve-image=changed monitoring
 docker stack deploy -c stacks/utils/docker-stack.yaml --prune --resolve-image=changed utils
 docker stack deploy -c stacks/authentik/docker-stack.yaml --prune --resolve-image=changed authentik
