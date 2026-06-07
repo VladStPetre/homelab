@@ -51,29 +51,34 @@ services:
       hlel:
         ipv4_address: 172.21.0.109   # same IP your Pi-hole had
 
-
-  wireguard:
-    image: lscr.io/linuxserver/wireguard:1.0.20250521
+  wg-easy:
+    image: ghcr.io/wg-easy/wg-easy:15
     cap_add:
       - NET_ADMIN
-      - SYS_MODULE #optional
+      - SYS_MODULE
     environment:
-      - PUID=${CUID}
-      - PGID=${CGID}
       - TZ=${TIMEZONE}
-      - SERVERURL=${WG_SERVER_URL}
-      - SERVERPORT=${WG_SERVER_PORT}
-      - PEERS=5 #optional
-      - PEERDNS=auto #optional
-      - INTERNAL_SUBNET=10.13.13.0 #optional
-      - ALLOWEDIPS=0.0.0.0/0 #optional
-      - PERSISTENTKEEPALIVE_PEERS=all #optional
-      - LOG_CONFS=true #optional
+      # First-start setup only
+#      - INIT_ENABLED=true
+#      - INIT_USERNAME=admin
+#      - INIT_PASSWORD=${WG_EASY_ADMIN_PASSWORD}
+#      - INIT_HOST=${WG_SERVER_URL}
+#      - INIT_PORT=${WG_SERVER_PORT}
+#      - INIT_DNS=192.168.7.124
+#      - INIT_IPV4_CIDR=10.13.13.0/24
+#      - INIT_IPV6_CIDR=fd00:13:13::/64
+      - WG_DEVICE=eth1
+##
+      # Web UI
+      - PORT=51821
     ports:
-      - "51820:51820/udp"
+      - target: 62931
+        published: 62931
+        protocol: udp
+        mode: host
     volumes:
-      - /srv/dvls/wireguard-data:/config
-      - /lib/modules:/lib/modules #optional
+      - /srv/dvls/wireguard-data:/etc/wireguard
+      - /lib/modules:/lib/modules:ro
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
       - net.ipv4.ip_forward=1
@@ -92,6 +97,13 @@ services:
       labels:
         - "portainer.io/managed=true"
         - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.wg-easy.rule=Host(`wg.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.wg-easy.entrypoints=websecure"
+        - "traefik.http.routers.wg-easy.tls=true"
+        - "traefik.http.routers.wg-easy.tls.certresolver=cloudflare"
+        - "traefik.http.services.wg-easy.loadbalancer.server.port=51821"
       placement:
         constraints:
           - node.labels.role == primary
