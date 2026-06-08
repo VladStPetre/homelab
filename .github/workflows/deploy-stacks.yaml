@@ -130,6 +130,7 @@ jobs:
           name: ${{ env.STACK_NAME }}
           file: stacks/${{ env.STACK_NAME }}/docker-stack.yaml
           host: ${{ secrets.DOMAIN_IP }}
+          port: ${{ secrets.SSH_PORT }}
           user: deploy
           ssh_key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
           env_file: envfile
@@ -146,6 +147,7 @@ jobs:
         env:
           SSH_HOST: ${{ secrets.DOMAIN_IP }}
           SSH_USER: deploy
+          SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
           set -euo pipefail
           install -m 700 -d ~/.ssh
