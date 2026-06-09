@@ -32,10 +32,6 @@ services:
       - /srv/dvls/prowlarr-config:/data/prowlarr-config:ro
       - /srv/dvls/jellyfin-config:/data/jellyfin-config:ro
       - /srv/dvls/qbittorrent-config:/data/qbittorrent-config:ro
-
-      - semaphore_config:/data/semaphore_config:ro
-      - semaphore_data:/data/semaphore_data:ro
-      - uptime-data:/data/uptime-data:ro
       - immich_library:/data/immich_library:ro
 
     deploy:
