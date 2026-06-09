@@ -2,7 +2,7 @@
 
 Create docker context
 ```commandline 
-docker context create echo --description "Docker on G3 - host: echo" --docker "host=ssh://echo.local"```
+docker context create echo --description "Docker on G3 - host: echo" --docker "host=ssh://echo.local"
 ```
 
 set env variables from .env file

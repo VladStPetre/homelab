@@ -117,16 +117,16 @@ services:
 
   filebrowser:
     image: filebrowser/filebrowser:v2-s6
-    user: "0:0"
-#    user: "${CUID}:${CGID}"
     environment:
+      PUID: ${CUID}
+      PGID: ${CGID}
       FB_ROOT: /srv
       FB_DATABASE: /database/filebrowser.db
       FB_CONFIG: /config/settings.json
     volumes:
       - /srv/dvls/filebrowser-db:/database
       - /srv/dvls/filebrowser-config:/config
-      - /var/lib/docker/volumes:/srv/docker-volumes
+      - /srv/dvls:/srv/dvls
 #      - /mnt/nas:/srv/mnt/nas
     networks:
       - hlel

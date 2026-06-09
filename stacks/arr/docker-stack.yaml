@@ -6,8 +6,6 @@ services:
   ###############################################
   radarr:
     image: ghcr.io/hotio/radarr:release-6.1.1.10360
-    ports:
-      - 7878:7878
     environment:
       - PUID=${CUID}
       - PGID=${CGID}
@@ -50,8 +48,6 @@ services:
   ###############################################
   sonarr:
     image: ghcr.io/hotio/sonarr:release-4.0.17.2952
-    ports:
-      - 8989:8989
     environment:
       - PUID=${CUID}
       - PGID=${CGID}
@@ -95,8 +91,6 @@ services:
   ###############################################
   bazarr:
     image: ghcr.io/hotio/bazarr:release-1.5.6
-    ports:
-      - 6767:6767
     environment:
       - PUID=${CUID}
       - PGID=${CGID}
@@ -139,8 +133,6 @@ services:
   ###############################################
   prowlarr:
     image: ghcr.io/hotio/prowlarr:release-2.3.5.5327
-    ports:
-      - 9696:9696
     environment:
       - PUID=${CUID}
       - PGID=${CGID}
