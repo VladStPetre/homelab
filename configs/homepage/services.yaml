@@ -19,6 +19,11 @@
         href: "https://influxdb.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
         description: Time-series DB
 
+    - Grafana:
+          icon: si-grafana
+          href: "https://grafana.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+          description: Dashboards
+
 - Media:
     - Immich:
         icon: si-immich
@@ -108,10 +113,10 @@
         description: Storage sync
 
 - Infra:
-    - Grafana:
-        icon: si-grafana
-        href: "https://grafana.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
-        description: Dashboards
+    - Wireguard:
+        icon: si-wireguard
+        href: "https://wg.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: VPN
 
     - Adguard Home:
         icon: si-adguard
