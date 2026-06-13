@@ -6,6 +6,7 @@ set -e
 echo "===  Create docker networks  ==="
 docker network create --subnet=172.21.0.0/16 -d overlay hlel
 docker network create --subnet=172.23.0.0/16 -d overlay hlarr
+docker network create --subnet=172.25.0.0/16 -d overlay --attachable hlocint
 echo "===  Docker network created  ==="
 
 echo "===  Create docker secrets  ==="
@@ -45,4 +46,5 @@ docker stack deploy -c stacks/kiosk/docker-stack.yaml --prune --resolve-image=ch
 docker stack deploy -c stacks/monitoring/docker-stack.yaml --prune --resolve-image=changed monitoring
 docker stack deploy -c stacks/utils/docker-stack.yaml --prune --resolve-image=changed utils
 docker stack deploy -c stacks/authentik/docker-stack.yaml --prune --resolve-image=changed authentik
+docker stack deploy -c stacks/opencloud/docker-stack.yaml --prune --resolve-image=changed opencloud
 echo "===  Stacks deployed  ==="

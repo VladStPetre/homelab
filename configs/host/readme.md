@@ -89,7 +89,7 @@ sudo -u <deploy_user> install -m 0700 <patb_to_repo>/configs/host/verify-swarm-d
 Easier to be done in the UI on first use - try to reproduce the following settings
 ```yaml
 serial:
-  port: tcp://<acho_ip>:3333
+  port: tcp://<echo_ip>:3333
   adapter: ember  # for Sonoff Dongle-E (EFR32 chip)
 mqtt:
   base_topic: zigbee2mqtt

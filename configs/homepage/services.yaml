@@ -61,6 +61,11 @@
         description: Subtitle management
 
 - Utils:
+    - Opencloud:
+        icon: si-googlecloud
+        href: "https://opencloud.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: Personal Cloud
+
     - Dockhand:
         icon: si-docker
         href: "https://dockhand.{{HOMEPAGE_VAR_BASE_DOMAIN}}"

@@ -1,0 +1,65 @@
+---
+services:
+
+  opencloud:
+    image: opencloudeu/opencloud:4.0.7
+    user: "${CUID}:${CGID}"
+    environment:
+      OC_URL: "https://opencloud.${DOMAIN_NAME}"
+      OC_DOMAIN: "opencloud.${DOMAIN_NAME}"
+      PROXY_TLS: "false"
+      OC_LOG_LEVEL: "info"
+      OC_LOG_COLOR: "false"
+      OC_LOG_PRETTY: "false"
+      INITIAL_ADMIN_PASSWORD: "${OC_INITIAL_ADMIN_PASSWORD}"
+      NATS_NATS_HOST: "0.0.0.0"
+      NATS_NATS_PORT: "9233"
+      MICRO_REGISTRY: "nats-js-kv"
+      MICRO_REGISTRY_ADDRESS: "127.0.0.1:9233"
+      OC_ADD_RUN_SERVICES: "${OC_ADD_RUN_SERVICES:-}"
+      INSECURE: "false"
+      OC_JWT_SECRET: "${OC_JWT_SECRET}"
+      OC_MACHINE_AUTH_API_KEY: "${OC_MACHINE_AUTH_API_KEY}"
+      OC_SYSTEM_USER_API_KEY: "${OC_SYSTEM_USER_API_KEY}"
+      OC_TRANSFER_SECRET: "${OC_TRANSFER_SECRET}"
+      OC_URL_SIGNING_SECRET: "${OC_URL_SIGNING_SECRET}"
+      STORAGE_SYSTEM_JWT_SECRET: "${STORAGE_SYSTEM_JWT_SECRET}"
+    volumes:
+      - /srv/dvls/opencloud/config:/etc/opencloud
+      - /srv/dvls/opencloud/data:/var/lib/opencloud
+    networks:
+      - hlel
+      - hlocint
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+      placement:
+        constraints:
+          - node.labels.role == primary
+      labels:
+        - "portainer.io/managed=true"
+        - "io.portainer.accesscontrol.users=admin"
+        - "traefik.enable=true"
+        - "traefik.swarm.network=hlel"
+        - "traefik.http.routers.opencloud.rule=Host(`opencloud.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.opencloud.entrypoints=websecure"
+        - "traefik.http.routers.opencloud.tls=true"
+        - "traefik.http.routers.opencloud.tls.certresolver=cloudflare"
+        - "traefik.http.services.opencloud.loadbalancer.server.port=9200"
+        - "traefik.http.services.opencloud.loadbalancer.server.scheme=http"
+
+
+networks:
+  hlel:
+    name: hlel
+    external: true
+  hlocint:
+    name: hlocint
+    external: true
