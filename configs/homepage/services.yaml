@@ -27,7 +27,7 @@
 - Media:
     - Immich:
         icon: si-immich
-        href: "https://{{HOMEPAGE_VAR_EXT_DOMAIN_NAME}}"
+        href: "https://immich.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
         description: Photo library
 
     - Jellyfin:
