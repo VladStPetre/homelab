@@ -1,11 +1,11 @@
 name: Deploy Stack(s)
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "stacks/**"
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - "stacks/**"
   workflow_dispatch:
     inputs:
       stack_names:

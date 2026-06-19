@@ -86,8 +86,8 @@ services:
         target: /app/config/docker.yaml
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      # Optional: persistent user assets (custom icons/backgrounds):
       - /srv/dvls/homepage-data:/app/config/user
+      - /srv/dvls/homepage-images:/app/public/images
     deploy:
       restart_policy:
         condition: on-failure
@@ -169,7 +169,15 @@ services:
         - "traefik.http.routers.nas-router.entrypoints=websecure"
         - "traefik.http.routers.nas-router.tls=true"
         - "traefik.http.routers.nas-router.tls.certresolver=cloudflare"
+        - "traefik.http.routers.nas-router.service=nas-router"
         - "traefik.http.services.nas-router.loadbalancer.server.url=http://${NAS_ADDR}:8080"
+
+        - "traefik.http.routers.semaphore-router.rule=Host(`semaphore.${DOMAIN_NAME}`)"
+        - "traefik.http.routers.semaphore-router.entrypoints=websecure"
+        - "traefik.http.routers.semaphore-router.tls=true"
+        - "traefik.http.routers.semaphore-router.tls.certresolver=cloudflare"
+        - "traefik.http.routers.semaphore-router.service=semaphore-router"
+        - "traefik.http.services.semaphore-router.loadbalancer.server.url=http://${THINKP_ADDR}:3000"
 
 
 configs:

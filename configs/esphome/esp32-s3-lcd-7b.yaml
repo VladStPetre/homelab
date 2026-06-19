@@ -545,9 +545,9 @@ lvgl:
             on_click:
               then:
                 - homeassistant.service:
-                    service: light.toggle
+                    service: switch.toggle
                     data:
-                      entity_id: light.living_room_light
+                      entity_id: btn_light_living
 
         # ── Light Button: Bedroom ──────────────────────────
         - button:
@@ -583,9 +583,9 @@ lvgl:
             on_click:
               then:
                 - homeassistant.service:
-                    service: light.toggle
+                    service: switch.toggle
                     data:
-                      entity_id: light.bedroom_light
+                      entity_id: btn_light_bedroom
 
         # ── Light Button: Kitchen ──────────────────────────
         - button:

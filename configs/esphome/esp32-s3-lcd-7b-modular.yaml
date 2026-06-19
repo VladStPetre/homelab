@@ -1,0 +1,346 @@
+---
+# Substitution variables used through the codebase
+substitutions:
+  icon_font: mdi_icons_40
+  text_font: nunito_20
+  text_color: white
+  bg_color: black
+  button_on_color: "ep_orange"
+  button_off_color: "very_dark_gray"
+  icon_on_color: "yellow"
+  icon_off_color: "gray"
+  label_on_color: "white"
+  label_off_color: "gray"
+  button_text_color: "white"
+
+  # LCD back light modes - Code in backlight_time.yaml
+  display_daytime_brightness: "100%"
+  display_nighttime_brightness: "50%"
+  display_night_hour: "0"      # Hour for night mode (0-23)
+  display_night_minute: "0"    # Minute for night mode (0-59)
+  display_backlight_timeout_always_enabled: "false"  # Set true to dim/off in all modes, not just Night
+  display_backlight_timeout_initial: "5"  # Initial backlight timeout in minutes (-1 to disable)
+
+  # Screen Size
+  screen_height: 600
+  screen_width: 1024
+  # defaults for popup pages
+  popup_timeout_seconds: '120'  # timeout in seconds  
+
+esphome:
+  name: esp32-s3-lcd-7b
+  friendly_name: "Waveshare ESP32-S3-Touch-LCD-7B"
+  comment: "Waveshare ESP32-S3-Touch-LCD-7B Smart Screen"
+  on_boot:
+    - priority: 400
+      then:
+        - script.execute: update_loading_page
+
+    - priority: -100
+      then:
+        - delay: 5s
+        - script.execute: dt_update
+        - script.execute: update_climate_labels_living
+        - script.execute: update_climate_labels_bedroom
+        - script.execute: update_climate_labels_balcony
+
+logger:
+
+wifi:
+  use_address: 192.168.7.178
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "sOXuW4k6R8kE068BVqUeTvKqWuvyfxqywpk1zfe5mTQ="
+
+ota:
+  - platform: esphome
+    password: "8fb0182a7e50cc6e128658786a93382a"
+
+# Time update script - This is run once per second. Use it to update any time related labels.
+script:
+  # --------------------------------------------------------------------------
+  # This script is called once per minute.
+  # Any packages in this library will !extend time_update to update their own labels.
+  # You can add code here to update your own custom labels.
+  # --------------------------------------------------------------------------
+  - id: time_update
+    then:
+      - lambda: |-
+          // No operation
+
+  - id: dt_update
+    then:
+      - lvgl.label.update:
+          id: date_label
+          text: !lambda |-
+            if (!id(system_time).now().is_valid()) {
+              return std::string("-- --- ----");
+            }
+  
+            static const char *months[] = {
+              "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            };
+  
+            auto now = id(system_time).now();
+            char buf[16];
+            snprintf(
+              buf,
+              sizeof(buf),
+              "%02d %s %04d",
+              now.day_of_month,
+              months[now.month - 1],
+              now.year
+            );
+            return std::string(buf);
+
+  - id: update_climate_labels_living
+    then:
+      - lvgl.label.update:
+          id: climate_label_living
+          text: !lambda |-
+            if (isnan(id(living_temp).state) || isnan(id(living_humid).state)) {
+              return std::string("--.-°C /--%");
+            }
+            char buf[32];
+            snprintf(buf, sizeof(buf), "%.1f°C / %.0f%%", id(living_temp).state, id(living_humid).state);
+            return std::string(buf);
+
+  - id: update_climate_labels_bedroom
+    then:
+      - lvgl.label.update:
+          id: climate_label_bedroom
+          text: !lambda |-
+            if (isnan(id(bedroom_temp).state) || isnan(id(bedroom_humid).state)) {
+              return std::string("--.-°C /--%");
+            }
+            char buf[32];
+            snprintf(buf, sizeof(buf), "%.1f°C / %.0f%%", id(bedroom_temp).state, id(bedroom_humid).state);
+            return std::string(buf);
+
+  - id: update_climate_labels_balcony
+    then:
+      - lvgl.label.update:
+          id: climate_label_balcony
+          text: !lambda |-
+            if (isnan(id(balcony_temp).state) || isnan(id(balcony_humid).state)) {
+              return std::string("--.-°C /--%");
+            }
+            char buf[32];
+            snprintf(buf, sizeof(buf), "%.1f°C / %.0f%%", id(balcony_temp).state, id(balcony_humid).state);
+            return std::string(buf);
+
+
+interval:
+  - interval: 1h
+    then:
+      - script.execute: dt_update
+
+sensor:
+  - platform: homeassistant
+    id: living_temp
+    entity_id: sensor.lumi_de_lumi_158d0003cb2d31_v1_temperature_p_2_1
+    on_value:
+      then:
+        - script.execute: update_climate_labels_living
+
+  - platform: homeassistant
+    id: bedroom_temp
+    entity_id: sensor.lumi_de_lumi_158d000391d212_v1_temperature_p_2_1
+    on_value:
+      then:
+        - script.execute: update_climate_labels_bedroom
+
+  - platform: homeassistant
+    id: balcony_temp
+    entity_id: sensor.lumi_de_lumi_158d0003cb89ed_v1_temperature_p_2_1
+    on_value:
+      then:
+        - script.execute: update_climate_labels_balcony
+
+  - platform: homeassistant
+    id: living_humid
+    entity_id: sensor.lumi_de_lumi_158d0003cb2d31_v1_relative_humidity_p_2_2
+    on_value:
+      then:
+        - script.execute: update_climate_labels_living
+
+  - platform: homeassistant
+    id: bedroom_humid
+    entity_id: sensor.lumi_de_lumi_158d000391d212_v1_relative_humidity_p_2_2
+    on_value:
+      then:
+        - script.execute: update_climate_labels_bedroom
+
+  - platform: homeassistant
+    id: balcony_humid
+    entity_id: sensor.lumi_de_lumi_158d0003cb89ed_v1_relative_humidity_p_2_2
+    on_value:
+      then:
+        - script.execute: update_climate_labels_balcony
+
+packages:
+  # Generic configuration for ESP32 screens
+  # Include Wi-Fi support
+  wifi: !include esphome-modular-lvgl-buttons/common/wifi.yaml
+  # Enable OTA updates with a status screen
+  ota_screen: !include esphome-modular-lvgl-buttons/common/ota.yaml
+  # Some basic sensors
+  sensors: !include esphome-modular-lvgl-buttons/common/sensors_base.yaml
+  # Styles + Themes + Some nice basic fonts + 1000s of glyphs + all the colors
+  theme:  !include esphome-modular-lvgl-buttons/common/theme/index.yaml
+  # Use this theme for debugging
+  # theme:  !include esphome-modular-lvgl-buttons/common/theme/index_debug.yaml  # uncomment to enable debug outlines
+  # Include if your touch screen has a backlight. Also sets the time from HA
+  backlight: !include esphome-modular-lvgl-buttons/common/backlight_time.yaml
+  # Popup system — code for popup pages lives here, but the popups themselves are defined in the UI section below
+  popup_system: !include esphome-modular-lvgl-buttons/ui/popup/popup_system.yaml
+
+  # Hardware description file
+  hardware: !include
+    file: esphome-modular-lvgl-buttons/hardware/waveshare-esp32-s3-touch-lcd-7B.yaml
+    vars:
+      rotation: "0"  # set screen rotation 0, 90, 180, 270
+  # Basic boot screen with ESPHome logo and device diagnostic info
+  loading_screen: !include esphome-modular-lvgl-buttons/pages/loading.yaml
+  # info screen - WiFi login, IP address, MAC address etc
+  info_screen: !include esphome-modular-lvgl-buttons/pages/info.yaml
+
+  # This section will add buttons and page to your screen using the ESPHome package system.
+  # Each package has all the code required for the button or page (LVGL, sensors, etc)
+
+  flip_clock: !include
+    file: esphome-modular-lvgl-buttons/ui/clock/flip_clock.yaml
+    vars:
+      uid: flip_clock
+      page_id: main_page
+      row: 1
+      column: 0
+      row_span: 2
+      column_span: 2
+      font_size: 120
+      height: "90%"
+      click_page: main_page
+
+  living_office_light: !include
+    file: esphome-modular-lvgl-buttons/ui/switch/remote.yaml
+    vars:
+      uid: living_office_light
+      page_id: main_page
+      entity_id: switch.lumi_zigbee_plug_mmeu01
+      row: 0
+      column: 2
+      text: "Desk"
+      icon: $mdi_desk
+
+  living_tv_light: !include
+    file: esphome-modular-lvgl-buttons/ui/switch/remote.yaml
+    vars:
+      uid: living_tv_light
+      page_id: main_page
+      entity_id: switch.chuangmi_de_235932589_hmi206_on_p_2_1
+      row: 1
+      column: 2
+      text: "TV"
+      icon: $mdi_television_ambient_light
+
+  bedroom_office_light: !include
+    file: esphome-modular-lvgl-buttons/ui/switch/remote.yaml
+    vars:
+      uid: bedroom_office_light
+      page_id: main_page
+      entity_id: switch.ikea_inspelning_plug_01
+      row: 2
+      column: 2
+      text: "Desk"
+      icon: $mdi_desk
+
+
+lvgl:
+  buffer_size: 100%
+  pages:
+    - id: main_page
+      layout: 4x3
+      styles: page_style
+      <<: !include esphome-modular-lvgl-buttons/common/swipe_navigation.yaml
+      widgets:
+        - obj:
+            grid_cell_row_pos: 0
+            grid_cell_column_pos: 0
+            grid_cell_column_span: 2
+            grid_cell_x_align: stretch
+            grid_cell_y_align: stretch
+            bg_opa: TRANSP
+            border_width: 0
+            pad_all: 0
+            widgets:
+              - label:
+                  id: date_label
+                  align: CENTER
+                  text: "-- --- ----"
+                  text_font: nunito_72
+        - obj:
+            grid_cell_row_pos: 3
+            grid_cell_column_pos: 0
+            grid_cell_column_span: 3
+            grid_cell_x_align: stretch
+            grid_cell_y_align: stretch
+            bg_opa: TRANSP
+            border_width: 0
+            pad_all: 0
+            layout:
+              type: FLEX
+              flex_flow: ROW
+              flex_align_main: SPACE_EVENLY
+              flex_align_cross: CENTER
+              flex_align_track: CENTER
+            widgets:
+              - label:
+                  id: climate_label_living
+                  text: "--.-°C / --%"
+                  text_font: nunito_48
+
+              - label:
+                  id: climate_label_bedroom
+                  text: "--.-°C / --%"
+                  text_font: nunito_48
+
+              - label:
+                  id: climate_label_balcony
+                  text: "--.-°C / --%"
+                  text_font: nunito_48
+
+
+font:
+  - file: 'https://github.com/Templarian/MaterialDesign-Webfont/raw/v7.4.47/fonts/materialdesignicons-webfont.ttf'
+    id: mdi_icons_40
+    size: 40
+    bpp: 8
+    glyphs: [
+      $mdi_bed,  # mdi-bed - bedroom icon
+      $mdi_brightness_6,  # mdi-brightness-6 - brightness slider icon
+      $mdi_bulkhead_light,  # mdi-bulkhead-light - bulkhead fixture
+      $mdi_ceiling_fan_light,  # mdi-ceiling-fan-light - ceiling fan with light
+      $mdi_ceiling_light,  # mdi-ceiling-light - ceiling fixture
+      $mdi_chevron_down,  # mdi-chevron-down - close/collapse button
+      $mdi_chevron_up,  # mdi-chevron-up - back/expand button
+      $mdi_circle_opacity,  # mdi-circle-opacity - saturation slider icon
+      $mdi_coach_lamp,  # mdi-coach-lamp - outdoor coach light
+      $mdi_eyedropper,  # mdi-eyedropper - spectrum mode toggle
+      $mdi_floor_lamp,  # mdi-floor-lamp - floor lamp
+      $mdi_grid,  # mdi-grid - grid mode toggle
+      $mdi_home,  # mdi-home - home/back navigation
+      $mdi_information_box,  # mdi-information-box - info screen
+      $mdi_lamp,  # mdi-lamp - table lamp
+      $mdi_led_strip,  # mdi-led-strip - LED strip light
+      $mdi_lightbulb,  # mdi-lightbulb - generic bulb icon
+      $mdi_string_lights,  # mdi-string-lights - decorative string lights
+      $mdi_track_light,  # mdi-track-light - track lighting
+      $mdi_white_balance_sunny,  # mdi-white-balance-sunny - color temp/sun icon
+      $mdi_television_ambient_light,  # mdi-television-ambient-light - TV ambient light
+      $mdi_desk,  # mdi-desk - desk lamp
+      $mdi_home_thermometer,  # mdi-home-thermometer - outdoor thermometer
+      $mdi_thermometer,  # mdi-thermometer - indoor thermometer
+    ]

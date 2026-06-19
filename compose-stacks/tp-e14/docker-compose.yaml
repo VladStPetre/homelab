@@ -1,0 +1,32 @@
+---
+version: '3.8'
+
+services:
+  semaphore:
+    image: semaphoreui/semaphore:v2.18.10
+    ports:
+      - "3000:3000"
+    environment:
+      - SEMAPHORE_DB_DIALECT=sqlite
+      - SEMAPHORE_DB=/var/lib/semaphore/database.sqlite
+      - SEMAPHORE_PLAYBOOK_PATH=/tmp/semaphore/
+      - SEMAPHORE_ADMIN_PASSWORD=${SEMAPHORE_ADMIN_PASSWORD:?error}
+      - SEMAPHORE_ADMIN_NAME=${SEMAPHORE_ADMIN_NAME:-admin}
+      - SEMAPHORE_ADMIN_EMAIL=${SEMAPHORE_ADMIN_EMAIL:-admin@localhost}
+      - SEMAPHORE_ADMIN=${SEMAPHORE_ADMIN:-admin}
+      - SEMAPHORE_ACCESS_KEY_ENCRYPTION=${SEMAPHORE_ACCESS_KEY_ENCRYPTION:?error}
+      - ANSIBLE_HOST_KEY_CHECKING=false
+      - HOME=/tmp/semaphore
+      - ANSIBLE_LOCAL_TEMP=/tmp/semaphore/.ansible/tmp
+      - ANSIBLE_REMOTE_TEMP=/tmp/semaphore/.ansible/tmp
+    volumes:
+      - /srv/dvls/semaphore_config:/etc/semaphore
+      - /srv/dvls/semaphore_data:/var/lib/semaphore
+      - /srv/dvls/semaphore_tmp:/tmp/semaphore
+    restart: unless-stopped
+    networks:
+      - tp-e14
+
+networks:
+  tp-e14:
+    name: tp-e14
