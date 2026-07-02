@@ -2,7 +2,7 @@
 services:
 
   opencloud:
-    image: opencloudeu/opencloud:4.0.7
+    image: opencloudeu/opencloud:7.2.0
     user: "${CUID}:${CGID}"
     environment:
       OC_URL: "https://opencloud.${DOMAIN_NAME}"
