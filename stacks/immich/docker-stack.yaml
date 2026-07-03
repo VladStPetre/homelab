@@ -1,7 +1,7 @@
 ---
 services:
   database:
-    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+    image: ghcr.io/immich-app/postgres:18-vectorchord0.5.3-pgvector0.8.1
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_DB=${POSTGRES_DB}
@@ -11,7 +11,8 @@ services:
     secrets:
       - immich_pg_password
     volumes:
-      - immich_postgres:/var/lib/postgresql/data
+#      - /srv/dvls/immich/postgres:/var/lib/postgresql/data
+      - /srv/dvls/immich/postgres_pg18:/var/lib/postgresql
     deploy:
       restart_policy:
         condition: any
@@ -30,9 +31,9 @@ services:
       - hlel
 
   redis:
-    image: docker.io/valkey/valkey:8-bookworm
+    image: docker.io/valkey/valkey:9-alpine
     volumes:
-      - immich_valkey_data:/data
+      - /srv/dvls/immich/valkey_data:/data
     deploy:
       restart_policy:
         condition: any
@@ -55,7 +56,7 @@ services:
     environment:
       - TZ=${TIMEZONE}
     volumes:
-      - immich_model_cache:/cache
+      - /srv/dvls/immich/model_cache:/cache
     deploy:
       restart_policy:
         condition: on-failure
@@ -87,13 +88,8 @@ services:
     secrets:
       - immich_pg_password
     volumes:
-      - immich_library:/data
+      - /srv/dvls/immich/library:/data
       - /etc/localtime:/etc/localtime:ro
-#    ports:
-#      - target: 2283
-#        published: 2283
-#        protocol: tcp
-#        mode: ingress
     deploy:
       restart_policy:
         condition: any
@@ -122,16 +118,6 @@ services:
 
 secrets:
   immich_pg_password:
-    external: true
-
-volumes:
-  immich_postgres:
-    external: true
-  immich_library:
-    external: true
-  immich_model_cache:
-    external: true
-  immich_valkey_data:
     external: true
 
 networks:

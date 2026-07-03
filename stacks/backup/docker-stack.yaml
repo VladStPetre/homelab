@@ -32,7 +32,7 @@ services:
       - /srv/dvls/prowlarr-config:/data/prowlarr-config:ro
       - /srv/dvls/jellyfin-config:/data/jellyfin-config:ro
       - /srv/dvls/qbittorrent-config:/data/qbittorrent-config:ro
-      - immich_library:/data/immich_library:ro
+      - /srv/dvls/immich/library:/data/immich_library:ro
 
     deploy:
       restart_policy:
@@ -78,7 +78,7 @@ services:
       - GUI_ADDRESS=0.0.0.0:8384
     volumes:
       - /srv/dvls/syncthing_src_config:/config
-      - immich_library:/data/immich_library:ro
+      - /srv/dvls/immich/library:/data/immich_library:ro
       - /mnt/nas_Vlad:/data/_Vlad:ro
       - /mnt/nas_Rux:/data/_Rux:ro
     deploy:
@@ -190,17 +190,6 @@ services:
           - node.labels.role == primary
     networks:
       - hlel
-
-volumes:
-  # Reuse the SAME volume names your services use.
-  immich_library:
-    external: true
-  semaphore_config:
-    external: true
-  semaphore_data:
-    external: true
-  uptime-data:
-    external: true
 
 networks:
   hlel:
