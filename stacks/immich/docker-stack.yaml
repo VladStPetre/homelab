@@ -51,7 +51,7 @@ services:
       - hlel
 
   immich-machine-learning:
-    image: ghcr.io/immich-app/immich-machine-learning:release
+    image: ghcr.io/immich-app/immich-machine-learning:v3.0.1
     # For HW accel, use tags like :release-cuda / :release-openvino / :release-rocm / :release-armnn
     environment:
       - TZ=${TIMEZONE}
@@ -74,7 +74,7 @@ services:
       - hlel
 
   immich-server:
-    image: ghcr.io/immich-app/immich-server:v2.7.5
+    image: ghcr.io/immich-app/immich-server:v3.0.1
     environment:
       - TZ=${TIMEZONE}
       # DB (must match database service)
