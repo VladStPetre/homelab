@@ -24,6 +24,8 @@ services:
       OC_TRANSFER_SECRET: "${OC_TRANSFER_SECRET}"
       OC_URL_SIGNING_SECRET: "${OC_URL_SIGNING_SECRET}"
       STORAGE_SYSTEM_JWT_SECRET: "${STORAGE_SYSTEM_JWT_SECRET}"
+      OC_SERVICE_ACCOUNT_ID: "${OC_SERVICE_ACCOUNT_ID}"
+      OC_SERVICE_ACCOUNT_SECRET: "${OC_SERVICE_ACCOUNT_SECRET}"
     volumes:
       - /srv/dvls/opencloud/config:/etc/opencloud
       - /srv/dvls/opencloud/data:/var/lib/opencloud
