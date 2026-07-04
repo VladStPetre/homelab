@@ -51,12 +51,14 @@ services:
       - hlel
 
   immich-machine-learning:
-    image: ghcr.io/immich-app/immich-machine-learning:v3.0.1
+    image: ghcr.io/immich-app/immich-machine-learning:v3-openvino
     # For HW accel, use tags like :release-cuda / :release-openvino / :release-rocm / :release-armnn
     environment:
       - TZ=${TIMEZONE}
+      - MACHINE_LEARNING_DEVICE_IDS=GPU
     volumes:
       - /srv/dvls/immich/model_cache:/cache
+      - /dev/dri:/dev/dri
     deploy:
       restart_policy:
         condition: on-failure
@@ -90,6 +92,7 @@ services:
     volumes:
       - /srv/dvls/immich/library:/data
       - /etc/localtime:/etc/localtime:ro
+      - /mnt/nas_Vlad:/mnt/external/nas_Vlad
     deploy:
       restart_policy:
         condition: any
