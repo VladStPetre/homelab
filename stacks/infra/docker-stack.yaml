@@ -112,7 +112,7 @@ services:
 
 
   traefik:
-    image: traefik:v3.7.1
+    image: traefik:v3.7.6
     ports:
       - "80:80"
       - "443:443"
