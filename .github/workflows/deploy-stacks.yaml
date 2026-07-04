@@ -16,13 +16,12 @@ on:
           - arr
           - ha
           - infra
-          - media
           - monitoring
           - utils
           - immich
-          - kiosk
           - backup
           - authentik
+          - opencloud
 
 concurrency:
   group: server-deploy-${{ github.repository_id }}-${{ github.ref }}
