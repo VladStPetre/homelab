@@ -7,7 +7,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_PASSWORD_FILE=/run/secrets/immich_pg_password
       - POSTGRES_INITDB_ARGS="--data-checksums"
-      # DB_STORAGE_TYPE: "HDD"   # uncomment if your DB disk is HDD
     secrets:
       - immich_pg_password
     volumes:
@@ -93,6 +92,7 @@ services:
       - /srv/dvls/immich/library:/data
       - /etc/localtime:/etc/localtime:ro
       - /mnt/nas_Vlad:/mnt/external/nas_Vlad
+      - /mnt/nas_Rux/1.poze:/mnt/external/nas_Rux/1.poze
     deploy:
       restart_policy:
         condition: any

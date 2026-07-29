@@ -45,7 +45,7 @@
       "matchManagers": ["docker-compose"],
       "matchFileNames": ["stacks/authentik/**"],
       "matchDatasources": ["docker"],
-      "matchDepNames": ["postgres"],
+      "matchDepNames": ["docker.io/library/postgres"],
       "allowedVersions": "/^16/"
     },
     {
@@ -53,7 +53,8 @@
       "matchFileNames": ["stacks/arr/**"],
       "matchDatasources": ["docker"],
       "matchDepNames": ["lscr.io/linuxserver/qbittorrent"],
-      "description": "Disable Renovate updates for qbittorrent in the arr stack (managed elsewhere)."
+      "description": "Disable Renovate updates for qbittorrent in the arr stack (managed elsewhere).",
+      "enabled": false
     }
   ]
  }

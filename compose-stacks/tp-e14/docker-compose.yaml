@@ -19,6 +19,7 @@ services:
       - HOME=/tmp/semaphore
       - ANSIBLE_LOCAL_TEMP=/tmp/semaphore/.ansible/tmp
       - ANSIBLE_REMOTE_TEMP=/tmp/semaphore/.ansible/tmp
+      - SEMAPHORE_WEB_ROOT=https://semaphore.${DOMAIN_NAME}
     volumes:
       - /srv/dvls/semaphore_config:/etc/semaphore
       - /srv/dvls/semaphore_data:/var/lib/semaphore

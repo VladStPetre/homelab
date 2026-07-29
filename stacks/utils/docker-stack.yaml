@@ -178,6 +178,7 @@ services:
         - "traefik.http.routers.semaphore-router.tls.certresolver=cloudflare"
         - "traefik.http.routers.semaphore-router.service=semaphore-router"
         - "traefik.http.services.semaphore-router.loadbalancer.server.url=http://${THINKP_ADDR}:3000"
+        - "traefik.http.services.semaphore-router.loadbalancer.passhostheader=true"
 
 
 configs:

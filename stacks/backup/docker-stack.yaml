@@ -33,12 +33,11 @@ services:
       - /srv/dvls/jellyfin-config:/data/jellyfin-config:ro
       - /srv/dvls/qbittorrent-config:/data/qbittorrent-config:ro
       - /srv/dvls/immich/library:/data/immich_library:ro
-
     deploy:
       restart_policy:
         condition: on-failure
-        delay: 300s          # wait 60s between restarts
-        max_attempts: 5    # stop restarting after 10 tries
+        delay: 300s
+        max_attempts: 5
       update_config:
         parallelism: 1
         order: stop-first
@@ -79,6 +78,7 @@ services:
     volumes:
       - /srv/dvls/syncthing_src_config:/config
       - /srv/dvls/immich/library:/data/immich_library:ro
+      - /srv/dvls/opencloud/data:/data/opencloud_data:ro
       - /mnt/nas_Vlad:/data/_Vlad:ro
       - /mnt/nas_Rux:/data/_Rux:ro
     deploy:
@@ -165,6 +165,7 @@ services:
     volumes:
       - /srv/dvls/syncthing_nas_config:/config
       - /mnt/nas/immich:/data/qnas/immich
+      - /mnt/nas_Vlad/001-OC:/data/_Vlad/001-OC
     deploy:
       restart_policy:
         condition: on-failure
