@@ -36,6 +36,18 @@
       ]
     },
     {
+      "description": "Parse Hotio Arr release tags correctly",
+      "matchManagers": ["docker-compose"],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "ghcr.io/hotio/sonarr",
+        "ghcr.io/hotio/radarr",
+        "ghcr.io/hotio/bazarr",
+        "ghcr.io/hotio/prowlarr"
+      ],
+      "versioning": "regex:^release-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$"
+    },
+    {
       "matchManagers": ["docker-compose"],
       "matchDatasources": ["docker"],
       "matchDepNames": ["ghcr.io/immich-app/postgres"],

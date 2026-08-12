@@ -132,7 +132,7 @@ services:
   # PROWLARR - Indexer Manager
   ###############################################
   prowlarr:
-    image: ghcr.io/hotio/prowlarr:release-2.3.5.5327
+    image: ghcr.io/hotio/prowlarr:release-2.5.2.5491
     environment:
       - PUID=${CUID}
       - PGID=${CGID}
