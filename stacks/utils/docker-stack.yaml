@@ -2,7 +2,7 @@
 services:
 
   dockhand:
-    image: fnsys/dockhand:v1.0.36
+    image: fnsys/dockhand:v1.0.41
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /srv/dvls/dockhand_data:/app/data
@@ -33,7 +33,7 @@ services:
       - hlel
 
   portainer:
-    image: portainer/portainer-ce:2.43.0
+    image: portainer/portainer-ce:2.44.0
     command: -H unix:///var/run/docker.sock
     volumes:
       - /srv/dvls/portainer-data:/data
@@ -155,7 +155,7 @@ services:
         - "traefik.http.services.files.loadbalancer.server.port=80"
 
   svc-router:
-    image: traefik/whoami:v1.11.0
+    image: traefik/whoami:v1.12.0
     networks:
       - hlel
     deploy:
