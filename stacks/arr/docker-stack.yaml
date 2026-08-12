@@ -5,7 +5,7 @@ services:
   # RADARR - Movies
   ###############################################
   radarr:
-    image: ghcr.io/hotio/radarr:release-6.1.1.10360
+    image: ghcr.io/hotio/radarr:release-6.3.0.10514
     environment:
       - PUID=${CUID}
       - PGID=${CGID}
@@ -47,7 +47,7 @@ services:
   # SONARR - TV Shows
   ###############################################
   sonarr:
-    image: ghcr.io/hotio/sonarr:release-4.0.17.2952
+    image: ghcr.io/hotio/sonarr:release-4.0.19.2979
     environment:
       - PUID=${CUID}
       - PGID=${CGID}
