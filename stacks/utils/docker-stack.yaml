@@ -2,7 +2,7 @@
 services:
 
   dockhand:
-    image: fnsys/dockhand:v1.0.45
+    image: fnsys/dockhand:v1.0.46
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /srv/dvls/dockhand_data:/app/data
